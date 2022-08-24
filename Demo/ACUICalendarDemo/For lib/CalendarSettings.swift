@@ -1,5 +1,5 @@
 //
-//  CalendarServiceSettings.swift
+//  CalendarSettings.swift
 //  ACUICalendarDemo
 //
 //  Created by Дмитрий Поляков on 24.08.2022.
@@ -7,8 +7,9 @@
 
 import Foundation
 
-public struct CalendarServiceSettings {
+public struct CalendarSettings {
     
+    // MARK: - Init
     static func `default`() -> Self {
         var calendar = Calendar.current
         calendar.firstWeekday = 2
@@ -20,6 +21,7 @@ public struct CalendarServiceSettings {
         return .init(calendar: calendar, minDate: minDate, maxDate: maxDate, currentDate: currentDate)
     }
     
+    // MARK: - Props
     public var calendar: Calendar
     public var minDate: Date
     public var maxDate: Date

@@ -7,19 +7,15 @@
 
 import Foundation
 
-
-
-
-
 open class CalendarService {
     
     // MARK: - Init
-    public init(settings: CalendarServiceSettings) {
+    public init(settings: CalendarSettings) {
         self.settings = settings
     }
 
     // MARK: - Props
-    open var settings: CalendarServiceSettings
+    open var settings: CalendarSettings
     
     public var calendar: Calendar {
         get { self.settings.calendar }
@@ -27,50 +23,13 @@ open class CalendarService {
     }
     
     // MARK: - Methods
-    open func getMonth(_ monthDate: Date) -> CalendarMonthModel? {
+    open func generateMonth(_ monthDate: Date) -> CalendarMonthModel? {
         CalendarMonthModel(
+            settings: self.settings,
             monthDates: self.monthDates(monthDate),
-            weekDatesOfStartOfMonthWithoutCurrentMonth: self.weekDatesOfStartOfMonthWithoutCurrentMonth(for: monthDate),
-            weekDatesOfEndOfMonthWithoutCurrentMonth: self.weekDatesOfEndOfMonthWithoutCurrentMonth(for: monthDate)
+            previousMonthDates: self.weekDatesOfStartOfMonthWithoutCurrentMonth(for: monthDate),
+            nextMonthDates: self.weekDatesOfEndOfMonthWithoutCurrentMonth(for: monthDate)
         )
-    }
-    
-    open func getNextMonth(_ monthDate: Date) -> CalendarMonthModel? {
-        guard let nextMonthDate = self.calendar.date(byAdding: .month, value: 1, to: monthDate) else { return nil }
-        
-        return self.getMonth(nextMonthDate)
-    }
-    
-    open func getNextMonths(_ monthDate: Date, count: Int) -> [CalendarMonthModel] {
-        var result: [CalendarMonthModel] = []
-        var currentDate = monthDate
-        
-        while result.count < count {
-            guard let month = self.getNextMonth(currentDate) else { break }
-            result += [month]
-            currentDate = month.monthDate
-        }
-        
-        return result
-    }
-    
-    open func getPreviousMonth(_ monthDate: Date) -> CalendarMonthModel? {
-        guard let nextMonthDate = self.calendar.date(byAdding: .month, value: -1, to: monthDate) else { return nil }
-        
-        return self.getMonth(nextMonthDate)
-    }
-    
-    open func getPreviousMonths(_ monthDate: Date, count: Int) -> [CalendarMonthModel] {
-        var result: [CalendarMonthModel] = []
-        var currentDate = monthDate
-        
-        while result.count < count {
-            guard let month = self.getPreviousMonth(currentDate) else { break }
-            result += [month]
-            currentDate = month.monthDate
-        }
-        
-        return result
     }
     
     open func monthDates(_ monthDate: Date) -> [Date] {
@@ -157,7 +116,7 @@ open class CalendarService {
         return result
     }
     
-    func generateAllMonths() -> [CalendarMonthModel] {
+    func generateMonths() -> [CalendarMonthModel] {
         var result: [CalendarMonthModel] = []
         var currentDate = self.settings.minDate
         
@@ -169,7 +128,7 @@ open class CalendarService {
         }
         
         while currentDate <= self.settings.maxDate {
-            guard let month = self.getMonth(currentDate), let nextDate = self.calendar.date(byAdding: .month, value: 1, to: month.monthDate) else { break }
+            guard let month = self.generateMonth(currentDate), let nextDate = self.calendar.date(byAdding: .month, value: 1, to: month.monthDate) else { break }
             result += [month]
             currentDate = nextDate
         }

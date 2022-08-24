@@ -13,13 +13,15 @@
 		E2A6CA6428B4E05F006EAA6F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E2A6CA6228B4E05F006EAA6F /* Main.storyboard */; };
 		E2A6CA6628B4E060006EAA6F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2A6CA6528B4E060006EAA6F /* Assets.xcassets */; };
 		E2A6CA6928B4E060006EAA6F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E2A6CA6728B4E060006EAA6F /* LaunchScreen.storyboard */; };
-		E2B6763528B5102B00D8710A /* Calendar+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B6763428B5102B00D8710A /* Calendar+Extensions.swift */; };
 		E2B6763728B5103F00D8710A /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B6763628B5103F00D8710A /* CalendarService.swift */; };
-		E2F0E31628B604FF008507D2 /* CalendarMonthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31528B604FF008507D2 /* CalendarMonthView.swift */; };
+		E2F0E31628B604FF008507D2 /* CalendarMonthCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31528B604FF008507D2 /* CalendarMonthCollectionView.swift */; };
 		E2F0E31828B614E3008507D2 /* CalendarDayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31728B614E3008507D2 /* CalendarDayCell.swift */; };
 		E2F0E31A28B61502008507D2 /* ACUICalendarHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31928B61502008507D2 /* ACUICalendarHorizontalLayout.swift */; };
 		E2F0E31C28B64F10008507D2 /* CalendarMonthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31B28B64F10008507D2 /* CalendarMonthModel.swift */; };
-		E2F0E31E28B64F23008507D2 /* CalendarServiceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31D28B64F23008507D2 /* CalendarServiceSettings.swift */; };
+		E2F0E31E28B64F23008507D2 /* CalendarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31D28B64F23008507D2 /* CalendarSettings.swift */; };
+		E2F0E32028B6A558008507D2 /* CaledarDateMonthBelongs.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31F28B6A558008507D2 /* CaledarDateMonthBelongs.swift */; };
+		E2F0E32228B6A578008507D2 /* CalendarDayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E32128B6A578008507D2 /* CalendarDayModel.swift */; };
+		E2F0E32428B6A670008507D2 /* CalendarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E32328B6A670008507D2 /* CalendarModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,13 +34,15 @@
 		E2A6CA6828B4E060006EAA6F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E2A6CA6A28B4E060006EAA6F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E2B6763228B4E0AB00D8710A /* appcraft-ui-calendar-ios */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "appcraft-ui-calendar-ios"; path = ..; sourceTree = "<group>"; };
-		E2B6763428B5102B00D8710A /* Calendar+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Extensions.swift"; sourceTree = "<group>"; };
 		E2B6763628B5103F00D8710A /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
-		E2F0E31528B604FF008507D2 /* CalendarMonthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarMonthView.swift; sourceTree = "<group>"; };
+		E2F0E31528B604FF008507D2 /* CalendarMonthCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarMonthCollectionView.swift; sourceTree = "<group>"; };
 		E2F0E31728B614E3008507D2 /* CalendarDayCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDayCell.swift; sourceTree = "<group>"; };
 		E2F0E31928B61502008507D2 /* ACUICalendarHorizontalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACUICalendarHorizontalLayout.swift; sourceTree = "<group>"; };
 		E2F0E31B28B64F10008507D2 /* CalendarMonthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarMonthModel.swift; sourceTree = "<group>"; };
-		E2F0E31D28B64F23008507D2 /* CalendarServiceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarServiceSettings.swift; sourceTree = "<group>"; };
+		E2F0E31D28B64F23008507D2 /* CalendarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSettings.swift; sourceTree = "<group>"; };
+		E2F0E31F28B6A558008507D2 /* CaledarDateMonthBelongs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaledarDateMonthBelongs.swift; sourceTree = "<group>"; };
+		E2F0E32128B6A578008507D2 /* CalendarDayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDayModel.swift; sourceTree = "<group>"; };
+		E2F0E32328B6A670008507D2 /* CalendarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,13 +99,15 @@
 		E2B6763328B5101900D8710A /* For lib */ = {
 			isa = PBXGroup;
 			children = (
-				E2B6763428B5102B00D8710A /* Calendar+Extensions.swift */,
-				E2B6763628B5103F00D8710A /* CalendarService.swift */,
-				E2F0E31528B604FF008507D2 /* CalendarMonthView.swift */,
-				E2F0E31728B614E3008507D2 /* CalendarDayCell.swift */,
 				E2F0E31928B61502008507D2 /* ACUICalendarHorizontalLayout.swift */,
+				E2F0E31F28B6A558008507D2 /* CaledarDateMonthBelongs.swift */,
+				E2F0E31728B614E3008507D2 /* CalendarDayCell.swift */,
+				E2F0E32128B6A578008507D2 /* CalendarDayModel.swift */,
+				E2F0E32328B6A670008507D2 /* CalendarModel.swift */,
+				E2F0E31528B604FF008507D2 /* CalendarMonthCollectionView.swift */,
 				E2F0E31B28B64F10008507D2 /* CalendarMonthModel.swift */,
-				E2F0E31D28B64F23008507D2 /* CalendarServiceSettings.swift */,
+				E2B6763628B5103F00D8710A /* CalendarService.swift */,
+				E2F0E31D28B64F23008507D2 /* CalendarSettings.swift */,
 			);
 			path = "For lib";
 			sourceTree = "<group>";
@@ -177,15 +183,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2F0E31E28B64F23008507D2 /* CalendarServiceSettings.swift in Sources */,
+				E2F0E31E28B64F23008507D2 /* CalendarSettings.swift in Sources */,
+				E2F0E32428B6A670008507D2 /* CalendarModel.swift in Sources */,
 				E2F0E31828B614E3008507D2 /* CalendarDayCell.swift in Sources */,
 				E2A6CA6128B4E05F006EAA6F /* ViewController.swift in Sources */,
-				E2B6763528B5102B00D8710A /* Calendar+Extensions.swift in Sources */,
 				E2A6CA5D28B4E05F006EAA6F /* AppDelegate.swift in Sources */,
-				E2F0E31628B604FF008507D2 /* CalendarMonthView.swift in Sources */,
+				E2F0E31628B604FF008507D2 /* CalendarMonthCollectionView.swift in Sources */,
 				E2F0E31C28B64F10008507D2 /* CalendarMonthModel.swift in Sources */,
 				E2B6763728B5103F00D8710A /* CalendarService.swift in Sources */,
 				E2A6CA5F28B4E05F006EAA6F /* SceneDelegate.swift in Sources */,
+				E2F0E32228B6A578008507D2 /* CalendarDayModel.swift in Sources */,
+				E2F0E32028B6A558008507D2 /* CaledarDateMonthBelongs.swift in Sources */,
 				E2F0E31A28B61502008507D2 /* ACUICalendarHorizontalLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

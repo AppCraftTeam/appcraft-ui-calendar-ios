@@ -8,29 +8,46 @@
 import Foundation
 import UIKit
 
-class CalendarDayCell: UICollectionViewCell {
+open class CalendarDayCell: UICollectionViewCell {
     
-    static let identifer: String = "CalendarDayCell"
-    
-    override init(frame: CGRect) {
+    // MARK: - Init
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         
         self.setupComponents()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         
         self.setupComponents()
     }
     
-    lazy var dayLabel: UILabel = {
+    // MARK: - Props
+    open class var identifer: String {
+        "CalendarDayCell"
+    }
+    
+    public lazy var dayLabel: UILabel = {
         let result = UILabel()
         result.textAlignment = .center
         return result
     }()
     
-    func setupComponents() {
+//    open override var isSelected: Bool {
+//        didSet { self.updateComponets() }
+//    }
+//
+//    var date: Date? {
+//        didSet { self.updateComponets() }
+//    }
+//    
+//    var dateSelected: Bool = false {
+//        didSet { self.updateComponets() }
+//    }
+    
+    // MARK: - Methods
+    open func setupComponents() {
         self.contentView.layer.borderColor = UIColor.gray.cgColor
         self.contentView.layer.borderWidth = 0.5
         
@@ -45,6 +62,10 @@ class CalendarDayCell: UICollectionViewCell {
             self.dayLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
             self.dayLabel.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor)
         ])
+    }
+    
+    open func updateComponets() {
+//        self.contentView.backgroundColor = self.dateSelected ? .lightGray : .clear
     }
     
 }
