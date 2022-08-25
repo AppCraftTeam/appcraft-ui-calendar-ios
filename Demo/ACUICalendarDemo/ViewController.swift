@@ -9,7 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let monthView = ACCalendarMonthCollectionView()
+    let monthView = ACCalendarView()
     
     override func loadView() {
         self.view = self.monthView
@@ -17,6 +17,9 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.view.backgroundColor = .white
+        
         // Do any additional setup after loading the view.
         
 //        var calendar = Calendar.current

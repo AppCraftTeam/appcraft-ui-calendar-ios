@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E220A69C28B825A200647377 /* DPSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E220A69B28B825A200647377 /* DPSwift */; };
 		E28A55B528B7EA2F00FCB5C6 /* ACCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A55B428B7EA2F00FCB5C6 /* ACCalendarView.swift */; };
 		E28A55B828B7EBE800FCB5C6 /* Calendar+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A55B728B7EBE800FCB5C6 /* Calendar+Extensions.swift */; };
 		E28A55BA28B7EC7F00FCB5C6 /* ACCalendarWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A55B928B7EC7F00FCB5C6 /* ACCalendarWeekView.swift */; };
@@ -54,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E220A69C28B825A200647377 /* DPSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,14 +114,14 @@
 		E2A6CA5B28B4E05F006EAA6F /* ACUICalendarDemo */ = {
 			isa = PBXGroup;
 			children = (
-				E2B6763328B5101900D8710A /* For lib */,
+				E2A6CA6A28B4E060006EAA6F /* Info.plist */,
 				E2A6CA5C28B4E05F006EAA6F /* AppDelegate.swift */,
 				E2A6CA5E28B4E05F006EAA6F /* SceneDelegate.swift */,
 				E2A6CA6028B4E05F006EAA6F /* ViewController.swift */,
-				E2A6CA6228B4E05F006EAA6F /* Main.storyboard */,
 				E2A6CA6528B4E060006EAA6F /* Assets.xcassets */,
+				E2B6763328B5101900D8710A /* For lib */,
 				E2A6CA6728B4E060006EAA6F /* LaunchScreen.storyboard */,
-				E2A6CA6A28B4E060006EAA6F /* Info.plist */,
+				E2A6CA6228B4E05F006EAA6F /* Main.storyboard */,
 			);
 			path = ACUICalendarDemo;
 			sourceTree = "<group>";
@@ -158,6 +160,9 @@
 			dependencies = (
 			);
 			name = ACUICalendarDemo;
+			packageProductDependencies = (
+				E220A69B28B825A200647377 /* DPSwift */,
+			);
 			productName = ACUICalendarDemo;
 			productReference = E2A6CA5928B4E05F006EAA6F /* ACUICalendarDemo.app */;
 			productType = "com.apple.product-type.application";
@@ -186,6 +191,9 @@
 				Base,
 			);
 			mainGroup = E2A6CA5028B4E05F006EAA6F;
+			packageReferences = (
+				E220A69A28B825A200647377 /* XCRemoteSwiftPackageReference "DPSwift" */,
+			);
 			productRefGroup = E2A6CA5A28B4E05F006EAA6F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -444,6 +452,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E220A69A28B825A200647377 /* XCRemoteSwiftPackageReference "DPSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/DPLibs/DPSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E220A69B28B825A200647377 /* DPSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E220A69A28B825A200647377 /* XCRemoteSwiftPackageReference "DPSwift" */;
+			productName = DPSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E2A6CA5128B4E05F006EAA6F /* Project object */;
 }
