@@ -1,5 +1,5 @@
 //
-//  ACUICalendarHorizontalLayout.swift
+//  ACCalendarHorizontalLayout.swift
 //  ACUICalendarDemo
 //
 //  Created by Дмитрий Поляков on 24.08.2022.
@@ -8,11 +8,11 @@
 import Foundation
 import UIKit
 
-open class ACUICalendarHorizontalLayout: UICollectionViewFlowLayout {
+open class ACCalendarHorizontalLayout: UICollectionViewFlowLayout {
     
     // MARK: - Props
-    private var attributesCashe: [UICollectionViewLayoutAttributes] = []
-    private var contentSize: CGSize = .zero
+    open var attributesCashe: [UICollectionViewLayoutAttributes] = []
+    open var contentSize: CGSize = .zero
     
     open override var collectionViewContentSize: CGSize {
         self.contentSize

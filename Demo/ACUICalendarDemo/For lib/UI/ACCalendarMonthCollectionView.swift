@@ -1,5 +1,5 @@
 //
-//  CalendarMonthCollectionView.swift
+//  ACCalendarMonthCollectionView.swift
 //  ACUICalendarDemo
 //
 //  Created by Дмитрий Поляков on 24.08.2022.
@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-open class CalendarMonthCollectionView: UIView {
+open class ACCalendarMonthCollectionView: UIView {
     
     // MARK: - Init
     public override init(frame: CGRect) {
@@ -24,15 +24,15 @@ open class CalendarMonthCollectionView: UIView {
     }
     
     // MARK: - Props
-    lazy var collectionViewLayout: UICollectionViewLayout = ACUICalendarHorizontalLayout()
+    open lazy var collectionViewLayout: UICollectionViewLayout = ACCalendarHorizontalLayout()
     
-    lazy var collectionView: UICollectionView = {
+    open lazy var collectionView: UICollectionView = {
         let result = UICollectionView(frame: .zero, collectionViewLayout: self.collectionViewLayout)
         result.showsVerticalScrollIndicator = false
         result.showsHorizontalScrollIndicator = false
         result.contentInsetAdjustmentBehavior = .never
         result.isPagingEnabled = true
-        result.register(CalendarDayCell.self, forCellWithReuseIdentifier: CalendarDayCell.identifer)
+        result.register(ACCalendarDayCollectionViewCell.self, forCellWithReuseIdentifier: ACCalendarDayCollectionViewCell.identifer)
         result.dataSource = self
         
         result.allowsMultipleSelection = true
@@ -40,11 +40,11 @@ open class CalendarMonthCollectionView: UIView {
         return result
     }()
     
-    open var service: CalendarService = .init(settings: .default())
+    open var service: ACCalendarService = ACCalendarService(settings: .default())
+    open var months: [ACCalendarMonthModel] = []
     
-    public private(set) var months: [CalendarMonthModel] = []
-    
-    func setupComponents() {
+    // MARK: - Methods
+    open func setupComponents() {
         self.collectionView.removeFromSuperview()
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -66,7 +66,7 @@ open class CalendarMonthCollectionView: UIView {
     }
     
     open func scrollToMonth(_ monthDate: Date) {
-        func isEqual1(_ month: CalendarMonthModel) -> Bool {
+        func isEqual1(_ month: ACCalendarMonthModel) -> Bool {
             self.service.calendar.compare(monthDate, to: month.monthDate, toGranularity: .month) == .orderedSame
         }
         
@@ -79,7 +79,7 @@ open class CalendarMonthCollectionView: UIView {
 }
 
 // MARK: - UICollectionViewDataSource
-extension CalendarMonthCollectionView: UICollectionViewDataSource {
+extension ACCalendarMonthCollectionView: UICollectionViewDataSource {
     
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         self.months.count
@@ -87,32 +87,30 @@ extension CalendarMonthCollectionView: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard self.months.indices.contains(section) else { return 0 }
-        return self.months[section].allDates.count
+        
+        return self.months[section].days.count
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CalendarDayCell.identifer, for: indexPath) as? CalendarDayCell
-        else { return .init() }
+        guard self.months.indices.contains(indexPath.section) else { return .init() }
+        let days = self.months[indexPath.section].days
         
-        let date = self.months[indexPath.section].allDates[indexPath.row]
+        guard days.indices.contains(indexPath.item) else { return .init() }
+        let day = days[indexPath.item]
         
-        var calendar = Calendar.current
-        calendar.firstWeekday = 2
-        let day = calendar.component(.day, from: date)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ACCalendarDayCollectionViewCell.identifer, for: indexPath) as? ACCalendarDayCollectionViewCell else { return .init() }
         
-        cell.dayLabel.text = day.description
-        cell.isSelected = self.selectedDates.contains(where: { self.service.calendar.compare($0, to: date, toGranularity: .day) == .orderedSame })
-        
+        cell.day = day
         return cell
     }
     
 }
 
-extension CalendarMonthCollectionView: UICollectionViewDelegate {
+// MARK: - ACCalendarService
+extension ACCalendarMonthCollectionView: UICollectionViewDelegate {
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.reloadData()
+//        collectionView.reloadData()
     }
     
 }

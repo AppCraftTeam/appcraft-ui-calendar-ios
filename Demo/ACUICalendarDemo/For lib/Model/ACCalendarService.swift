@@ -1,5 +1,5 @@
 //
-//  CalendarService.swift
+//  ACCalendarService.swift
 //  ACUICalendarDemo
 //
 //  Created by Дмитрий Поляков on 23.08.2022.
@@ -7,15 +7,15 @@
 
 import Foundation
 
-open class CalendarService {
+open class ACCalendarService {
     
     // MARK: - Init
-    public init(settings: CalendarSettings) {
+    public init(settings: ACCalendarSettings) {
         self.settings = settings
     }
 
     // MARK: - Props
-    open var settings: CalendarSettings
+    open var settings: ACCalendarSettings
     
     public var calendar: Calendar {
         get { self.settings.calendar }
@@ -23,20 +23,58 @@ open class CalendarService {
     }
     
     // MARK: - Methods
-    open func generateMonth(_ monthDate: Date) -> CalendarMonthModel? {
-        CalendarMonthModel(
-            settings: self.settings,
-            monthDates: self.monthDates(monthDate),
-            previousMonthDates: self.weekDatesOfStartOfMonthWithoutCurrentMonth(for: monthDate),
-            nextMonthDates: self.weekDatesOfEndOfMonthWithoutCurrentMonth(for: monthDate)
+    open func generateMonths() -> [ACCalendarMonthModel] {
+        var result: [ACCalendarMonthModel] = []
+        var currentDate = self.settings.minDate
+        
+        var condition: Bool {
+            let compare = currentDate.compare(self.settings.maxDate)
+            let condition = compare == .orderedAscending || compare == .orderedSame
+            
+            return condition
+        }
+        
+        while currentDate <= self.settings.maxDate {
+            guard
+                let month = self.generateMonth(for: currentDate),
+                let nextDate = self.calendar.date(byAdding: .month, value: 1, to: month.monthDate)
+            else { break }
+            
+            result += [month]
+            currentDate = nextDate
+        }
+        
+        return result
+    }
+    
+    open func generateMonth(for monthDate: Date) -> ACCalendarMonthModel? {
+        guard
+            let monthDates = self.generateCurrentMonthDates(for: monthDate),
+            let previousMonthDates = self.generatePreviousMonthDates(for: monthDate),
+            let nextMonthDates = self.generateNextMonthDates(for: monthDate),
+            let monthDate = monthDates.first
+        else { return nil }
+        
+        let days = (previousMonthDates + monthDates + nextMonthDates)
+            .sorted()
+            .map({ date in
+                self.generateDay(date, previousMonthDates: previousMonthDates, nextMonthDates: nextMonthDates)
+            })
+        
+        return ACCalendarMonthModel(
+            monthDate: monthDate,
+            monthDates: monthDates,
+            previousMonthDates: previousMonthDates,
+            nextMonthDates: nextMonthDates,
+            days: days
         )
     }
     
-    open func monthDates(_ monthDate: Date) -> [Date] {
+    open func generateCurrentMonthDates(for monthDate: Date) -> [Date]? {
         guard
             let startOfMonth = self.startOfMonth(for: monthDate),
             let endOfMonth = self.endOfMonth(for: monthDate)
-        else { return [] }
+        else { return nil }
         
         var result: [Date] = []
         var nextDate = startOfMonth
@@ -62,12 +100,13 @@ open class CalendarService {
             nextDate = dateAddingDay
         }
         
-        return result
+        return result.sorted()
     }
     
     open func startOfMonth(for monthDate: Date) -> Date? {
         let date = self.calendar.startOfDay(for: monthDate)
         let dateComponents = self.calendar.dateComponents([.year, .month], from: date)
+        
         return self.calendar.date(from: dateComponents)
     }
     
@@ -78,11 +117,11 @@ open class CalendarService {
         return self.calendar.date(byAdding: dateComponents, to: startOfMonth)
     }
     
-    open func weekDatesOfStartOfMonthWithoutCurrentMonth(for monthDate: Date) -> [Date] {
+    open func generatePreviousMonthDates(for monthDate: Date) -> [Date]? {
         guard
             let startOfMonth = self.startOfMonth(for: monthDate),
             let previousStartOfMonth = self.calendar.date(byAdding: .day, value: -1, to: startOfMonth)
-        else { return [] }
+        else { return nil }
         
         var result: [Date] = []
         var nextDate = previousStartOfMonth
@@ -94,14 +133,14 @@ open class CalendarService {
             nextDate = dateAddingDay
         }
         
-        return result
+        return result.sorted()
     }
     
-    open func weekDatesOfEndOfMonthWithoutCurrentMonth(for monthDate: Date) -> [Date] {
+    open func generateNextMonthDates(for monthDate: Date) -> [Date]? {
         guard
             let endOfMonth = self.endOfMonth(for: monthDate),
             let nextEndOfMonth = self.calendar.date(byAdding: .day, value: 1, to: endOfMonth)
-        else { return [] }
+        else { return nil }
         
         var result: [Date] = []
         var nextDate = nextEndOfMonth
@@ -113,24 +152,31 @@ open class CalendarService {
             nextDate = dateAddingDay
         }
         
-        return result
+        return result.sorted()
     }
     
-    func generateMonths() -> [CalendarMonthModel] {
-        var result: [CalendarMonthModel] = []
-        var currentDate = self.settings.minDate
-        
-        var condition: Bool {
-            let compare = currentDate.compare(self.settings.maxDate)
-            let condition = compare == .orderedAscending || compare == .orderedSame
-            
-            return condition
+    open func generateDay(_ dayDate: Date, previousMonthDates: [Date], nextMonthDates: [Date]) -> ACCalendarDayModel {
+        var belongsToMonth: ACCalendarBelongsToMonth {
+            if self.isContaints(date: dayDate, in: previousMonthDates) {
+                return .previous
+            } else if self.isContaints(date: dayDate, in: nextMonthDates) {
+                return .next
+            } else {
+                return .current
+            }
         }
         
-        while currentDate <= self.settings.maxDate {
-            guard let month = self.generateMonth(currentDate), let nextDate = self.calendar.date(byAdding: .month, value: 1, to: month.monthDate) else { break }
-            result += [month]
-            currentDate = nextDate
+        return ACCalendarDayModel(
+            date: dayDate,
+            belongsToMonth: belongsToMonth
+        )
+    }
+    
+    open func isContaints(date: Date, in dates: [Date]) -> Bool {
+        let calendar = self.settings.calendar
+        
+        let result = dates.contains { dateFromDates in
+            calendar.compare(date, to: dateFromDates, toGranularity: .day) == .orderedSame
         }
         
         return result

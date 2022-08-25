@@ -9,7 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let monthView = CalendarMonthCollectionView()
+    let monthView = ACCalendarMonthCollectionView()
     
     override func loadView() {
         self.view = self.monthView
