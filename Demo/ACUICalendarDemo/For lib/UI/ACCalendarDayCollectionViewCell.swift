@@ -38,6 +38,22 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
         didSet { self.updateComponets() }
     }
     
+    open var dayPlainTextColor: UIColor = .black {
+        didSet { self.updateComponets() }
+    }
+    
+    open var daySelectedOfEdgeTextColor: UIColor = .black {
+        didSet { self.updateComponets() }
+    }
+    
+    open var daySelectedOfMiddleTextColor: UIColor = .black {
+        didSet { self.updateComponets() }
+    }
+    
+    open var dayFont: UIFont = .systemFont(ofSize: 20, weight: .regular) {
+        didSet { self.updateComponets() }
+    }
+    
     // MARK: - Methods
     open func setupComponents() {
         self.dayLabel.removeFromSuperview()
@@ -55,6 +71,8 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
     
     open func updateComponets() {
         self.dayLabel.text = self.day?.dayDateText
+        self.dayLabel.textColor = self.dayPlainTextColor
+        self.dayLabel.font = self.dayFont
     }
     
 }

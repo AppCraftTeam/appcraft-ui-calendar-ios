@@ -11,11 +11,8 @@ public struct ACCalendarDayModel {
     
     // MARK: - Init
     public init(date: Date, belongsToMonth: ACCalendarBelongsToMonth) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd"
-        
         self.dayDate = date
-        self.dayDateText = formatter.string(from: date)
+        self.dayDateText = date.toLocalString(withFormatType: "d")
         self.belongsToMonth = belongsToMonth
     }
     

@@ -12,15 +12,6 @@ import DPSwift
 open class ACCalendarWeekView: UIView {
     
     // MARK: - Init
-    public init(calendar: Calendar, locale: Locale) {
-        super.init(frame: .zero)
-        
-        self.calendar = calendar
-        self.locale = locale
-        
-        self.updateComponents()
-    }
-    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -42,11 +33,7 @@ open class ACCalendarWeekView: UIView {
         return result
     }()
     
-    open var calendar: Calendar = .defaultACCalendar() {
-        didSet { self.updateComponents() }
-    }
-    
-    open var locale: Locale = .current {
+    open var settings: ACCalendarSettings = .default() {
         didSet { self.updateComponents() }
     }
     
@@ -80,11 +67,13 @@ open class ACCalendarWeekView: UIView {
     }
     
     open func updateComponents() {
-        let weekDays = self.calendar.firstDPWeekDay.generateWeek()
+        let calendar = self.settings.calendar
+        let locale = self.settings.locale
+        let weekDays = calendar.firstDPWeekDay.generateWeek()
         
         let views: [UIView] = weekDays.map { weekDay in
             let text = weekDay
-                .toLocalString(with: .eee, calendar: self.calendar, locale: self.locale)?
+                .toLocalString(with: .eee, calendar: calendar, locale: locale)?
                 .uppercased()
             
             let label = UILabel()

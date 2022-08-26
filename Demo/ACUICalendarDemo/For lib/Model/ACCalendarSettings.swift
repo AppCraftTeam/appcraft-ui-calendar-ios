@@ -14,12 +14,14 @@ public struct ACCalendarSettings {
         calendar: Calendar,
         minDate: Date,
         maxDate: Date,
-        currentDate: Date
+        currentDate: Date,
+        locale: Locale
     ) {
         self.calendar = calendar
         self.minDate = minDate
         self.maxDate = maxDate
         self.currentDate = currentDate
+        self.locale = locale
     }
     
     static func `default`() -> Self {
@@ -28,7 +30,13 @@ public struct ACCalendarSettings {
         let minDate = calendar.date(byAdding: .year, value: -10, to: currentDate) ?? currentDate
         let maxDate = calendar.date(byAdding: .year, value: 10, to: currentDate) ?? currentDate
         
-        return .init(calendar: calendar, minDate: minDate, maxDate: maxDate, currentDate: currentDate)
+        return .init(
+            calendar: calendar,
+            minDate: minDate,
+            maxDate: maxDate,
+            currentDate: currentDate,
+            locale: .current
+        )
     }
     
     // MARK: - Props
@@ -36,4 +44,5 @@ public struct ACCalendarSettings {
     public var minDate: Date
     public var maxDate: Date
     public var currentDate: Date
+    public var locale: Locale
 }
