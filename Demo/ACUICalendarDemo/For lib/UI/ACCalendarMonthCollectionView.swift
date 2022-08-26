@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import DPSwift
 
 open class ACCalendarMonthCollectionView: UIView {
     
@@ -34,14 +35,14 @@ open class ACCalendarMonthCollectionView: UIView {
         result.isPagingEnabled = true
         result.register(ACCalendarDayCollectionViewCell.self, forCellWithReuseIdentifier: ACCalendarDayCollectionViewCell.identifer)
         result.dataSource = self
-        
-        result.allowsMultipleSelection = true
+        result.delegate = self
         
         return result
     }()
     
-    open var service: ACCalendarService = ACCalendarService(settings: .default())
+    open var service: ACCalendarService = .default()
     open var months: [ACCalendarMonthModel] = []
+    open var didScrollToMonth: ContextClosure<Date>?
     
     // MARK: - Methods
     open func setupComponents() {
@@ -61,20 +62,37 @@ open class ACCalendarMonthCollectionView: UIView {
         self.collectionView.reloadData()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10)) { [weak self] in
-            self?.scrollToMonth(.init())
+            guard let self = self else { return }
+            self.scrollToMonth(self.service.currentMonthDate, animated: false)
         }
     }
     
-    open func scrollToMonth(_ monthDate: Date) {
+    open func scrollToMonth(_ monthDate: Date, animated: Bool) {
         func isEqual1(_ month: ACCalendarMonthModel) -> Bool {
             self.service.calendar.compare(monthDate, to: month.monthDate, toGranularity: .month) == .orderedSame
         }
         
         guard let index = self.months.firstIndex(where: { isEqual1($0) }) else { return }
-        self.collectionView.scrollToItem(at: .init(item: 0, section: index), at: .left, animated: false)
+        self.collectionView.scrollToItem(at: .init(item: 0, section: index), at: .left, animated: animated)
     }
     
-    var selectedDates: [Date] = []
+    open func scrollToNextMonth(animated: Bool) {
+        guard let date = self.service.nextMonth() else { return }
+        self.scrollToMonth(date, animated: animated)
+    }
+    
+    open func scrollToPreviousMonth(animated: Bool) {
+        guard let date = self.service.previousMonth() else { return }
+        self.scrollToMonth(date, animated: animated)
+    }
+    
+    open func handleScrolling() {
+        let page = self.collectionView.contentOffset.x / self.frame.width
+        
+        guard let monthDate = self.months.element(at: Int(page))?.monthDate else { return }
+        self.service.currentMonthDate = monthDate
+        self.didScrollToMonth?(monthDate)
+    }
     
 }
 
@@ -109,8 +127,12 @@ extension ACCalendarMonthCollectionView: UICollectionViewDataSource {
 // MARK: - ACCalendarService
 extension ACCalendarMonthCollectionView: UICollectionViewDelegate {
     
-    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        collectionView.reloadData()
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        self.handleScrolling()
+    }
+    
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        self.handleScrolling()
     }
     
 }

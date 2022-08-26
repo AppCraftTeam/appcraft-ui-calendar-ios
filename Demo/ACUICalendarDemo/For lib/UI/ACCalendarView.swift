@@ -51,11 +51,11 @@ open class ACCalendarView: UIView {
         let result = ACCalendarArrowsView()
         
         result.didTapLeftArrow = { [weak self] in
-            
+            self?.monthCollectionView.scrollToPreviousMonth(animated: true)
         }
         
         result.didTapRightArrow = { [weak self] in
-            
+            self?.monthCollectionView.scrollToNextMonth(animated: true)
         }
         
         return result
@@ -65,6 +65,11 @@ open class ACCalendarView: UIView {
     
     open lazy var monthCollectionView: ACCalendarMonthCollectionView = {
         let result = ACCalendarMonthCollectionView()
+        result.didScrollToMonth = { [weak self] monthDate in
+            guard let self = self else { return }
+            self.service.currentMonthDate = monthDate
+            self.monthSelectView.service = self.service
+        }
         
         return result
     }()
@@ -73,11 +78,16 @@ open class ACCalendarView: UIView {
         didSet { self.setupStackContentView() }
     }
     
-    open var currentMonth = Date() {
+    open var service: ACCalendarService = .default() {
         didSet {
-            self.monthSelectView.monthDate = self.currentMonth
+            
         }
     }
+    
+//    open var currentDate: Date {
+//        get { self.service.currentDate }
+//        set { self.service.currentDate = newValue }
+//    }
     
     // MARK: - Methods
     open func setupComponents() {

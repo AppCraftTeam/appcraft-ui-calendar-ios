@@ -25,7 +25,6 @@
 		E2F0E31828B614E3008507D2 /* ACCalendarDayCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31728B614E3008507D2 /* ACCalendarDayCollectionViewCell.swift */; };
 		E2F0E31A28B61502008507D2 /* ACCalendarHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31928B61502008507D2 /* ACCalendarHorizontalLayout.swift */; };
 		E2F0E31C28B64F10008507D2 /* ACCalendarMonthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31B28B64F10008507D2 /* ACCalendarMonthModel.swift */; };
-		E2F0E31E28B64F23008507D2 /* ACCalendarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31D28B64F23008507D2 /* ACCalendarSettings.swift */; };
 		E2F0E32028B6A558008507D2 /* ACCalendarBelongsToMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31F28B6A558008507D2 /* ACCalendarBelongsToMonth.swift */; };
 		E2F0E32228B6A578008507D2 /* ACCalendarDayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E32128B6A578008507D2 /* ACCalendarDayModel.swift */; };
 /* End PBXBuildFile section */
@@ -51,7 +50,6 @@
 		E2F0E31728B614E3008507D2 /* ACCalendarDayCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarDayCollectionViewCell.swift; sourceTree = "<group>"; };
 		E2F0E31928B61502008507D2 /* ACCalendarHorizontalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarHorizontalLayout.swift; sourceTree = "<group>"; };
 		E2F0E31B28B64F10008507D2 /* ACCalendarMonthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarMonthModel.swift; sourceTree = "<group>"; };
-		E2F0E31D28B64F23008507D2 /* ACCalendarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarSettings.swift; sourceTree = "<group>"; };
 		E2F0E31F28B6A558008507D2 /* ACCalendarBelongsToMonth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarBelongsToMonth.swift; sourceTree = "<group>"; };
 		E2F0E32128B6A578008507D2 /* ACCalendarDayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarDayModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -89,7 +87,6 @@
 				E2F0E32128B6A578008507D2 /* ACCalendarDayModel.swift */,
 				E2F0E31B28B64F10008507D2 /* ACCalendarMonthModel.swift */,
 				E2B6763628B5103F00D8710A /* ACCalendarService.swift */,
-				E2F0E31D28B64F23008507D2 /* ACCalendarSettings.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -232,7 +229,6 @@
 			files = (
 				E24C546528B8D1F400D341C4 /* ACCalendarMonthSelectView.swift in Sources */,
 				E28A55B528B7EA2F00FCB5C6 /* ACCalendarView.swift in Sources */,
-				E2F0E31E28B64F23008507D2 /* ACCalendarSettings.swift in Sources */,
 				E2F0E31828B614E3008507D2 /* ACCalendarDayCollectionViewCell.swift in Sources */,
 				E2A6CA6128B4E05F006EAA6F /* ViewController.swift in Sources */,
 				E2A6CA5D28B4E05F006EAA6F /* AppDelegate.swift in Sources */,

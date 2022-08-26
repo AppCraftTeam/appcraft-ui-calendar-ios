@@ -33,7 +33,7 @@ open class ACCalendarWeekView: UIView {
         return result
     }()
     
-    open var settings: ACCalendarSettings = .default() {
+    open var service: ACCalendarService = .default() {
         didSet { self.updateComponents() }
     }
     
@@ -67,8 +67,8 @@ open class ACCalendarWeekView: UIView {
     }
     
     open func updateComponents() {
-        let calendar = self.settings.calendar
-        let locale = self.settings.locale
+        let calendar = self.service.calendar
+        let locale = self.service.locale
         let weekDays = calendar.firstDPWeekDay.generateWeek()
         
         let views: [UIView] = weekDays.map { weekDay in

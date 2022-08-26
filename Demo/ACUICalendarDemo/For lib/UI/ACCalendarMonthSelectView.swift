@@ -37,11 +37,7 @@ open class ACCalendarMonthSelectView: UIView {
         return result
     }()
     
-    open var settings: ACCalendarSettings = .default() {
-        didSet { self.updateComponents() }
-    }
-    
-    open var monthDate = Date() {
+    open var service: ACCalendarService = .default() {
         didSet { self.updateComponents() }
     }
     
@@ -118,8 +114,11 @@ open class ACCalendarMonthSelectView: UIView {
     }
     
     open func updateComponents() {
-        let monthText = self.monthDate
-            .toLocalString(withFormatType: "LLLL yyyy", locale: self.settings.locale)
+        let locale = self.service.locale
+        let monthDate = self.service.currentMonthDate
+        
+        let monthText = monthDate
+            .toLocalString(withFormatType: "LLLL yyyy", locale: locale)
             .capitalizingFirstLetter()
         
         self.monthDateLabel.text = monthText
@@ -145,7 +144,7 @@ open class ACCalendarMonthSelectView: UIView {
     }
     
     open func setHighlighted(_ highlighted: Bool) {
-//        self.alpha = highlighted ? 0.5 : 1.0
+        self.alpha = highlighted ? 0.5 : 1.0
     }
     
 }
