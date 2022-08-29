@@ -54,7 +54,11 @@ open class ACCalendarArrowsView: UIView {
         return result
     }()
     
-    open override var tintColor: UIColor! {
+    open var service: ACCalendarService = .default() {
+        didSet { self.updateComponents() }
+    }
+    
+    open var theme = ACCalendarUITheme() {
         didSet { self.updateComponents() }
     }
     
@@ -97,7 +101,9 @@ open class ACCalendarArrowsView: UIView {
     }
     
     open func updateComponents() {
-        self.subviews.forEach({ $0.tintColor = self.tintColor })
+        self.subviews.forEach({ $0.tintColor = self.theme.arrowsTintColor })
+        self.leftArrowIsEnabled = self.service.previousMonth() != nil
+        self.rightArrowIsEnabled = self.service.nextMonth() != nil
     }
     
     @objc

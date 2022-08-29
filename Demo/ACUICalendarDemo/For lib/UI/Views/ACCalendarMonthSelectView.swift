@@ -41,15 +41,7 @@ open class ACCalendarMonthSelectView: UIView {
         didSet { self.updateComponents() }
     }
     
-    open var monthDateTextColor: UIColor = .black {
-        didSet { self.updateComponents() }
-    }
-    
-    open var monthDateFont: UIFont = .systemFont(ofSize: 18, weight: .semibold) {
-        didSet { self.updateComponents() }
-    }
-    
-    open var arrowImageTintColor: UIColor = .black {
+    open var theme = ACCalendarUITheme() {
         didSet { self.updateComponents() }
     }
     
@@ -118,14 +110,14 @@ open class ACCalendarMonthSelectView: UIView {
         let monthDate = self.service.currentMonthDate
         
         let monthText = monthDate
-            .toLocalString(withFormatType: "LLLL yyyy", locale: locale)
+            .toLocalString(withFormatType: .montLettersAndYear, locale: locale)
             .capitalizingFirstLetter()
         
         self.monthDateLabel.text = monthText
         
-        self.monthDateLabel.textColor = self.monthDateTextColor
-        self.monthDateLabel.font = self.monthDateFont
-        self.arrowImageView.tintColor = self.arrowImageTintColor
+        self.monthDateLabel.textColor = self.theme.monthSelectDateTextColor
+        self.monthDateLabel.font = self.theme.monthSelectDateFont
+        self.arrowImageView.tintColor = self.theme.monthSelectArrowImageTintColor
         
         var arrowImageTransform: CGAffineTransform {
             switch self.state {

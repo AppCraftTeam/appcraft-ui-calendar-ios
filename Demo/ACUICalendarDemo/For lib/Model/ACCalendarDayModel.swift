@@ -12,7 +12,7 @@ public struct ACCalendarDayModel {
     // MARK: - Init
     public init(date: Date, belongsToMonth: ACCalendarBelongsToMonth) {
         self.dayDate = date
-        self.dayDateText = date.toLocalString(withFormatType: "d")
+        self.dayDateText = date.toLocalString(withFormatType: .day)
         self.belongsToMonth = belongsToMonth
     }
     

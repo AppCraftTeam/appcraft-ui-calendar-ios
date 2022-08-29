@@ -37,15 +37,7 @@ open class ACCalendarWeekView: UIView {
         didSet { self.updateComponents() }
     }
     
-    open var textColor: UIColor = .black {
-        didSet { self.updateComponents() }
-    }
-    
-    open var textAlignment: NSTextAlignment = .center {
-        didSet { self.updateComponents() }
-    }
-    
-    open var font: UIFont = .systemFont(ofSize: 14) {
+    open var theme = ACCalendarUITheme() {
         didSet { self.updateComponents() }
     }
     
@@ -78,9 +70,9 @@ open class ACCalendarWeekView: UIView {
             
             let label = UILabel()
             label.text = text
-            label.textColor = self.textColor
-            label.textAlignment = self.textAlignment
-            label.font = self.font
+            label.textAlignment = .center
+            label.textColor = self.theme.weekDayTextColor
+            label.font = self.theme.weekDayFont
             
             return label
         }

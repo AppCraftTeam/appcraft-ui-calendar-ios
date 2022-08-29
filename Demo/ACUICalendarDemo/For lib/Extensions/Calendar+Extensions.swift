@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import DPSwift
 
 public extension Calendar {
     
     static func defaultACCalendar() -> Calendar {
         var calendar = Calendar.current
-        calendar.firstWeekday = 2
+        calendar.firstDPWeekDay = .monday
         
         return calendar
     }

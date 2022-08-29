@@ -41,8 +41,14 @@ open class ACCalendarMonthCollectionView: UIView {
     }()
     
     open var service: ACCalendarService = .default()
+    
+    open var theme = ACCalendarUITheme() {
+        didSet { self.collectionView.reloadData() }
+    }
+    
     open var months: [ACCalendarMonthModel] = []
     open var didScrollToMonth: ContextClosure<Date>?
+    open var didSelectDates: ContextClosure<[Date]>?
     
     // MARK: - Methods
     open func setupComponents() {
@@ -58,6 +64,10 @@ open class ACCalendarMonthCollectionView: UIView {
             self.collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
         ])
         
+        self.reload()
+    }
+    
+    open func reload() {
         self.months = self.service.generateMonths()
         self.collectionView.reloadData()
 
@@ -68,11 +78,11 @@ open class ACCalendarMonthCollectionView: UIView {
     }
     
     open func scrollToMonth(_ monthDate: Date, animated: Bool) {
-        func isEqual1(_ month: ACCalendarMonthModel) -> Bool {
+        func isEqual(_ month: ACCalendarMonthModel) -> Bool {
             self.service.calendar.compare(monthDate, to: month.monthDate, toGranularity: .month) == .orderedSame
         }
         
-        guard let index = self.months.firstIndex(where: { isEqual1($0) }) else { return }
+        guard let index = self.months.firstIndex(where: { isEqual($0) }) else { return }
         self.collectionView.scrollToItem(at: .init(item: 0, section: index), at: .left, animated: animated)
     }
     
@@ -119,6 +129,8 @@ extension ACCalendarMonthCollectionView: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ACCalendarDayCollectionViewCell.identifer, for: indexPath) as? ACCalendarDayCollectionViewCell else { return .init() }
         
         cell.day = day
+        cell.daySelection = self.service.dayIsSelected(day)
+        cell.theme = self.theme
         return cell
     }
     
@@ -133,6 +145,13 @@ extension ACCalendarMonthCollectionView: UICollectionViewDelegate {
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         self.handleScrolling()
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let day = self.months.element(at: indexPath.section)?.days.element(at: indexPath.item) else { return }
+        self.service.daySelect(day)
+        self.didSelectDates?(self.service.datesSelection.datesSelected)
+        self.collectionView.reloadData()
     }
     
 }

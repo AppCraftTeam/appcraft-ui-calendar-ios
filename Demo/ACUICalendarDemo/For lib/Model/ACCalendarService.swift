@@ -27,8 +27,8 @@ public struct ACCalendarService {
     public static func `default`() -> Self {
         let calendar = Calendar.defaultACCalendar()
         let currentDate = Date()
-        let minDate = calendar.date(byAdding: .year, value: -10, to: currentDate) ?? currentDate
-        let maxDate = calendar.date(byAdding: .year, value: 10, to: currentDate) ?? currentDate
+        let minDate = calendar.date(byAdding: .month, value: -1, to: currentDate) ?? currentDate
+        let maxDate = calendar.date(byAdding: .month, value: 1, to: currentDate) ?? currentDate
         
         return .init(
             calendar: calendar,
@@ -45,6 +45,7 @@ public struct ACCalendarService {
     public var maxDate: Date
     public var currentMonthDate: Date
     public var locale: Locale
+    public var datesSelection: ACCalendarDateSelectionProtocol = ACCalendarRangeDateSelection()
     
     // MARK: - Methods
     public func generateMonths() -> [ACCalendarMonthModel] {
@@ -205,19 +206,104 @@ public struct ACCalendarService {
     public func nextMonth() -> Date? {
         guard
             let startOfMonth = self.startOfMonth(for: self.currentMonthDate),
-            let nextMonthDate = self.calendar.date(byAdding: .month, value: 1, to: startOfMonth)
+            let date = self.calendar.date(byAdding: .month, value: 1, to: startOfMonth),
+            self.dateIsCorrespondsToMinAndMax(date)
         else { return nil }
         
-        return nextMonthDate
+        return date
     }
     
     public func previousMonth() -> Date? {
         guard
             let startOfMonth = self.startOfMonth(for: self.currentMonthDate),
-            let previousMonthDate = self.calendar.date(byAdding: .month, value: -1, to: startOfMonth)
+            let date = self.calendar.date(byAdding: .month, value: -1, to: startOfMonth),
+            self.dateIsCorrespondsToMinAndMax(date)
         else { return nil }
         
-        return previousMonthDate
+        return date
+    }
+    
+    public func dateIsCorrespondsToMinAndMax(_ date: Date) -> Bool {
+        (date.isLess(than: self.maxDate, toGranularity: .month, calendar: self.calendar) || date.isEqual(to: self.maxDate, toGranularity: .month, calendar: self.calendar)) &&
+        (date.isGreater(than: self.minDate, toGranularity: .month, calendar: self.calendar) || date.isEqual(to: self.minDate, toGranularity: .month, calendar: self.calendar))
+    }
+    
+    public func dayIsSelected(_ day: ACCalendarDayModel) -> ACCalendarDateSelectionType {
+        self.datesSelection.dateSelected(day.dayDate, calendar: self.calendar)
+    }
+    
+    public mutating func daySelect(_ day: ACCalendarDayModel) {
+        self.datesSelection.dateSelecting(day.dayDate, calendar: self.calendar, belongsToMonth: day.belongsToMonth)
     }
 
+}
+
+public protocol ACCalendarDateSelectionProtocol {
+    var datesSelected: [Date] { get set }
+    
+    func dateSelected(_ date: Date, calendar: Calendar) -> ACCalendarDateSelectionType
+    mutating func dateSelecting(_ date: Date, calendar: Calendar, belongsToMonth: ACCalendarBelongsToMonth)
+}
+
+public extension ACCalendarDateSelectionProtocol {
+    
+    func dateSelected(_ date: Date, calendar: Calendar) -> ACCalendarDateSelectionType {
+        if let first = self.datesSelected.first, first.isEqual(to: date, toGranularity: .day, calendar: calendar) {
+            return .startOfRange
+        } else if let last = self.datesSelected.last, last.isEqual(to: date, toGranularity: .day, calendar: calendar) {
+            return .endOfRange
+        } else if self.datesSelected.contains(where: { $0.isEqual(to: date, toGranularity: .day, calendar: calendar) }) {
+            return .middleOfRange
+        } else {
+            return .notSelected
+        }
+    }
+    
+}
+
+public struct ACCalendarSingleDateSelection: ACCalendarDateSelectionProtocol {
+    
+    public var datesSelected: [Date] = []
+    
+    public mutating func dateSelecting(_ date: Date, calendar: Calendar, belongsToMonth: ACCalendarBelongsToMonth) {
+        guard belongsToMonth == .current else { return }
+        self.datesSelected = [date]
+    }
+    
+}
+
+public struct ACCalendarRangeDateSelection: ACCalendarDateSelectionProtocol {
+    
+    public var datesSelected: [Date] = []
+    
+    public mutating func dateSelecting(_ date: Date, calendar: Calendar, belongsToMonth: ACCalendarBelongsToMonth) {
+        guard belongsToMonth == .current else { return }
+    
+        if let first = self.datesSelected.first, first.isEqual(to: date, toGranularity: .day, calendar: calendar) {
+            self.datesSelected = Array(self.datesSelected.dropFirst())
+        } else if let last = self.datesSelected.last, last.isEqual(to: date, toGranularity: .day, calendar: calendar) {
+            self.datesSelected = Array(self.datesSelected.dropLast())
+        } else if let first = self.datesSelected.first, date.isLess(than: first, toGranularity: .day, calendar: calendar), let last = self.datesSelected.last {
+            self.datesSelected = self.generateDatesRange(from: date, to: last, calendar: calendar)
+        } else if let first = self.datesSelected.first, date.isGreater(than: first, toGranularity: .day, calendar: calendar) {
+            self.datesSelected = self.generateDatesRange(from: first, to: date, calendar: calendar)
+        } else {
+            self.datesSelected = [date]
+        }
+    }
+    
+    public func generateDatesRange(from startDate: Date, to endDate: Date, calendar: Calendar) -> [Date] {
+        var currentDate: Date = startDate
+        var result: [Date] = []
+        
+        while currentDate.isLess(than: endDate, toGranularity: .day, calendar: calendar) || currentDate.isEqual(to: endDate, toGranularity: .day, calendar: calendar) {
+            result += [currentDate]
+            
+            guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
+            currentDate = nextDate
+        }
+        
+        return result
+    }
+    
 }

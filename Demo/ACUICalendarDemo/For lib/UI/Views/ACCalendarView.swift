@@ -11,6 +11,12 @@ import UIKit
 open class ACCalendarView: UIView {
     
     // MARK: - Init
+    init(service: ACCalendarService = .default()) {
+        self.service = service
+        
+        super.init(frame: .zero)
+    }
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -41,7 +47,9 @@ open class ACCalendarView: UIView {
     
     open lazy var monthSelectView: ACCalendarMonthSelectView = {
         let result = ACCalendarMonthSelectView()
+        
         result.didTap = { [weak self] state in
+            
         }
         
         return result
@@ -65,10 +73,9 @@ open class ACCalendarView: UIView {
     
     open lazy var monthCollectionView: ACCalendarMonthCollectionView = {
         let result = ACCalendarMonthCollectionView()
+        
         result.didScrollToMonth = { [weak self] monthDate in
-            guard let self = self else { return }
-            self.service.currentMonthDate = monthDate
-            self.monthSelectView.service = self.service
+            self?.service.currentMonthDate = monthDate
         }
         
         return result
@@ -79,15 +86,12 @@ open class ACCalendarView: UIView {
     }
     
     open var service: ACCalendarService = .default() {
-        didSet {
-            
-        }
+        didSet { self.updateComponents() }
     }
     
-//    open var currentDate: Date {
-//        get { self.service.currentDate }
-//        set { self.service.currentDate = newValue }
-//    }
+    open var theme = ACCalendarUITheme() {
+        didSet { self.updateComponents() }
+    }
     
     // MARK: - Methods
     open func setupComponents() {
@@ -115,6 +119,8 @@ open class ACCalendarView: UIView {
             self.arrowsView.trailingAnchor.constraint(equalTo: self.monthSelectContainerView.trailingAnchor),
             self.arrowsView.centerYAnchor.constraint(equalTo: self.monthSelectContainerView.centerYAnchor)
         ])
+        
+        self.updateComponents()
     }
     
     open func setupStackContentView() {
@@ -130,6 +136,14 @@ open class ACCalendarView: UIView {
             self.stackContentView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: insets.leading),
             self.stackContentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: insets.trailing)
         ])
+    }
+    
+    open func updateComponents() {
+        self.monthSelectView.service = self.service
+        self.monthCollectionView.theme = self.theme
+        
+        self.arrowsView.service = self.service
+        self.arrowsView.theme = self.theme
     }
     
 }
