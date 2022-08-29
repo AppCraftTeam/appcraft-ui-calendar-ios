@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E20C89C728BD16F60068629C /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20C89C628BD16F60068629C /* UIColor+Extensions.swift */; };
 		E220A69C28B825A200647377 /* DPSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E220A69B28B825A200647377 /* DPSwift */; };
 		E24C546528B8D1F400D341C4 /* ACCalendarMonthSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24C546428B8D1F400D341C4 /* ACCalendarMonthSelectView.swift */; };
 		E24C546728B8D97E00D341C4 /* UIImage+Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24C546628B8D97E00D341C4 /* UIImage+Assets.swift */; };
@@ -18,9 +19,7 @@
 		E28A55B828B7EBE800FCB5C6 /* Calendar+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A55B728B7EBE800FCB5C6 /* Calendar+Extensions.swift */; };
 		E28A55BA28B7EC7F00FCB5C6 /* ACCalendarWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A55B928B7EC7F00FCB5C6 /* ACCalendarWeekView.swift */; };
 		E2A6CA5D28B4E05F006EAA6F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A6CA5C28B4E05F006EAA6F /* AppDelegate.swift */; };
-		E2A6CA5F28B4E05F006EAA6F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A6CA5E28B4E05F006EAA6F /* SceneDelegate.swift */; };
 		E2A6CA6128B4E05F006EAA6F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A6CA6028B4E05F006EAA6F /* ViewController.swift */; };
-		E2A6CA6428B4E05F006EAA6F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E2A6CA6228B4E05F006EAA6F /* Main.storyboard */; };
 		E2A6CA6628B4E060006EAA6F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2A6CA6528B4E060006EAA6F /* Assets.xcassets */; };
 		E2A6CA6928B4E060006EAA6F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E2A6CA6728B4E060006EAA6F /* LaunchScreen.storyboard */; };
 		E2B6763728B5103F00D8710A /* ACCalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B6763628B5103F00D8710A /* ACCalendarService.swift */; };
@@ -33,6 +32,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E20C89C628BD16F60068629C /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
 		E24C546428B8D1F400D341C4 /* ACCalendarMonthSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarMonthSelectView.swift; sourceTree = "<group>"; };
 		E24C546628B8D97E00D341C4 /* UIImage+Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Assets.swift"; sourceTree = "<group>"; };
 		E24C546828B8E51700D341C4 /* ACCalendarArrowsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarArrowsView.swift; sourceTree = "<group>"; };
@@ -44,9 +44,7 @@
 		E28A55B928B7EC7F00FCB5C6 /* ACCalendarWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarWeekView.swift; sourceTree = "<group>"; };
 		E2A6CA5928B4E05F006EAA6F /* ACUICalendarDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ACUICalendarDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2A6CA5C28B4E05F006EAA6F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		E2A6CA5E28B4E05F006EAA6F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		E2A6CA6028B4E05F006EAA6F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		E2A6CA6328B4E05F006EAA6F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E2A6CA6528B4E060006EAA6F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E2A6CA6828B4E060006EAA6F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E2A6CA6A28B4E060006EAA6F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -119,8 +117,9 @@
 			isa = PBXGroup;
 			children = (
 				E28A55B728B7EBE800FCB5C6 /* Calendar+Extensions.swift */,
-				E24C546628B8D97E00D341C4 /* UIImage+Assets.swift */,
 				E24C546A28BCA4DD00D341C4 /* DPDateFormatType+Extensions.swift */,
+				E20C89C628BD16F60068629C /* UIColor+Extensions.swift */,
+				E24C546628B8D97E00D341C4 /* UIImage+Assets.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -147,12 +146,10 @@
 			children = (
 				E2A6CA6A28B4E060006EAA6F /* Info.plist */,
 				E2A6CA5C28B4E05F006EAA6F /* AppDelegate.swift */,
-				E2A6CA5E28B4E05F006EAA6F /* SceneDelegate.swift */,
 				E2A6CA6028B4E05F006EAA6F /* ViewController.swift */,
 				E2A6CA6528B4E060006EAA6F /* Assets.xcassets */,
 				E2B6763328B5101900D8710A /* For lib */,
 				E2A6CA6728B4E060006EAA6F /* LaunchScreen.storyboard */,
-				E2A6CA6228B4E05F006EAA6F /* Main.storyboard */,
 			);
 			path = ACUICalendarDemo;
 			sourceTree = "<group>";
@@ -241,7 +238,6 @@
 			files = (
 				E2A6CA6928B4E060006EAA6F /* LaunchScreen.storyboard in Resources */,
 				E2A6CA6628B4E060006EAA6F /* Assets.xcassets in Resources */,
-				E2A6CA6428B4E05F006EAA6F /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,9 +259,9 @@
 				E24C546D28BCB33800D341C4 /* ACCalendarDateSelectionType.swift in Sources */,
 				E2F0E31C28B64F10008507D2 /* ACCalendarMonthModel.swift in Sources */,
 				E24C546F28BCBE6000D341C4 /* ACCalendarUITheme.swift in Sources */,
+				E20C89C728BD16F60068629C /* UIColor+Extensions.swift in Sources */,
 				E28A55B828B7EBE800FCB5C6 /* Calendar+Extensions.swift in Sources */,
 				E2B6763728B5103F00D8710A /* ACCalendarService.swift in Sources */,
-				E2A6CA5F28B4E05F006EAA6F /* SceneDelegate.swift in Sources */,
 				E28A55BA28B7EC7F00FCB5C6 /* ACCalendarWeekView.swift in Sources */,
 				E2F0E32228B6A578008507D2 /* ACCalendarDayModel.swift in Sources */,
 				E2F0E32028B6A558008507D2 /* ACCalendarBelongsToMonth.swift in Sources */,
@@ -277,14 +273,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		E2A6CA6228B4E05F006EAA6F /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				E2A6CA6328B4E05F006EAA6F /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		E2A6CA6728B4E060006EAA6F /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -346,7 +334,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -400,7 +388,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -422,9 +410,9 @@
 				INFOPLIST_FILE = ACUICalendarDemo/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -450,9 +438,9 @@
 				INFOPLIST_FILE = ACUICalendarDemo/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

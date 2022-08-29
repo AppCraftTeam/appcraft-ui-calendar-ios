@@ -90,7 +90,6 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
             self.dayLabel.textColor = self.theme.dayNotCurrentMonthTextColor
         case .current:
             self.daySelectionView.isHidden = false
-            self.dayLabel.textColor = self.theme.dayCurrentMonthTextColor
             
             switch self.daySelection {
             case .notSelected:
@@ -101,6 +100,13 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
                 self.daySelectionView.backgroundColor = self.theme.dayEdgeAtRangeBackgroundColor
             case .endOfRange:
                 self.daySelectionView.backgroundColor = self.theme.dayEdgeAtRangeBackgroundColor
+            }
+            
+            switch self.daySelection {
+            case .notSelected:
+                self.dayLabel.textColor = self.theme.dayCurrentMonthNotSelectedTextColor
+            default:
+                self.dayLabel.textColor = self.theme.dayCurrentMonthSelectedTextColor
             }
         }
     }

@@ -29,6 +29,7 @@ open class ACCalendarMonthCollectionView: UIView {
     
     open lazy var collectionView: UICollectionView = {
         let result = UICollectionView(frame: .zero, collectionViewLayout: self.collectionViewLayout)
+        result.backgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         result.showsHorizontalScrollIndicator = false
         result.contentInsetAdjustmentBehavior = .never

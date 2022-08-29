@@ -139,6 +139,8 @@ open class ACCalendarView: UIView {
     }
     
     open func updateComponents() {
+        self.backgroundColor = self.theme.backgroundColor
+        
         self.monthSelectView.service = self.service
         self.monthCollectionView.theme = self.theme
         
