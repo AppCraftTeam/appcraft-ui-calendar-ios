@@ -27,8 +27,8 @@ public struct ACCalendarService {
     public static func `default`() -> Self {
         let calendar = Calendar.defaultACCalendar()
         let currentDate = Date()
-        let minDate = calendar.date(byAdding: .month, value: -1, to: currentDate) ?? currentDate
-        let maxDate = calendar.date(byAdding: .month, value: 1, to: currentDate) ?? currentDate
+        let minDate = calendar.date(byAdding: .year, value: -1, to: currentDate) ?? currentDate
+        let maxDate = calendar.date(byAdding: .year, value: 1, to: currentDate) ?? currentDate
         
         return .init(
             calendar: calendar,
@@ -235,6 +235,39 @@ public struct ACCalendarService {
     public mutating func daySelect(_ day: ACCalendarDayModel) {
         self.datesSelection.dateSelecting(day.dayDate, calendar: self.calendar, belongsToMonth: day.belongsToMonth)
     }
+    
+    public func startOfYear(for yearDate: Date) -> Date? {
+        let date = self.calendar.startOfDay(for: yearDate)
+        let dateComponents = self.calendar.dateComponents([.year], from: date)
+        
+        return self.calendar.date(from: dateComponents)
+    }
+    
+    public func generateYears() -> [ACCalendarYearModel] {
+        let months = self.generateMonths()
+        var result: [ACCalendarYearModel] = []
+        
+        for month in months {
+            if let last = result.last, last.yearDate.isEqual(to: month.monthDate, toGranularity: .year, calendar: self.calendar) {
+                result = Array(result.dropLast())
+                result += [
+                    ACCalendarYearModel(
+                        yearDate: last.yearDate,
+                        months: last.months + [month]
+                    )
+                ]
+            } else {
+                result += [
+                    ACCalendarYearModel(
+                        yearDate: month.monthDate,
+                        months: [month]
+                    )
+                ]
+            }
+        }
+        
+        return result
+    }
 
 }
 
@@ -306,4 +339,9 @@ public struct ACCalendarRangeDateSelection: ACCalendarDateSelectionProtocol {
         return result
     }
     
+}
+
+public struct ACCalendarYearModel {
+    let yearDate: Date
+    let months: [ACCalendarMonthModel]
 }

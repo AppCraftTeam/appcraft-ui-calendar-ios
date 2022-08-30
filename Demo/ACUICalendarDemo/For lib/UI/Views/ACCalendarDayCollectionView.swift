@@ -1,5 +1,5 @@
 //
-//  ACCalendarMonthCollectionView.swift
+//  ACCalendarDayCollectionView.swift
 //  ACUICalendarDemo
 //
 //  Created by Дмитрий Поляков on 24.08.2022.
@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import DPSwift
 
-open class ACCalendarMonthCollectionView: UIView {
+open class ACCalendarDayCollectionView: UIView {
     
     // MARK: - Init
     public override init(frame: CGRect) {
@@ -108,7 +108,7 @@ open class ACCalendarMonthCollectionView: UIView {
 }
 
 // MARK: - UICollectionViewDataSource
-extension ACCalendarMonthCollectionView: UICollectionViewDataSource {
+extension ACCalendarDayCollectionView: UICollectionViewDataSource {
     
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         self.months.count
@@ -138,7 +138,7 @@ extension ACCalendarMonthCollectionView: UICollectionViewDataSource {
 }
 
 // MARK: - ACCalendarService
-extension ACCalendarMonthCollectionView: UICollectionViewDelegate {
+extension ACCalendarDayCollectionView: UICollectionViewDelegate {
     
     public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         self.handleScrolling()

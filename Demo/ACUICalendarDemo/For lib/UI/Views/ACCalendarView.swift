@@ -30,26 +30,15 @@ open class ACCalendarView: UIView {
     }
     
     // MARK: - Props
-    
-    open lazy var stackContentView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [
-            self.monthSelectContainerView,
-            self.weekView,
-            self.monthCollectionView
-        ])
-        result.axis = .vertical
-        result.spacing = 16
-        
-        return result
-    }()
-    
-    open lazy var monthSelectContainerView = UIView()
+    open lazy var contentView = UIView()
+    open lazy var topContentView = UIView()
+    open lazy var bottomContentView = UIView()
     
     open lazy var monthSelectView: ACCalendarMonthSelectView = {
         let result = ACCalendarMonthSelectView()
         
-        result.didTap = { [weak self] state in
-            
+        result.didToggle = { [weak self] isOn in
+            self?.updateComponents()
         }
         
         return result
@@ -59,11 +48,11 @@ open class ACCalendarView: UIView {
         let result = ACCalendarArrowsView()
         
         result.didTapLeftArrow = { [weak self] in
-            self?.monthCollectionView.scrollToPreviousMonth(animated: true)
+            self?.dayCollectionView.scrollToPreviousMonth(animated: true)
         }
         
         result.didTapRightArrow = { [weak self] in
-            self?.monthCollectionView.scrollToNextMonth(animated: true)
+            self?.dayCollectionView.scrollToNextMonth(animated: true)
         }
         
         return result
@@ -71,8 +60,8 @@ open class ACCalendarView: UIView {
     
     open lazy var weekView = ACCalendarWeekView()
     
-    open lazy var monthCollectionView: ACCalendarMonthCollectionView = {
-        let result = ACCalendarMonthCollectionView()
+    open lazy var dayCollectionView: ACCalendarDayCollectionView = {
+        let result = ACCalendarDayCollectionView()
         
         result.didScrollToMonth = { [weak self] monthDate in
             self?.service.currentMonthDate = monthDate
@@ -81,8 +70,13 @@ open class ACCalendarView: UIView {
         return result
     }()
     
-    open var stackContentInsets = NSDirectionalEdgeInsets(top: 100, leading: 16, bottom: -16, trailing: -16) {
-        didSet { self.setupStackContentView() }
+    open lazy var monthPickerView: ACCalendarMonthPickerView = {
+        let result = ACCalendarMonthPickerView()
+        return result
+    }()
+    
+    open var contentInsets = NSDirectionalEdgeInsets(top: 100, leading: 16, bottom: -16, trailing: -16) {
+        didSet { self.setupContentView() }
     }
     
     open var service: ACCalendarService = .default() {
@@ -95,46 +89,79 @@ open class ACCalendarView: UIView {
     
     // MARK: - Methods
     open func setupComponents() {
-        self.setupStackContentView()
+        self.setupContentView()
         
-        self.monthSelectContainerView.translatesAutoresizingMaskIntoConstraints = false
-        self.weekView.translatesAutoresizingMaskIntoConstraints = false
+        [
+            self.topContentView,
+            self.bottomContentView,
+            self.monthSelectView,
+            self.arrowsView,
+            self.weekView,
+            self.dayCollectionView,
+            self.monthPickerView
+        ].forEach({
+            $0.removeFromSuperview()
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        })
         
-        self.monthSelectView.removeFromSuperview()
-        self.monthSelectView.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(self.topContentView)
+        self.contentView.addSubview(self.bottomContentView)
         
-        self.arrowsView.removeFromSuperview()
-        self.arrowsView.translatesAutoresizingMaskIntoConstraints = false
+        self.topContentView.addSubview(self.monthSelectView)
+        self.topContentView.addSubview(self.arrowsView)
         
-        self.monthSelectContainerView.addSubview(self.monthSelectView)
-        self.monthSelectContainerView.addSubview(self.arrowsView)
+        self.bottomContentView.addSubview(self.weekView)
+        self.bottomContentView.addSubview(self.dayCollectionView)
+        self.bottomContentView.addSubview(self.monthPickerView)
         
         NSLayoutConstraint.activate([
-            self.monthSelectContainerView.heightAnchor.constraint(equalToConstant: 40),
+            self.topContentView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
+            self.topContentView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
+            self.topContentView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+            self.topContentView.heightAnchor.constraint(equalToConstant: 40),
+            
+            self.bottomContentView.topAnchor.constraint(equalTo: self.topContentView.bottomAnchor, constant: 16),
+            self.bottomContentView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
+            self.bottomContentView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+            self.bottomContentView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
+            
+            self.monthSelectView.leadingAnchor.constraint(equalTo: self.topContentView.leadingAnchor),
+            self.monthSelectView.centerYAnchor.constraint(equalTo: self.topContentView.centerYAnchor),
+            
+            self.arrowsView.trailingAnchor.constraint(equalTo: self.topContentView.trailingAnchor),
+            self.arrowsView.centerYAnchor.constraint(equalTo: self.topContentView.centerYAnchor),
+            
+            self.weekView.topAnchor.constraint(equalTo: self.bottomContentView.topAnchor),
+            self.weekView.leadingAnchor.constraint(equalTo: self.bottomContentView.leadingAnchor),
+            self.weekView.trailingAnchor.constraint(equalTo: self.bottomContentView.trailingAnchor),
             self.weekView.heightAnchor.constraint(equalToConstant: 24),
             
-            self.monthSelectView.leadingAnchor.constraint(equalTo: self.monthSelectContainerView.leadingAnchor),
-            self.monthSelectView.centerYAnchor.constraint(equalTo: self.monthSelectContainerView.centerYAnchor),
-            
-            self.arrowsView.trailingAnchor.constraint(equalTo: self.monthSelectContainerView.trailingAnchor),
-            self.arrowsView.centerYAnchor.constraint(equalTo: self.monthSelectContainerView.centerYAnchor)
+            self.dayCollectionView.topAnchor.constraint(equalTo: self.weekView.bottomAnchor, constant: 16),
+            self.dayCollectionView.bottomAnchor.constraint(equalTo: self.bottomContentView.bottomAnchor),
+            self.dayCollectionView.leadingAnchor.constraint(equalTo: self.bottomContentView.leadingAnchor),
+            self.dayCollectionView.trailingAnchor.constraint(equalTo: self.bottomContentView.trailingAnchor),
+
+            self.monthPickerView.topAnchor.constraint(equalTo: self.bottomContentView.topAnchor),
+            self.monthPickerView.bottomAnchor.constraint(equalTo: self.bottomContentView.bottomAnchor),
+            self.monthPickerView.leadingAnchor.constraint(equalTo: self.bottomContentView.leadingAnchor),
+            self.monthPickerView.trailingAnchor.constraint(equalTo: self.bottomContentView.trailingAnchor)
         ])
-        
+
         self.updateComponents()
     }
     
-    open func setupStackContentView() {
-        self.stackContentView.removeFromSuperview()
-        self.stackContentView.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(self.stackContentView)
+    open func setupContentView() {
+        self.contentView.removeFromSuperview()
+        self.contentView.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(self.contentView)
         
-        let insets = self.stackContentInsets
+        let insets = self.contentInsets
         
         NSLayoutConstraint.activate([
-            self.stackContentView.topAnchor.constraint(equalTo: self.topAnchor, constant: insets.top),
-            self.stackContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: insets.bottom),
-            self.stackContentView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: insets.leading),
-            self.stackContentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: insets.trailing)
+            self.contentView.topAnchor.constraint(equalTo: self.topAnchor, constant: insets.top),
+            self.contentView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: insets.bottom),
+            self.contentView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: insets.leading),
+            self.contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: insets.trailing)
         ])
     }
     
@@ -142,10 +169,18 @@ open class ACCalendarView: UIView {
         self.backgroundColor = self.theme.backgroundColor
         
         self.monthSelectView.service = self.service
-        self.monthCollectionView.theme = self.theme
+        self.dayCollectionView.theme = self.theme
         
         self.arrowsView.service = self.service
         self.arrowsView.theme = self.theme
+        
+        self.monthPickerView.service = self.service
+        self.monthPickerView.theme = self.theme
+        
+        self.arrowsView.isHidden = self.monthSelectView.isOn
+        self.dayCollectionView.isHidden = self.monthSelectView.isOn
+        self.weekView.isHidden = self.monthSelectView.isOn
+        self.monthPickerView.isHidden = !self.monthSelectView.isOn
     }
     
 }

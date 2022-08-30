@@ -45,11 +45,11 @@ open class ACCalendarMonthSelectView: UIView {
         didSet { self.updateComponents() }
     }
     
-    open var state: State = .default {
+    open var isOn: Bool = false {
         didSet { self.updateComponents() }
     }
     
-    open var didTap: ContextClosure<State>?
+    open var didToggle: ContextClosure<Bool>?
     
     // MARK: - Methods
     open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -75,8 +75,8 @@ open class ACCalendarMonthSelectView: UIView {
         
         self.setHighlighted(false)
         
-        self.state.toggle()
-        self.didTap?(self.state)
+        self.isOn.toggle()
+        self.didToggle?(self.isOn)
     }
     
     open func setupComponents() {
@@ -119,14 +119,7 @@ open class ACCalendarMonthSelectView: UIView {
         self.monthDateLabel.font = self.theme.monthSelectDateFont
         self.arrowImageView.tintColor = self.theme.monthSelectArrowImageTintColor
         
-        var arrowImageTransform: CGAffineTransform {
-            switch self.state {
-            case .default:
-                return .identity
-            case .active:
-                return CGAffineTransform(rotationAngle: CGFloat.pi / 2)
-            }
-        }
+        let arrowImageTransform: CGAffineTransform = self.isOn ? CGAffineTransform(rotationAngle: CGFloat.pi / 2) : .identity
         
         if self.arrowImageView.transform != arrowImageTransform {
             UIView.animate(withDuration: 0.25, delay: 0) { [weak self] in
@@ -137,25 +130,6 @@ open class ACCalendarMonthSelectView: UIView {
     
     open func setHighlighted(_ highlighted: Bool) {
         self.alpha = highlighted ? 0.5 : 1.0
-    }
-    
-}
-
-// MARK: - State
-public extension ACCalendarMonthSelectView {
-    
-    enum State {
-        case `default`
-        case active
-        
-        mutating func toggle() {
-            switch self {
-            case .default:
-                self = .active
-            case .active:
-                self = .default
-            }
-        }
     }
     
 }
