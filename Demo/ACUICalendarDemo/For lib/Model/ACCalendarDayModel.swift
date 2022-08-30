@@ -8,17 +8,8 @@
 import Foundation
 
 public struct ACCalendarDayModel {
-    
-    // MARK: - Init
-    public init(date: Date, belongsToMonth: ACCalendarBelongsToMonth) {
-        self.dayDate = date
-        self.dayDateText = date.toLocalString(withFormatType: .day)
-        self.belongsToMonth = belongsToMonth
-    }
-    
-    // MARK: - Props
+    public let day: Int
     public let dayDate: Date
     public let dayDateText: String
     public let belongsToMonth: ACCalendarBelongsToMonth
-    
 }

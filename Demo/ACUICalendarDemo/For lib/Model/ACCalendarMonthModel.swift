@@ -8,6 +8,7 @@
 import Foundation
 
 public struct ACCalendarMonthModel {
+    public let month: Int
     public let monthDate: Date
     public let monthDates: [Date]
     public let previousMonthDates: [Date]

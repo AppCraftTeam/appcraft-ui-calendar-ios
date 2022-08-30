@@ -110,6 +110,7 @@ public struct ACCalendarService {
             })
         
         return ACCalendarMonthModel(
+            month: self.calendar.component(.month, from: monthDate),
             monthDate: monthDate,
             monthDates: monthDates,
             previousMonthDates: previousMonthDates,
@@ -215,7 +216,9 @@ public struct ACCalendarService {
         }
         
         return ACCalendarDayModel(
-            date: dayDate,
+            day: self.calendar.component(.day, from: dayDate),
+            dayDate: dayDate,
+            dayDateText: dayDate.toLocalString(withFormatType: .day, locale: self.locale),
             belongsToMonth: belongsToMonth
         )
     }
@@ -275,6 +278,7 @@ public struct ACCalendarService {
                 result = Array(result.dropLast())
                 result += [
                     ACCalendarYearModel(
+                        year: last.year,
                         yearDate: last.yearDate,
                         months: last.months + [month]
                     )
@@ -282,6 +286,7 @@ public struct ACCalendarService {
             } else {
                 result += [
                     ACCalendarYearModel(
+                        year: self.calendar.component(.year, from: month.monthDate),
                         yearDate: month.monthDate,
                         months: [month]
                     )
@@ -294,77 +299,196 @@ public struct ACCalendarService {
 
 }
 
-public protocol ACCalendarDateSelectionProtocol {
-    var datesSelected: [Date] { get set }
-    
-    func dateSelected(_ date: Date, calendar: Calendar) -> ACCalendarDateSelectionType
-    mutating func dateSelecting(_ date: Date, calendar: Calendar, belongsToMonth: ACCalendarBelongsToMonth)
-}
-
-public extension ACCalendarDateSelectionProtocol {
-    
-    func dateSelected(_ date: Date, calendar: Calendar) -> ACCalendarDateSelectionType {
-        if let first = self.datesSelected.first, first.isEqual(to: date, toGranularity: .day, calendar: calendar) {
-            return .startOfRange
-        } else if let last = self.datesSelected.last, last.isEqual(to: date, toGranularity: .day, calendar: calendar) {
-            return .endOfRange
-        } else if self.datesSelected.contains(where: { $0.isEqual(to: date, toGranularity: .day, calendar: calendar) }) {
-            return .middleOfRange
-        } else {
-            return .notSelected
-        }
-    }
-    
-}
-
-public struct ACCalendarSingleDateSelection: ACCalendarDateSelectionProtocol {
-    
-    public var datesSelected: [Date] = []
-    
-    public mutating func dateSelecting(_ date: Date, calendar: Calendar, belongsToMonth: ACCalendarBelongsToMonth) {
-        guard belongsToMonth == .current else { return }
-        self.datesSelected = [date]
-    }
-    
-}
-
-public struct ACCalendarRangeDateSelection: ACCalendarDateSelectionProtocol {
-    
-    public var datesSelected: [Date] = []
-    
-    public mutating func dateSelecting(_ date: Date, calendar: Calendar, belongsToMonth: ACCalendarBelongsToMonth) {
-        guard belongsToMonth == .current else { return }
-    
-        if let first = self.datesSelected.first, first.isEqual(to: date, toGranularity: .day, calendar: calendar) {
-            self.datesSelected = Array(self.datesSelected.dropFirst())
-        } else if let last = self.datesSelected.last, last.isEqual(to: date, toGranularity: .day, calendar: calendar) {
-            self.datesSelected = Array(self.datesSelected.dropLast())
-        } else if let first = self.datesSelected.first, date.isLess(than: first, toGranularity: .day, calendar: calendar), let last = self.datesSelected.last {
-            self.datesSelected = self.generateDatesRange(from: date, to: last, calendar: calendar)
-        } else if let first = self.datesSelected.first, date.isGreater(than: first, toGranularity: .day, calendar: calendar) {
-            self.datesSelected = self.generateDatesRange(from: first, to: date, calendar: calendar)
-        } else {
-            self.datesSelected = [date]
-        }
-    }
-    
-    public func generateDatesRange(from startDate: Date, to endDate: Date, calendar: Calendar) -> [Date] {
-        var currentDate: Date = startDate
-        var result: [Date] = []
-        
-        while currentDate.isLess(than: endDate, toGranularity: .day, calendar: calendar) || currentDate.isEqual(to: endDate, toGranularity: .day, calendar: calendar) {
-            result += [currentDate]
-            
-            guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
-            currentDate = nextDate
-        }
-        
-        return result
-    }
-    
-}
-
-public struct ACCalendarYearModel {
-    let yearDate: Date
-    let months: [ACCalendarMonthModel]
-}
+//public protocol ACCalendarGenerator {
+//    var calendar: Calendar { get set }
+//    var minDate: Date { get set }
+//    var maxDate: Date { get set }
+//    var locale: Locale { get set }
+//    
+//    func isContaints(date: Date, in dates: [Date]) -> Bool
+//}
+//
+//public extension ACCalendarGenerator {
+//    
+//    func isContaints(date: Date, in dates: [Date]) -> Bool {
+//        dates.contains { dateFromDates in
+//            self.calendar.compare(date, to: dateFromDates, toGranularity: .day) == .orderedSame
+//        }
+//    }
+//    
+//}
+//
+//public protocol ACCalendarDayGenerator: ACCalendarGenerator {
+//    func generateDay(_ dayDate: Date, previousMonthDates: [Date], nextMonthDates: [Date]) -> ACCalendarDayModel
+//}
+//
+//public extension ACCalendarDayGenerator {
+//    
+//    func generateDay(_ dayDate: Date, previousMonthDates: [Date], nextMonthDates: [Date]) -> ACCalendarDayModel {
+//        var belongsToMonth: ACCalendarBelongsToMonth {
+//            if self.isContaints(date: dayDate, in: previousMonthDates) {
+//                return .previous
+//            } else if self.isContaints(date: dayDate, in: nextMonthDates) {
+//                return .next
+//            } else {
+//                return .current
+//            }
+//        }
+//        
+//        return ACCalendarDayModel(
+//            day: self.calendar.component(.day, from: dayDate),
+//            dayDate: dayDate,
+//            dayDateText: dayDate.toLocalString(withFormatType: .day, locale: self.locale),
+//            belongsToMonth: belongsToMonth
+//        )
+//    }
+//    
+//}
+//
+//public protocol ACCalendarMonthGenerator: ACCalendarDayGenerator {
+//    func startOfMonth(for monthDate: Date) -> Date?
+//    func endOfMonth(for monthDate: Date) -> Date?
+//    
+//    func generateMonths() -> [ACCalendarMonthModel]
+//    func generateMonth(for monthDate: Date) -> ACCalendarMonthModel?
+//    func generateCurrentMonthDates(for monthDate: Date) -> [Date]?
+//    func generatePreviousMonthDates(for monthDate: Date) -> [Date]?
+//    func generateNextMonthDates(for monthDate: Date) -> [Date]?
+//}
+//
+//public extension ACCalendarMonthGenerator {
+//    
+//    func startOfMonth(for monthDate: Date) -> Date? {
+//        let date = self.calendar.startOfDay(for: monthDate)
+//        let dateComponents = self.calendar.dateComponents([.year, .month], from: date)
+//        
+//        return self.calendar.date(from: dateComponents)
+//    }
+//    
+//    func endOfMonth(for monthDate: Date) -> Date? {
+//        guard let startOfMonth = self.startOfMonth(for: monthDate) else { return nil }
+//        let dateComponents = DateComponents(month: 1, day: -1)
+//        
+//        return self.calendar.date(byAdding: dateComponents, to: startOfMonth)
+//    }
+//    
+//    func generateMonths() -> [ACCalendarMonthModel] {
+//        var result: [ACCalendarMonthModel] = []
+//        var currentDate = self.minDate
+//        
+//        var condition: Bool {
+//            let compare = currentDate.compare(self.maxDate)
+//            let condition = compare == .orderedAscending || compare == .orderedSame
+//            
+//            return condition
+//        }
+//        
+//        while currentDate <= self.maxDate {
+//            guard
+//                let month = self.generateMonth(for: currentDate),
+//                let nextDate = self.calendar.date(byAdding: .month, value: 1, to: month.monthDate)
+//            else { break }
+//            
+//            result += [month]
+//            currentDate = nextDate
+//        }
+//        
+//        return result
+//    }
+//    
+//    func generateMonth(for monthDate: Date) -> ACCalendarMonthModel? {
+//        guard
+//            let monthDates = self.generateCurrentMonthDates(for: monthDate),
+//            let previousMonthDates = self.generatePreviousMonthDates(for: monthDate),
+//            let nextMonthDates = self.generateNextMonthDates(for: monthDate),
+//            let monthDate = monthDates.first
+//        else { return nil }
+//        
+//        let days = (previousMonthDates + monthDates + nextMonthDates)
+//            .sorted()
+//            .map({ date in
+//                self.generateDay(date, previousMonthDates: previousMonthDates, nextMonthDates: nextMonthDates)
+//            })
+//        
+//        return ACCalendarMonthModel(
+//            month: self.calendar.component(.month, from: monthDate),
+//            monthDate: monthDate,
+//            monthDates: monthDates,
+//            previousMonthDates: previousMonthDates,
+//            nextMonthDates: nextMonthDates,
+//            days: days
+//        )
+//    }
+//    
+//    func generateCurrentMonthDates(for monthDate: Date) -> [Date]? {
+//        guard
+//            let startOfMonth = self.startOfMonth(for: monthDate),
+//            let endOfMonth = self.endOfMonth(for: monthDate)
+//        else { return nil }
+//        
+//        var result: [Date] = []
+//        var nextDate = startOfMonth
+//        
+//        var startCondition: Bool {
+//            let compare = nextDate.compare(startOfMonth)
+//            let condition = compare == .orderedDescending || compare == .orderedSame
+//            
+//            return condition
+//        }
+//        
+//        var endCondition: Bool {
+//            let compare = nextDate.compare(endOfMonth)
+//            let condition = compare == .orderedAscending || compare == .orderedSame
+//            
+//            return condition
+//        }
+//        
+//        while startCondition && endCondition {
+//            result += [nextDate]
+//            
+//            guard let dateAddingDay = self.calendar.date(byAdding: .day, value: 1, to: nextDate) else { break }
+//            nextDate = dateAddingDay
+//        }
+//        
+//        return result.sorted()
+//    }
+//    
+//    func generatePreviousMonthDates(for monthDate: Date) -> [Date]? {
+//        guard
+//            let startOfMonth = self.startOfMonth(for: monthDate),
+//            let previousStartOfMonth = self.calendar.date(byAdding: .day, value: -1, to: startOfMonth)
+//        else { return nil }
+//        
+//        var result: [Date] = []
+//        var nextDate = previousStartOfMonth
+//        
+//        while self.calendar.component(.weekOfYear, from: startOfMonth) == self.calendar.component(.weekOfYear, from: nextDate) {
+//            result += [nextDate]
+//            
+//            guard let dateAddingDay = self.calendar.date(byAdding: .day, value: -1, to: nextDate) else { break }
+//            nextDate = dateAddingDay
+//        }
+//        
+//        return result.sorted()
+//    }
+//    
+//    func generateNextMonthDates(for monthDate: Date) -> [Date]? {
+//        guard
+//            let endOfMonth = self.endOfMonth(for: monthDate),
+//            let nextEndOfMonth = self.calendar.date(byAdding: .day, value: 1, to: endOfMonth)
+//        else { return nil }
+//        
+//        var result: [Date] = []
+//        var nextDate = nextEndOfMonth
+//        
+//        while self.calendar.component(.weekOfYear, from: endOfMonth) == self.calendar.component(.weekOfYear, from: nextDate) {
+//            result += [nextDate]
+//            
+//            guard let dateAddingDay = self.calendar.date(byAdding: .day, value: 1, to: nextDate) else { break }
+//            nextDate = dateAddingDay
+//        }
+//        
+//        return result.sorted()
+//    }
+//    
+//}
