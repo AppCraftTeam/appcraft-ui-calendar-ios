@@ -22,6 +22,8 @@ public struct ACCalendarService {
         self.maxDate = maxDate
         self.currentMonthDate = currentMonthDate
         self.locale = locale
+        
+        self.setupComponents()
     }
     
     public static func `default`() -> Self {
@@ -40,14 +42,35 @@ public struct ACCalendarService {
     }
 
     // MARK: - Props
-    public var calendar: Calendar
-    public var minDate: Date
-    public var maxDate: Date
+    public var calendar: Calendar {
+        didSet { self.setupComponents() }
+    }
+    
+    public var minDate: Date {
+        didSet { self.setupComponents() }
+    }
+    
+    public var maxDate: Date {
+        didSet { self.setupComponents() }
+    }
+    
     public var currentMonthDate: Date
-    public var locale: Locale
+    
+    public var locale: Locale {
+        didSet { self.setupComponents() }
+    }
+    
     public var datesSelection: ACCalendarDateSelectionProtocol = ACCalendarRangeDateSelection()
     
+    public private(set) var months: [ACCalendarMonthModel] = []
+    public private(set) var years: [ACCalendarYearModel] = []
+    
     // MARK: - Methods
+    public mutating func setupComponents() {
+        self.months = self.generateMonths()
+        self.years = self.generateYears()
+    }
+    
     public func generateMonths() -> [ACCalendarMonthModel] {
         var result: [ACCalendarMonthModel] = []
         var currentDate = self.minDate

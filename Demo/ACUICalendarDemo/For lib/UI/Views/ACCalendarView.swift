@@ -177,6 +177,10 @@ open class ACCalendarView: UIView {
         self.monthPickerView.service = self.service
         self.monthPickerView.theme = self.theme
         
+//        self.monthPickerView.minimumDate = self.service.minDate
+//        self.monthPickerView.maximumDate = self.service.maxDate
+//        self.monthPickerView.date = self.service.currentMonthDate
+        
         self.arrowsView.isHidden = self.monthSelectView.isOn
         self.dayCollectionView.isHidden = self.monthSelectView.isOn
         self.weekView.isHidden = self.monthSelectView.isOn

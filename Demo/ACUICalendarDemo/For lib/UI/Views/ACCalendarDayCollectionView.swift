@@ -47,7 +47,11 @@ open class ACCalendarDayCollectionView: UIView {
         didSet { self.collectionView.reloadData() }
     }
     
-    open var months: [ACCalendarMonthModel] = []
+//    open var months: [ACCalendarMonthModel] = []
+    open var months: [ACCalendarMonthModel] {
+        self.service.months
+    }
+    
     open var didScrollToMonth: ContextClosure<Date>?
     open var didSelectDates: ContextClosure<[Date]>?
     
@@ -69,7 +73,7 @@ open class ACCalendarDayCollectionView: UIView {
     }
     
     open func reload() {
-        self.months = self.service.generateMonths()
+//        self.months = self.service.generateMonths()
         self.collectionView.reloadData()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10)) { [weak self] in

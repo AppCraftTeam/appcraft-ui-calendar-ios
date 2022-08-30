@@ -45,7 +45,7 @@ open class ACCalendarMonthSelectView: UIView {
         didSet { self.updateComponents() }
     }
     
-    open var isOn: Bool = false {
+    open var isOn: Bool = true {
         didSet { self.updateComponents() }
     }
     
