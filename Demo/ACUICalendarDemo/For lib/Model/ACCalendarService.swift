@@ -29,8 +29,8 @@ public struct ACCalendarService {
     public static func `default`() -> Self {
         let calendar = Calendar.defaultACCalendar()
         let currentDate = Date()
-        let minDate = calendar.date(byAdding: .year, value: -1, to: currentDate) ?? currentDate
-        let maxDate = calendar.date(byAdding: .year, value: 1, to: currentDate) ?? currentDate
+        let minDate = calendar.date(byAdding: .year, value: -10, to: currentDate) ?? currentDate
+        let maxDate = calendar.date(byAdding: .year, value: 10, to: currentDate) ?? currentDate
         
         return .init(
             calendar: calendar,
@@ -65,13 +65,37 @@ public struct ACCalendarService {
     public private(set) var months: [ACCalendarMonthModel] = []
     public private(set) var years: [ACCalendarYearModel] = []
     
+    public var datesSelected: [Date] {
+        get { self.datesSelection.datesSelected }
+        set { self.datesSelection.datesSelected = newValue }
+    }
+    
     // MARK: - Methods
     public mutating func setupComponents() {
         self.months = self.generateMonths()
         self.years = self.generateYears()
     }
     
-    public func generateMonths() -> [ACCalendarMonthModel] {
+}
+
+// MARK: - Equatable
+extension ACCalendarService: Equatable {
+    
+    public static func == (lhs: ACCalendarService, rhs: ACCalendarService) -> Bool {
+        lhs.calendar == rhs.calendar &&
+        lhs.minDate == rhs.minDate &&
+        lhs.maxDate == rhs.maxDate &&
+        lhs.currentMonthDate == rhs.currentMonthDate &&
+        lhs.locale == rhs.locale &&
+        lhs.datesSelection.datesSelected == rhs.datesSelection.datesSelected
+    }
+    
+}
+
+// MARK: - Helpers
+public extension ACCalendarService {
+    
+    func generateMonths() -> [ACCalendarMonthModel] {
         var result: [ACCalendarMonthModel] = []
         var currentDate = self.minDate
         
@@ -95,7 +119,7 @@ public struct ACCalendarService {
         return result
     }
     
-    public func generateMonth(for monthDate: Date) -> ACCalendarMonthModel? {
+    func generateMonth(for monthDate: Date) -> ACCalendarMonthModel? {
         guard
             let monthDates = self.generateCurrentMonthDates(for: monthDate),
             let previousMonthDates = self.generatePreviousMonthDates(for: monthDate),
@@ -119,7 +143,7 @@ public struct ACCalendarService {
         )
     }
     
-    public func generateCurrentMonthDates(for monthDate: Date) -> [Date]? {
+    func generateCurrentMonthDates(for monthDate: Date) -> [Date]? {
         guard
             let startOfMonth = self.startOfMonth(for: monthDate),
             let endOfMonth = self.endOfMonth(for: monthDate)
@@ -152,21 +176,21 @@ public struct ACCalendarService {
         return result.sorted()
     }
     
-    public func startOfMonth(for monthDate: Date) -> Date? {
+    func startOfMonth(for monthDate: Date) -> Date? {
         let date = self.calendar.startOfDay(for: monthDate)
         let dateComponents = self.calendar.dateComponents([.year, .month], from: date)
         
         return self.calendar.date(from: dateComponents)
     }
     
-    public func endOfMonth(for monthDate: Date) -> Date? {
+    func endOfMonth(for monthDate: Date) -> Date? {
         guard let startOfMonth = self.startOfMonth(for: monthDate) else { return nil }
         let dateComponents = DateComponents(month: 1, day: -1)
         
         return self.calendar.date(byAdding: dateComponents, to: startOfMonth)
     }
     
-    public func generatePreviousMonthDates(for monthDate: Date) -> [Date]? {
+    func generatePreviousMonthDates(for monthDate: Date) -> [Date]? {
         guard
             let startOfMonth = self.startOfMonth(for: monthDate),
             let previousStartOfMonth = self.calendar.date(byAdding: .day, value: -1, to: startOfMonth)
@@ -185,7 +209,7 @@ public struct ACCalendarService {
         return result.sorted()
     }
     
-    public func generateNextMonthDates(for monthDate: Date) -> [Date]? {
+    func generateNextMonthDates(for monthDate: Date) -> [Date]? {
         guard
             let endOfMonth = self.endOfMonth(for: monthDate),
             let nextEndOfMonth = self.calendar.date(byAdding: .day, value: 1, to: endOfMonth)
@@ -204,7 +228,7 @@ public struct ACCalendarService {
         return result.sorted()
     }
     
-    public func generateDay(_ dayDate: Date, previousMonthDates: [Date], nextMonthDates: [Date]) -> ACCalendarDayModel {
+    func generateDay(_ dayDate: Date, previousMonthDates: [Date], nextMonthDates: [Date]) -> ACCalendarDayModel {
         var belongsToMonth: ACCalendarBelongsToMonth {
             if self.isContaints(date: dayDate, in: previousMonthDates) {
                 return .previous
@@ -223,13 +247,13 @@ public struct ACCalendarService {
         )
     }
     
-    public func isContaints(date: Date, in dates: [Date]) -> Bool {
+    func isContaints(date: Date, in dates: [Date]) -> Bool {
         dates.contains { dateFromDates in
             self.calendar.compare(date, to: dateFromDates, toGranularity: .day) == .orderedSame
         }
     }
     
-    public func nextMonth() -> Date? {
+    func nextMonth() -> Date? {
         guard
             let startOfMonth = self.startOfMonth(for: self.currentMonthDate),
             let date = self.calendar.date(byAdding: .month, value: 1, to: startOfMonth),
@@ -239,7 +263,7 @@ public struct ACCalendarService {
         return date
     }
     
-    public func previousMonth() -> Date? {
+    func previousMonth() -> Date? {
         guard
             let startOfMonth = self.startOfMonth(for: self.currentMonthDate),
             let date = self.calendar.date(byAdding: .month, value: -1, to: startOfMonth),
@@ -249,27 +273,27 @@ public struct ACCalendarService {
         return date
     }
     
-    public func dateIsCorrespondsToMinAndMax(_ date: Date) -> Bool {
+    func dateIsCorrespondsToMinAndMax(_ date: Date) -> Bool {
         (date.isLess(than: self.maxDate, toGranularity: .month, calendar: self.calendar) || date.isEqual(to: self.maxDate, toGranularity: .month, calendar: self.calendar)) &&
         (date.isGreater(than: self.minDate, toGranularity: .month, calendar: self.calendar) || date.isEqual(to: self.minDate, toGranularity: .month, calendar: self.calendar))
     }
     
-    public func dayIsSelected(_ day: ACCalendarDayModel) -> ACCalendarDateSelectionType {
+    func dayIsSelected(_ day: ACCalendarDayModel) -> ACCalendarDateSelectionType {
         self.datesSelection.dateSelected(day.dayDate, calendar: self.calendar)
     }
     
-    public mutating func daySelect(_ day: ACCalendarDayModel) {
+    mutating func daySelect(_ day: ACCalendarDayModel) {
         self.datesSelection.dateSelecting(day.dayDate, calendar: self.calendar, belongsToMonth: day.belongsToMonth)
     }
     
-    public func startOfYear(for yearDate: Date) -> Date? {
+    func startOfYear(for yearDate: Date) -> Date? {
         let date = self.calendar.startOfDay(for: yearDate)
         let dateComponents = self.calendar.dateComponents([.year], from: date)
         
         return self.calendar.date(from: dateComponents)
     }
     
-    public func generateYears() -> [ACCalendarYearModel] {
+    func generateYears() -> [ACCalendarYearModel] {
         let months = self.generateMonths()
         var result: [ACCalendarYearModel] = []
         
@@ -296,5 +320,5 @@ public struct ACCalendarService {
         
         return result
     }
-
+    
 }

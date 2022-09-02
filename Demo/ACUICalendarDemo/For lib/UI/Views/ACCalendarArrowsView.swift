@@ -9,9 +9,16 @@ import Foundation
 import UIKit
 import DPSwift
 
-open class ACCalendarArrowsView: UIView {
+open class ACCalendarArrowsView: UIView, ACCalendarServicePresenterProtocol {
     
     // MARK: - Init
+    public init(service: ACCalendarService, theme: ACCalendarUITheme) {
+        self.service = service
+        self.theme = theme
+        
+        super.init(frame: .zero)
+    }
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -54,9 +61,7 @@ open class ACCalendarArrowsView: UIView {
         return result
     }()
     
-    open var service: ACCalendarService = .default() {
-        didSet { self.updateComponents() }
-    }
+    open var service: ACCalendarService?
     
     open var theme = ACCalendarUITheme() {
         didSet { self.updateComponents() }
@@ -102,8 +107,8 @@ open class ACCalendarArrowsView: UIView {
     
     open func updateComponents() {
         self.subviews.forEach({ $0.tintColor = self.theme.arrowsTintColor })
-        self.leftArrowIsEnabled = self.service.previousMonth() != nil
-        self.rightArrowIsEnabled = self.service.nextMonth() != nil
+        self.leftArrowIsEnabled = self.service?.previousMonth() != nil
+        self.rightArrowIsEnabled = self.service?.nextMonth() != nil
     }
     
     @objc

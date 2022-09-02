@@ -32,6 +32,13 @@ open class ACCalendarMonthPickerView: UIView {
 
         return result
     }()
+    
+    open lazy var selectedView: UIView = {
+        let result = UIView()
+        result.layer.cornerRadius = 18
+        
+        return result
+    }()
 
     open var service: ACCalendarService = .default() {
         didSet { self.updateComponents() }
@@ -57,14 +64,23 @@ open class ACCalendarMonthPickerView: UIView {
     open func setupComponents() {
         self.pickerView.removeFromSuperview()
         self.pickerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.selectedView.removeFromSuperview()
+        self.selectedView.translatesAutoresizingMaskIntoConstraints = false
 
+        self.addSubview(self.selectedView)
         self.addSubview(self.pickerView)
-
+    
         NSLayoutConstraint.activate([
             self.pickerView.topAnchor.constraint(equalTo: self.topAnchor),
             self.pickerView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             self.pickerView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            self.pickerView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+            self.pickerView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            
+            self.selectedView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            self.selectedView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
+            self.selectedView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
+            self.selectedView.heightAnchor.constraint(equalToConstant: 36)
         ])
 
         self.updateComponents()
@@ -85,6 +101,9 @@ open class ACCalendarMonthPickerView: UIView {
         if let monthRow = self.months.firstIndex(where: { $0.month == currentMonth }) {
             self.selectRow(monthRow, inComponentType: .month, animated: true)
         }
+        
+        self.pickerView.subviews.forEach { $0.backgroundColor = .clear }
+        self.selectedView.backgroundColor = self.theme.monthPickerSelectedBackgroundColor
     }
     
     open func selectedRow(inComponentType type: PickerComponentType) -> Int {
@@ -98,8 +117,7 @@ open class ACCalendarMonthPickerView: UIView {
     open func reloadComponent(withType type: PickerComponentType) {
         self.pickerView.reloadComponent(type.rawValue)
     }
-    
-    
+
 }
 
 // MARK: - PickerComponent
@@ -134,20 +152,27 @@ extension ACCalendarMonthPickerView: UIPickerViewDataSource {
 
 // MARK: - UIPickerViewDelegate
 extension ACCalendarMonthPickerView: UIPickerViewDelegate {
-
-    public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        guard let type = PickerComponentType(rawValue: component) else { return nil }
+    
+    public func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        let label = view as? UILabel ?? UILabel()
+        label.textAlignment = .center
+        label.textColor = self.theme.monthPickerTextColor
+        label.font = self.theme.monthPickerFont
+        
+        guard let type = PickerComponentType(rawValue: component) else { return label }
 
         switch type {
         case .month:
             let monthDate = self.months.element(at: row)?.monthDate
             let monthText = monthDate?.toLocalString(withFormatType: .montLetters, locale: self.service.locale)
-            return monthText
+            label.text = monthText
         case .year:
             let yearDate = self.years.element(at: row)?.yearDate
             let yearText = yearDate?.toLocalString(withFormatType: .year, locale: self.service.locale)
-            return yearText
+            label.text = yearText
         }
+        
+        return label
     }
     
     public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -155,22 +180,27 @@ extension ACCalendarMonthPickerView: UIPickerViewDelegate {
         
         switch type {
         case .year:
-            let selectedMonthRow = pickerView.selectedRow(inComponent: PickerComponentType.month.rawValue)
-            let selectedMonth = self.months.element(at: selectedMonthRow)?.month
+            let selectedMonth = self.months.element(at: self.selectedRow(inComponentType: .month))?.month
             
             self.currentYear = self.years.element(at: row)
             self.reloadComponent(withType: .month)
             
             if let row = self.months.firstIndex(where: { $0.month == selectedMonth }) {
                 self.selectRow(row, inComponentType: .month, animated: true)
+            } else {
+                self.selectRow(0, inComponentType: .month, animated: true)
             }
         case .month:
             break
         }
         
-        guard let monthDate = self.years.element(at: self.selectedRow(inComponentType: .year))?.months.element(at: self.selectedRow(inComponentType: .month))?.monthDate else { return }
-        self.service.currentMonthDate = monthDate
-        self.didSelectMonth?(monthDate)
+        let selectedYearRow = self.selectedRow(inComponentType: .year)
+        let selectedMonthRow = self.selectedRow(inComponentType: .month)
+        
+        if let monthDate = self.years.element(at: selectedYearRow)?.months.element(at: selectedMonthRow)?.monthDate {
+            self.service.currentMonthDate = monthDate
+            self.didSelectMonth?(monthDate)
+        }
     }
 
 }

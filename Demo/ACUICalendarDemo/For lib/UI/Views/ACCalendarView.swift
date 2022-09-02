@@ -45,7 +45,7 @@ open class ACCalendarView: UIView {
     }()
     
     open lazy var arrowsView: ACCalendarArrowsView = {
-        let result = ACCalendarArrowsView()
+        let result = ACCalendarArrowsView(service: self.service, theme: self.theme)
         
         result.didTapLeftArrow = { [weak self] in
             self?.dayCollectionView.scrollToPreviousMonth(animated: true)
@@ -61,10 +61,14 @@ open class ACCalendarView: UIView {
     open lazy var weekView = ACCalendarWeekView()
     
     open lazy var dayCollectionView: ACCalendarDayCollectionView = {
-        let result = ACCalendarDayCollectionView()
+        let result = ACCalendarDayCollectionView(service: self.service, theme: self.theme)
         
         result.didScrollToMonth = { [weak self] monthDate in
             self?.service.currentMonthDate = monthDate
+        }
+        
+        result.didSelectDates = { [weak self] dates in
+            self?.service.datesSelection.datesSelected = dates
         }
         
         return result
@@ -80,7 +84,7 @@ open class ACCalendarView: UIView {
         return result
     }()
     
-    open var contentInsets = NSDirectionalEdgeInsets(top: 100, leading: 16, bottom: -16, trailing: -16) {
+    open var contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 16, bottom: -16, trailing: -16) {
         didSet { self.setupContentView() }
     }
     
