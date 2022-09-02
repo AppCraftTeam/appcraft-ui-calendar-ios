@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import DPSwift
 
 open class ACCalendarMonthPickerView: UIView {
 
@@ -24,7 +25,7 @@ open class ACCalendarMonthPickerView: UIView {
     }
 
     // MARK: - Props
-    open lazy var picker: UIPickerView = {
+    open lazy var pickerView: UIPickerView = {
         let result = UIPickerView()
         result.dataSource = self
         result.delegate = self
@@ -39,89 +40,66 @@ open class ACCalendarMonthPickerView: UIView {
     open var theme = ACCalendarUITheme() {
         didSet { self.updateComponents() }
     }
-
+    
+    open var currentYear: ACCalendarYearModel?
+    
     open var years: [ACCalendarYearModel] {
         self.service.years
     }
+    
+    open var months: [ACCalendarMonthModel] {
+        self.currentYear?.months ?? []
+    }
+    
+    open var didSelectMonth: ContextClosure<Date>?
 
     // MARK: - Methods
     open func setupComponents() {
-//        if #available(iOS 13.4, *) {
-//            self.preferredDatePickerStyle = .wheels
-//        }
-//
-//        self.datePickerMode = .date
-        self.picker.removeFromSuperview()
-        self.picker.translatesAutoresizingMaskIntoConstraints = false
+        self.pickerView.removeFromSuperview()
+        self.pickerView.translatesAutoresizingMaskIntoConstraints = false
 
-        self.addSubview(self.picker)
+        self.addSubview(self.pickerView)
 
         NSLayoutConstraint.activate([
-            self.picker.topAnchor.constraint(equalTo: self.topAnchor),
-            self.picker.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            self.picker.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            self.picker.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+            self.pickerView.topAnchor.constraint(equalTo: self.topAnchor),
+            self.pickerView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            self.pickerView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            self.pickerView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
         ])
 
         self.updateComponents()
     }
 
     open func updateComponents() {
-//        self.minimumDate = self.service.minDate
-//        self.maximumDate = self.service.maxDate
-//        self.date = self.service.currentMonthDate
-//        self.locale = self.service.locale
-//        self.calendar = self.service.calendar
-//        self.years = self.service.generateYears()
-        self.picker.reloadAllComponents()
+        let calendar = self.service.calendar
+        let currentYear = calendar.component(.year, from: self.service.currentMonthDate)
+        let currentMonth = calendar.component(.month, from: self.service.currentMonthDate)
         
+        self.currentYear = self.years.first(where: { $0.year == currentYear })
+        self.pickerView.reloadAllComponents()
         
-        guard let yearIndex = self.service.years.firstIndex(where: { $0.yearDate.isEqual(to: self.currentMonthDate, toGranularity: .year, calendar: self.service.calendar) }),
-        let monthIndex = self.service.years.element(at: yearIndex)?.months.firstIndex(where: { $0.monthDate.isEqual(to: self.currentMonthDate, toGranularity: .month, calendar: self.service.calendar) })
-                
-        else { return }
+        if let yearRow = self.years.firstIndex(where: { $0.year == currentYear }) {
+            self.selectRow(yearRow, inComponentType: .year, animated: true)
+        }
         
-        self.picker.selectRow(monthIndex, inComponent: 0, animated: true)
-        self.picker.selectRow(yearIndex, inComponent: 1, animated: true)
-
-//        self.service.calendar.maximumRange(of: <#T##Calendar.Component#>)
-//        let year = self.service.years.first(where: { $0.yearDate.isEqual(to: self.currentMonthDate, toGranularity: .year, calendar: self.service.calendar) }) ?? 0
-//        self.picker.selectRow(<#T##row: Int##Int#>, inComponent: <#T##Int#>, animated: <#T##Bool#>)
-    }
-
-//    var currentYear: ACCalendarYearModel? {
-//        let index = self.picker.selectedRow(inComponent: PickerComponentType.year.rawValue)
-//        let result = self.service.years.element(at: index)
-//
-//        return result
-//    }
-    
-//    var currentYearDate: Date? {
-//        self.service.currentMonthDate
-//    }
-    
-    var currentMonthDate: Date {
-        get { self.service.currentMonthDate }
-        set { self.service.currentMonthDate = newValue }
-    }
-    
-    public func yearIndex() -> Int? {
-        self.service.years.firstIndex { year in
-            year.year == self.service.calendar.component(.year, from: self.currentMonthDate)
+        if let monthRow = self.months.firstIndex(where: { $0.month == currentMonth }) {
+            self.selectRow(monthRow, inComponentType: .month, animated: true)
         }
     }
     
-    public func year() -> ACCalendarYearModel? {
-        guard let index = self.yearIndex() else { return nil }
-        let year = self.service.years.element(at: index)
-        
-        return year
+    open func selectedRow(inComponentType type: PickerComponentType) -> Int {
+        self.pickerView.selectedRow(inComponent: type.rawValue)
     }
     
-    public func monthsCount() -> Int? {
-        self.year()?.months.count
+    open func selectRow(_ row: Int, inComponentType type: PickerComponentType, animated: Bool) {
+        self.pickerView.selectRow(row, inComponent: type.rawValue, animated: animated)
     }
-
+    
+    open func reloadComponent(withType type: PickerComponentType) {
+        self.pickerView.reloadComponent(type.rawValue)
+    }
+    
+    
 }
 
 // MARK: - PickerComponent
@@ -146,8 +124,7 @@ extension ACCalendarMonthPickerView: UIPickerViewDataSource {
 
         switch type {
         case .month:
-            let yearIndex = self.service.years.firstIndex(where: { $0.yearDate.isEqual(to: self.currentMonthDate, toGranularity: .year, calendar: self.service.calendar) }) ?? 0
-            return self.years.element(at: yearIndex)?.months.count ?? 0
+            return self.months.count
         case .year:
             return self.years.count
         }
@@ -163,9 +140,7 @@ extension ACCalendarMonthPickerView: UIPickerViewDelegate {
 
         switch type {
         case .month:
-            let yearIndex = self.service.years.firstIndex(where: { $0.yearDate.isEqual(to: self.currentMonthDate, toGranularity: .year, calendar: self.service.calendar) }) ?? 0
-            
-            let monthDate = self.years.element(at: yearIndex)?.months.element(at: row)?.monthDate
+            let monthDate = self.months.element(at: row)?.monthDate
             let monthText = monthDate?.toLocalString(withFormatType: .montLetters, locale: self.service.locale)
             return monthText
         case .year:
@@ -176,21 +151,26 @@ extension ACCalendarMonthPickerView: UIPickerViewDelegate {
     }
     
     public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        guard let type = PickerComponentType(rawValue: component) else { return }
         
-        
-        let monthIndex = pickerView.selectedRow(inComponent: 0)
-        let yearIndex = pickerView.selectedRow(inComponent: 1)
-        
-        guard
-            let year = self.service.years.element(at: yearIndex),
-            let month = year.months.first(where: { self.service.calendar.component(.month, from: $0.monthDate) == self.service.calendar.component(.month, from: self.currentMonthDate) }) ?? year.months.first
-        else { return }
-        
-        self.currentMonthDate = month.monthDate
-        
-        if component == 1 {
-            self.picker.reloadComponent(0)
+        switch type {
+        case .year:
+            let selectedMonthRow = pickerView.selectedRow(inComponent: PickerComponentType.month.rawValue)
+            let selectedMonth = self.months.element(at: selectedMonthRow)?.month
+            
+            self.currentYear = self.years.element(at: row)
+            self.reloadComponent(withType: .month)
+            
+            if let row = self.months.firstIndex(where: { $0.month == selectedMonth }) {
+                self.selectRow(row, inComponentType: .month, animated: true)
+            }
+        case .month:
+            break
         }
+        
+        guard let monthDate = self.years.element(at: self.selectedRow(inComponentType: .year))?.months.element(at: self.selectedRow(inComponentType: .month))?.monthDate else { return }
+        self.service.currentMonthDate = monthDate
+        self.didSelectMonth?(monthDate)
     }
 
 }

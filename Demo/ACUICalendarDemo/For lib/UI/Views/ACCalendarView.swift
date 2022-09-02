@@ -72,6 +72,11 @@ open class ACCalendarView: UIView {
     
     open lazy var monthPickerView: ACCalendarMonthPickerView = {
         let result = ACCalendarMonthPickerView()
+        
+        result.didSelectMonth = { [weak self] monthDate in
+            self?.service.currentMonthDate = monthDate
+        }
+        
         return result
     }()
     
@@ -177,9 +182,8 @@ open class ACCalendarView: UIView {
         self.monthPickerView.service = self.service
         self.monthPickerView.theme = self.theme
         
-//        self.monthPickerView.minimumDate = self.service.minDate
-//        self.monthPickerView.maximumDate = self.service.maxDate
-//        self.monthPickerView.date = self.service.currentMonthDate
+        self.dayCollectionView.service = self.service
+        self.dayCollectionView.theme = self.theme
         
         self.arrowsView.isHidden = self.monthSelectView.isOn
         self.dayCollectionView.isHidden = self.monthSelectView.isOn
