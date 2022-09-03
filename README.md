@@ -4,8 +4,6 @@
 
 <img src="/Resources/demo.gif" width="300">
 
-<!-- ![](/Resources/demo.gif) -->
-
 ## Requirements
 * IOS 11 or above
 * Xcode 12.5 or above
