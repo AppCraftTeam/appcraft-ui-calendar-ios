@@ -9,27 +9,7 @@ import Foundation
 import UIKit
 import DPSwift
 
-open class ACCalendarArrowsView: UIView, ACCalendarServicePresenterProtocol {
-    
-    // MARK: - Init
-    public init(service: ACCalendarService, theme: ACCalendarUITheme) {
-        self.service = service
-        self.theme = theme
-        
-        super.init(frame: .zero)
-    }
-    
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        self.setupComponents()
-    }
-    
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        
-        self.setupComponents()
-    }
+open class ACCalendarArrowsView: ACCalendarBaseView {
     
     // MARK: - Props
     open lazy var leftArrowButton: UIButton = {
@@ -61,12 +41,6 @@ open class ACCalendarArrowsView: UIView, ACCalendarServicePresenterProtocol {
         return result
     }()
     
-    open var service: ACCalendarService?
-    
-    open var theme = ACCalendarUITheme() {
-        didSet { self.updateComponents() }
-    }
-    
     open var leftArrowIsEnabled: Bool {
         get { self.leftArrowButton.isEnabled }
         set { self.leftArrowButton.isEnabled = newValue }
@@ -77,13 +51,10 @@ open class ACCalendarArrowsView: UIView, ACCalendarServicePresenterProtocol {
         set { self.rightArrowButton.isEnabled = newValue }
     }
     
-    open var didTapLeftArrow: Closure?
-    open var didTapRightArrow: Closure?
+    open var didTapOnDirection: ContextClosure<ACCalendarDirection>?
     
     // MARK: - Methods
-    open func setupComponents() {
-        self.tintColor = .black
-        
+    open override func setupComponents() {
         self.stackView.removeFromSuperview()
         self.stackView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -105,19 +76,19 @@ open class ACCalendarArrowsView: UIView, ACCalendarServicePresenterProtocol {
         self.updateComponents()
     }
     
-    open func updateComponents() {
+    open override func updateComponents() {
         self.subviews.forEach({ $0.tintColor = self.theme.arrowsTintColor })
-        self.leftArrowIsEnabled = self.service?.previousMonth() != nil
-        self.rightArrowIsEnabled = self.service?.nextMonth() != nil
+        self.leftArrowIsEnabled = self.service.month(on: .previous) != nil
+        self.rightArrowIsEnabled = self.service.month(on: .next) != nil
     }
     
     @objc
     open func buttonAction(_ button: UIButton) {
         switch button {
         case self.leftArrowButton:
-            self.didTapLeftArrow?()
+            self.didTapOnDirection?(.previous)
         case self.rightArrowButton:
-            self.didTapRightArrow?()
+            self.didTapOnDirection?(.next)
         default:
             break
         }

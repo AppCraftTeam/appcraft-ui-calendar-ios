@@ -8,26 +8,7 @@
 import Foundation
 import UIKit
 
-open class ACCalendarView: UIView {
-    
-    // MARK: - Init
-    init(service: ACCalendarService = .default()) {
-        self.service = service
-        
-        super.init(frame: .zero)
-    }
-    
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        self.setupComponents()
-    }
-    
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        
-        self.setupComponents()
-    }
+open class ACCalendarView: ACCalendarBaseView {
     
     // MARK: - Props
     open lazy var contentView = UIView()
@@ -35,7 +16,7 @@ open class ACCalendarView: UIView {
     open lazy var bottomContentView = UIView()
     
     open lazy var monthSelectView: ACCalendarMonthSelectView = {
-        let result = ACCalendarMonthSelectView()
+        let result = ACCalendarMonthSelectView(service: self.service)
         
         result.didToggle = { [weak self] isOn in
             self?.updateComponents()
@@ -45,37 +26,35 @@ open class ACCalendarView: UIView {
     }()
     
     open lazy var arrowsView: ACCalendarArrowsView = {
-        let result = ACCalendarArrowsView(service: self.service, theme: self.theme)
+        let result = ACCalendarArrowsView(service: self.service)
         
-        result.didTapLeftArrow = { [weak self] in
-            self?.dayCollectionView.scrollToPreviousMonth(animated: true)
-        }
-        
-        result.didTapRightArrow = { [weak self] in
-            self?.dayCollectionView.scrollToNextMonth(animated: true)
+        result.didTapOnDirection = { [weak self] direction in
+            self?.dayCollectionView.scrollToMonth(on: direction, animated: true)
         }
         
         return result
     }()
     
-    open lazy var weekView = ACCalendarWeekView()
+    open lazy var weekView: ACCalendarWeekView = {
+        ACCalendarWeekView(service: self.service)
+    }()
     
     open lazy var dayCollectionView: ACCalendarDayCollectionView = {
-        let result = ACCalendarDayCollectionView(service: self.service, theme: self.theme)
+        let result = ACCalendarDayCollectionView(service: self.service)
         
         result.didScrollToMonth = { [weak self] monthDate in
             self?.service.currentMonthDate = monthDate
         }
         
         result.didSelectDates = { [weak self] dates in
-            self?.service.datesSelection.datesSelected = dates
+            self?.service.datesSelected = dates
         }
         
         return result
     }()
     
     open lazy var monthPickerView: ACCalendarMonthPickerView = {
-        let result = ACCalendarMonthPickerView()
+        let result = ACCalendarMonthPickerView(service: self.service)
         
         result.didSelectMonth = { [weak self] monthDate in
             self?.service.currentMonthDate = monthDate
@@ -88,16 +67,8 @@ open class ACCalendarView: UIView {
         didSet { self.setupContentView() }
     }
     
-    open var service: ACCalendarService = .default() {
-        didSet { self.updateComponents() }
-    }
-    
-    open var theme = ACCalendarUITheme() {
-        didSet { self.updateComponents() }
-    }
-    
     // MARK: - Methods
-    open func setupComponents() {
+    open override func setupComponents() {
         self.setupContentView()
         
         [
@@ -174,11 +145,11 @@ open class ACCalendarView: UIView {
         ])
     }
     
-    open func updateComponents() {
+    open override func updateComponents() {
         self.backgroundColor = self.theme.backgroundColor
         
         self.monthSelectView.service = self.service
-        self.dayCollectionView.theme = self.theme
+        self.monthSelectView.theme = self.theme
         
         self.arrowsView.service = self.service
         self.arrowsView.theme = self.theme
@@ -189,10 +160,11 @@ open class ACCalendarView: UIView {
         self.dayCollectionView.service = self.service
         self.dayCollectionView.theme = self.theme
         
-        self.arrowsView.isHidden = self.monthSelectView.isOn
-        self.dayCollectionView.isHidden = self.monthSelectView.isOn
-        self.weekView.isHidden = self.monthSelectView.isOn
-        self.monthPickerView.isHidden = !self.monthSelectView.isOn
+        let pickerShows = self.monthSelectView.isOn
+        self.arrowsView.isHidden = pickerShows
+        self.dayCollectionView.isHidden = pickerShows
+        self.weekView.isHidden = pickerShows
+        self.monthPickerView.isHidden = !pickerShows
     }
     
 }

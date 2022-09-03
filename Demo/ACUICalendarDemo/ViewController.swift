@@ -11,17 +11,9 @@ import UIKit
 class ViewController: UIViewController {
     
     // MARK: - Props
-    var service = ACCalendarService.default() {
-        didSet { self.updateComponents() }
-    }
-    
-    var datesSelected: [Date] {
-        get { self.service.datesSelected }
-        set { self.service.datesSelected = newValue }
-    }
-    
     lazy var datesButton: UIButton = {
         let result = UIButton(type: .system)
+        result.setTitle("Select dates", for: .normal)
         result.addTarget(self, action: #selector(self.handleTapDatesButton), for: .touchUpInside)
         
         return result
@@ -31,11 +23,11 @@ class ViewController: UIViewController {
         let result = UITextField()
         result.inputView = self.calendarView
         result.placeholder = "Select Dates"
+        result.borderStyle = .roundedRect
         
         let toolbar = UIToolbar()
         toolbar.items = [
             UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.tapCancel)),
-            .init(),
             UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.tapDone))
         ]
         toolbar.sizeToFit()
@@ -45,18 +37,65 @@ class ViewController: UIViewController {
     }()
     
     lazy var calendarView: ACCalendarView = {
-        ACCalendarView(frame: .init(x: 0, y: 0, width: 0, height: 352))
+        let result = ACCalendarView(service: self.service)
+        result.frame = CGRect(x: 0, y: 0, width: 0, height: 352)
+        
+        return result
     }()
     
+    lazy var selectionNamesView: UIStackView = {
+        let result = UIStackView()
+        result.axis = .horizontal
+        result.distribution = .fillEqually
+        
+        return result
+    }()
+    
+    var service = ACCalendarService() {
+        didSet { self.updateComponents() }
+    }
+    
+    var selectionName: ACCalendarDateSelectionName = .single {
+        didSet {
+            switch self.selectionName {
+            case .single:
+                self.service.selection = ACCalendarSingleDateSelection(
+                    calendar: self.service.calendar,
+                    datesSelected: self.service.datesSelected
+                )
+            case .multi:
+                self.service.selection = ACCalendarMultiDateSelection(
+                    calendar: self.service.calendar,
+                    datesSelected: self.service.datesSelected
+                )
+            case .range:
+                self.service.selection = ACCalendarRangeDateSelection(
+                    calendar: self.service.calendar,
+                    datesSelected: self.service.datesSelected
+                )
+            default:
+                break
+            }
+        }
+    }
+    
+    var selectionNames: [ACCalendarDateSelectionName] = [.single, .multi, .range]
+    
+    // MARK: - Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.view.backgroundColor = .backgroundColor
         let guide = self.view.safeAreaLayoutGuide
         
-        let stackView = UIStackView(arrangedSubviews: [self.datesButton, self.datesTextField, .init()])
-        stackView.axis = .vertical
+        let dateSelectStackView = UIStackView(arrangedSubviews: [self.datesTextField, self.datesButton])
+        dateSelectStackView.axis = .horizontal
+        dateSelectStackView.spacing = 16
+        dateSelectStackView.distribution = .fillEqually
         
+        let stackView = UIStackView(arrangedSubviews: [dateSelectStackView, self.selectionNamesView, .init()])
+        stackView.axis = .vertical
+        stackView.spacing = 16
         stackView.removeFromSuperview()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -69,23 +108,45 @@ class ViewController: UIViewController {
             stackView.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -16)
         ])
         
-        
+        self.calendarView.service = self.service
         self.updateComponents()
     }
     
     func updateComponents() {
         var datesText: String = ""
+        let datesSelectedTexts = self.service.datesSelected.map({ $0.toLocalString(withFormatType: .default, locale: .current) })
         
-        if let first = self.datesSelected.first {
-            datesText = first.toLocalString(withFormatType: .default, locale: .current)
-            
-            if let last = self.datesSelected.last, last != self.datesSelected.first {
-                datesText +=  " - " + last.toLocalString(withFormatType: .default, locale: .current)
+        switch self.selectionName {
+        case .single:
+            datesText = datesSelectedTexts.first ?? ""
+        case .multi:
+            datesText = datesSelectedTexts.joined(separator: ", ")
+        case .range:
+            if let first = datesSelectedTexts.first {
+                datesText = first
+                
+                if let last = datesSelectedTexts.last, last != datesSelectedTexts.first {
+                    datesText +=  " - " + last
+                }
             }
+        default:
+            break
         }
         
-        self.datesButton.setTitle(datesText.isEmpty ? "Select dates" : datesText, for: .normal)
         self.datesTextField.text = datesText
+        
+        let selectionNamesViews: [UIView] = self.selectionNames.map { name in
+            let button = UIButton(type: .system)
+            button.setTitle(name.identifer.capitalizingFirstLetter(), for: .normal)
+            button.setTitleColor(name == self.selectionName ? .black : .gray, for: .normal)
+            button.addTarget(self, action: #selector(self.handleTapSelectionNameView(_:)), for: .touchUpInside)
+            return button
+        }
+        
+        self.selectionNamesView.subviews.forEach({ $0.removeFromSuperview() })
+        selectionNamesViews.forEach({ self.selectionNamesView.addArrangedSubview($0) })
+        
+        self.calendarView.service = self.service
     }
     
     @objc
@@ -93,8 +154,8 @@ class ViewController: UIViewController {
         let vc = CalendarViewController(service: self.service)
         let nc = UINavigationController(rootViewController: vc)
         
-        vc.didTapDone = { [weak self, weak nc] dates in
-            self?.datesSelected = dates
+        vc.didTapDone = { [weak self, weak nc] service in
+            self?.service = service
             nc?.dismiss(animated: true)
         }
         
@@ -114,6 +175,16 @@ class ViewController: UIViewController {
     private func tapDone() {
         self.datesTextField.resignFirstResponder()
         self.service = self.calendarView.service
+    }
+    
+    @objc
+    private func handleTapSelectionNameView(_ button: UIButton) {
+        guard
+            let index = self.selectionNamesView.subviews.firstIndex(of: button),
+            let name = self.selectionNames.element(at: index)
+        else { return }
+        
+        self.selectionName = name
     }
     
 }

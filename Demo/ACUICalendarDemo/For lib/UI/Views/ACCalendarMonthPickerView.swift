@@ -9,20 +9,7 @@ import Foundation
 import UIKit
 import DPSwift
 
-open class ACCalendarMonthPickerView: UIView {
-
-    // MARK: - Init
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        self.setupComponents()
-    }
-
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-
-        self.setupComponents()
-    }
+open class ACCalendarMonthPickerView: ACCalendarBaseView {
 
     // MARK: - Props
     open lazy var pickerView: UIPickerView = {
@@ -39,14 +26,6 @@ open class ACCalendarMonthPickerView: UIView {
         
         return result
     }()
-
-    open var service: ACCalendarService = .default() {
-        didSet { self.updateComponents() }
-    }
-
-    open var theme = ACCalendarUITheme() {
-        didSet { self.updateComponents() }
-    }
     
     open var currentYear: ACCalendarYearModel?
     
@@ -61,7 +40,7 @@ open class ACCalendarMonthPickerView: UIView {
     open var didSelectMonth: ContextClosure<Date>?
 
     // MARK: - Methods
-    open func setupComponents() {
+    open override func setupComponents() {
         self.pickerView.removeFromSuperview()
         self.pickerView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -86,7 +65,7 @@ open class ACCalendarMonthPickerView: UIView {
         self.updateComponents()
     }
 
-    open func updateComponents() {
+    open override func updateComponents() {
         let calendar = self.service.calendar
         let currentYear = calendar.component(.year, from: self.service.currentMonthDate)
         let currentMonth = calendar.component(.month, from: self.service.currentMonthDate)

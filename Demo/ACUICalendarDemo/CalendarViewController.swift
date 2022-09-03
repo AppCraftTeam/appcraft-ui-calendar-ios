@@ -29,7 +29,7 @@ class CalendarViewController: UIViewController {
     }()
     
     var didTapCancel: Closure?
-    var didTapDone: ContextClosure<[Date]>?
+    var didTapDone: ContextClosure<ACCalendarService>?
 
     // MARK: - Methods
     override func viewDidLoad() {
@@ -62,7 +62,7 @@ class CalendarViewController: UIViewController {
     
     @objc
     private func handleTapDone() {
-        self.didTapDone?(self.calendarView.service.datesSelection.datesSelected)
+        self.didTapDone?(self.calendarView.service)
     }
 
 }

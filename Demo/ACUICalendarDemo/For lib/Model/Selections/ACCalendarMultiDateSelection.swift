@@ -1,13 +1,13 @@
 //
-//  ACCalendarSingleDateSelection.swift
+//  ACCalendarMultiDateSelection.swift
 //  ACUICalendarDemo
 //
-//  Created by Дмитрий Поляков on 30.08.2022.
+//  Created by Дмитрий Поляков on 03.09.2022.
 //
 
 import Foundation
 
-public struct ACCalendarSingleDateSelection: ACCalendarDateSelectionProtocol {
+public struct ACCalendarMultiDateSelection: ACCalendarDateSelectionProtocol {
     
     // MARK: - Init
     public init(calendar: Calendar, datesSelected: [Date]) {
@@ -18,7 +18,7 @@ public struct ACCalendarSingleDateSelection: ACCalendarDateSelectionProtocol {
     }
     
     // MARK: - Props
-    public let name: ACCalendarDateSelectionName = .single
+    public let name: ACCalendarDateSelectionName = .multi
     
     public var calendar: Calendar {
         didSet { self.updateComponents() }
@@ -38,12 +38,21 @@ public struct ACCalendarSingleDateSelection: ACCalendarDateSelectionProtocol {
     }
     
     public mutating func dateSelect(_ date: Date) {
-        self.datesSelected = [date]
+        if let index = self.datesSelected.firstIndex(where: { $0.isEqual(to: date, toGranularity: .day, calendar: self.calendar) }) {
+            self.datesSelected.remove(at: index)
+        } else {
+            self.datesSelected.append(date)
+        }
     }
     
     public mutating func updateComponents() {
-        guard self.datesSelected.count > 1, let first = self.datesSelected.first else { return }
-        self.datesSelected = [first]
+        var datesSelected = self.datesSelected
+        datesSelected.removeDuplicates()
+        datesSelected.sort()
+        
+        if self.datesSelected != datesSelected {
+            self.datesSelected = datesSelected
+        }
     }
     
 }

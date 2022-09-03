@@ -9,20 +9,7 @@ import Foundation
 import UIKit
 import DPSwift
 
-open class ACCalendarWeekView: UIView {
-    
-    // MARK: - Init
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        self.setupComponents()
-    }
-    
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        
-        self.setupComponents()
-    }
+open class ACCalendarWeekView: ACCalendarBaseView {
     
     // MARK: - Props
     open lazy var stackView: UIStackView = {
@@ -33,16 +20,8 @@ open class ACCalendarWeekView: UIView {
         return result
     }()
     
-    open var service: ACCalendarService = .default() {
-        didSet { self.updateComponents() }
-    }
-    
-    open var theme = ACCalendarUITheme() {
-        didSet { self.updateComponents() }
-    }
-    
     // MARK: - Methods
-    open func setupComponents() {
+    open override func setupComponents() {
         self.stackView.removeFromSuperview()
         self.stackView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -58,7 +37,7 @@ open class ACCalendarWeekView: UIView {
         self.updateComponents()
     }
     
-    open func updateComponents() {
+    open override func updateComponents() {
         let calendar = self.service.calendar
         let locale = self.service.locale
         let weekDays = calendar.firstDPWeekDay.generateWeek()

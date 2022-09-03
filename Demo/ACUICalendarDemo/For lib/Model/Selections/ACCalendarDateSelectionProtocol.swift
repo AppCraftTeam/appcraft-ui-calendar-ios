@@ -8,24 +8,10 @@
 import Foundation
 
 public protocol ACCalendarDateSelectionProtocol {
+    var name: ACCalendarDateSelectionName { get }
+    var calendar: Calendar { get set }
     var datesSelected: [Date] { get set }
     
-    func dateSelected(_ date: Date, calendar: Calendar) -> ACCalendarDateSelectionType
-    mutating func dateSelecting(_ date: Date, calendar: Calendar, belongsToMonth: ACCalendarBelongsToMonth)
-}
-
-public extension ACCalendarDateSelectionProtocol {
-    
-    func dateSelected(_ date: Date, calendar: Calendar) -> ACCalendarDateSelectionType {
-        if let first = self.datesSelected.first, first.isEqual(to: date, toGranularity: .day, calendar: calendar) {
-            return .startOfRange
-        } else if let last = self.datesSelected.last, last.isEqual(to: date, toGranularity: .day, calendar: calendar) {
-            return .endOfRange
-        } else if self.datesSelected.contains(where: { $0.isEqual(to: date, toGranularity: .day, calendar: calendar) }) {
-            return .middleOfRange
-        } else {
-            return .notSelected
-        }
-    }
-    
+    func dateSelected(_ date: Date) -> ACCalendarDateSelectionType
+    mutating func dateSelect(_ date: Date)
 }

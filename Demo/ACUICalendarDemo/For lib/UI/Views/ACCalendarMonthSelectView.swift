@@ -9,20 +9,7 @@ import Foundation
 import UIKit
 import DPSwift
 
-open class ACCalendarMonthSelectView: UIView {
-    
-    // MARK: - Init
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        self.setupComponents()
-    }
-    
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        
-        self.setupComponents()
-    }
+open class ACCalendarMonthSelectView: ACCalendarBaseView {
     
     // MARK: - Props
     open lazy var monthDateLabel: UILabel = {
@@ -36,14 +23,6 @@ open class ACCalendarMonthSelectView: UIView {
         
         return result
     }()
-    
-    open var service: ACCalendarService = .default() {
-        didSet { self.updateComponents() }
-    }
-    
-    open var theme = ACCalendarUITheme() {
-        didSet { self.updateComponents() }
-    }
     
     open var isOn: Bool = false {
         didSet { self.updateComponents() }
@@ -79,7 +58,7 @@ open class ACCalendarMonthSelectView: UIView {
         self.didToggle?(self.isOn)
     }
     
-    open func setupComponents() {
+    open override func setupComponents() {
         self.monthDateLabel.removeFromSuperview()
         self.monthDateLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -105,7 +84,7 @@ open class ACCalendarMonthSelectView: UIView {
         self.updateComponents()
     }
     
-    open func updateComponents() {
+    open override func updateComponents() {
         let locale = self.service.locale
         let monthDate = self.service.currentMonthDate
         
