@@ -2,7 +2,7 @@
 
 [![version](https://img.shields.io/badge/version-0.0.1-white.svg)](https://semver.org)
 
-<img src="/Resources/demo.gif" width="50%" height="50%">
+<img src="/Resources/demo.gif" width="100" height="200">
 
 <!-- ![](/Resources/demo.gif) -->
 
