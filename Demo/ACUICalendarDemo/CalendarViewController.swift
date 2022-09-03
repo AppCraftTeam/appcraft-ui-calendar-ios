@@ -36,7 +36,7 @@ class CalendarViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = .backgroundColor
+        self.view.backgroundColor = ACCalendarColor.backgroundColor
         
         let guide = self.view.safeAreaLayoutGuide
         

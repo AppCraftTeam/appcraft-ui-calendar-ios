@@ -135,8 +135,8 @@ extension ACCalendarMonthPickerView: UIPickerViewDelegate {
     public func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         let label = view as? UILabel ?? UILabel()
         label.textAlignment = .center
-        label.textColor = self.theme.monthPickerTextColor
         label.font = self.theme.monthPickerFont
+        label.textColor = self.theme.monthPickerTextColor
         
         guard let type = PickerComponentType(rawValue: component) else { return label }
 

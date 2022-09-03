@@ -28,6 +28,8 @@ public struct ACCalendarRangeDateSelection: ACCalendarDateSelectionProtocol {
         didSet { self.updateComponents() }
     }
     
+    public var allowsDeselect: Bool = true
+    
     // MARK: - Methods
     public func dateSelected(_ date: Date) -> ACCalendarDateSelectionType {
         if let first = self.datesSelected.first, first.isEqual(to: date, toGranularity: .day, calendar: self.calendar) {

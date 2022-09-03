@@ -64,7 +64,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = .backgroundColor
+        self.view.backgroundColor = ACCalendarColor.backgroundColor
         let guide = self.view.safeAreaLayoutGuide
         
         let dateSelectStackView = UIStackView(arrangedSubviews: [self.datesLabel, self.datesButton])
@@ -116,7 +116,11 @@ class ViewController: UIViewController {
         let selectionNamesViews: [UIView] = self.selectionNames.map { name in
             let button = UIButton(type: .system)
             button.setTitle(name.identifer.capitalizingFirstLetter(), for: .normal)
-            button.setTitleColor(name == self.selectionName ? .black : .gray, for: .normal)
+            
+            if name != self.selectionName {
+                button.setTitleColor(ACCalendarColor.textPrimaryColor, for: .normal)
+            }
+            
             button.addTarget(self, action: #selector(self.handleTapSelectionNameView(_:)), for: .touchUpInside)
             return button
         }
