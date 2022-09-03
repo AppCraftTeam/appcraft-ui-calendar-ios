@@ -11,7 +11,7 @@
 
 ## Overview
 [ACCalendarService](#ACCalendarService)\
-[Views](#Strings)
+[Views](#Strings)\
 [Demo](#Demo)
 
 ## ACCalendarService
