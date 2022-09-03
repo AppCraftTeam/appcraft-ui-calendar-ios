@@ -1,7 +1,6 @@
 # ACUICalendar
 
 [![version](https://img.shields.io/badge/version-0.0.1-white.svg)](https://semver.org)
-
 [![figma layouts used in development](https://img.shields.io/badge/figma-layouts_used_in_development-white.svg)](https://www.figma.com/file/Wy7oBUkLRVZI5Yw1N5mDiF/Calendar?node-id=0%3A1)
 
 <img src="/Resources/demo.gif" width="300">
