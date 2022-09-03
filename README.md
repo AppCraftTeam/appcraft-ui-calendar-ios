@@ -2,7 +2,7 @@
 
 [![version](https://img.shields.io/badge/version-0.0.1-white.svg)](https://semver.org)
 
-![](/Resources/demo.gif)
+![](/Resources/demo.gif | width=100)
 
 ## Requirements
 * IOS 11 or above
