@@ -7,75 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E20C89C728BD16F60068629C /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20C89C628BD16F60068629C /* UIColor+Extensions.swift */; };
-		E20C89C928BDBDFD0068629C /* ACCalendarMonthPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20C89C828BDBDFD0068629C /* ACCalendarMonthPickerView.swift */; };
-		E220A69C28B825A200647377 /* DPSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E220A69B28B825A200647377 /* DPSwift */; };
-		E24C546528B8D1F400D341C4 /* ACCalendarMonthSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24C546428B8D1F400D341C4 /* ACCalendarMonthSelectView.swift */; };
-		E24C546728B8D97E00D341C4 /* UIImage+Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24C546628B8D97E00D341C4 /* UIImage+Assets.swift */; };
-		E24C546928B8E51700D341C4 /* ACCalendarArrowsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24C546828B8E51700D341C4 /* ACCalendarArrowsView.swift */; };
-		E24C546B28BCA4DD00D341C4 /* DPDateFormatType+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24C546A28BCA4DD00D341C4 /* DPDateFormatType+Extensions.swift */; };
-		E24C546D28BCB33800D341C4 /* ACCalendarDateSelectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24C546C28BCB33800D341C4 /* ACCalendarDateSelectionType.swift */; };
-		E24C546F28BCBE6000D341C4 /* ACCalendarUITheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24C546E28BCBE6000D341C4 /* ACCalendarUITheme.swift */; };
-		E25719C128BE4677007326D9 /* ACCalendarYearModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25719C028BE4677007326D9 /* ACCalendarYearModel.swift */; };
-		E25719CD28BE4FF6007326D9 /* ACCalendarRangeDateSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25719CA28BE4FF6007326D9 /* ACCalendarRangeDateSelection.swift */; };
-		E25719CE28BE4FF6007326D9 /* ACCalendarSingleDateSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25719CB28BE4FF6007326D9 /* ACCalendarSingleDateSelection.swift */; };
-		E25719CF28BE4FF6007326D9 /* ACCalendarDateSelectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25719CC28BE4FF6007326D9 /* ACCalendarDateSelectionProtocol.swift */; };
-		E28A55B528B7EA2F00FCB5C6 /* ACCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A55B428B7EA2F00FCB5C6 /* ACCalendarView.swift */; };
-		E28A55B828B7EBE800FCB5C6 /* Calendar+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A55B728B7EBE800FCB5C6 /* Calendar+Extensions.swift */; };
-		E28A55BA28B7EC7F00FCB5C6 /* ACCalendarWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A55B928B7EC7F00FCB5C6 /* ACCalendarWeekView.swift */; };
 		E29FA7C428C20F30005366CB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29FA7C328C20F30005366CB /* ViewController.swift */; };
-		E29FA7C828C353E3005366CB /* ACCalendarBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29FA7C728C353E3005366CB /* ACCalendarBaseView.swift */; };
-		E29FA7CA28C35444005366CB /* ACCalendarDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29FA7C928C35444005366CB /* ACCalendarDirection.swift */; };
-		E29FA7CC28C35C6B005366CB /* ACCalendarMultiDateSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29FA7CB28C35C6B005366CB /* ACCalendarMultiDateSelection.swift */; };
-		E29FA7D028C3619A005366CB /* ACCalendarDateSelectionName.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29FA7CF28C3619A005366CB /* ACCalendarDateSelectionName.swift */; };
+		E29FA7D328C37EE2005366CB /* ACUICalendar in Frameworks */ = {isa = PBXBuildFile; productRef = E29FA7D228C37EE2005366CB /* ACUICalendar */; };
 		E2A6CA5D28B4E05F006EAA6F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A6CA5C28B4E05F006EAA6F /* AppDelegate.swift */; };
 		E2A6CA6128B4E05F006EAA6F /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A6CA6028B4E05F006EAA6F /* CalendarViewController.swift */; };
-		E2A6CA6628B4E060006EAA6F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2A6CA6528B4E060006EAA6F /* Assets.xcassets */; };
 		E2A6CA6928B4E060006EAA6F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E2A6CA6728B4E060006EAA6F /* LaunchScreen.storyboard */; };
-		E2B6763728B5103F00D8710A /* ACCalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B6763628B5103F00D8710A /* ACCalendarService.swift */; };
-		E2F0E31628B604FF008507D2 /* ACCalendarDayCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31528B604FF008507D2 /* ACCalendarDayCollectionView.swift */; };
-		E2F0E31828B614E3008507D2 /* ACCalendarDayCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31728B614E3008507D2 /* ACCalendarDayCollectionViewCell.swift */; };
-		E2F0E31A28B61502008507D2 /* ACCalendarHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31928B61502008507D2 /* ACCalendarHorizontalLayout.swift */; };
-		E2F0E31C28B64F10008507D2 /* ACCalendarMonthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31B28B64F10008507D2 /* ACCalendarMonthModel.swift */; };
-		E2F0E32028B6A558008507D2 /* ACCalendarBelongsToMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E31F28B6A558008507D2 /* ACCalendarBelongsToMonth.swift */; };
-		E2F0E32228B6A578008507D2 /* ACCalendarDayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F0E32128B6A578008507D2 /* ACCalendarDayModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E20C89C628BD16F60068629C /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
-		E20C89C828BDBDFD0068629C /* ACCalendarMonthPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarMonthPickerView.swift; sourceTree = "<group>"; };
-		E24C546428B8D1F400D341C4 /* ACCalendarMonthSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarMonthSelectView.swift; sourceTree = "<group>"; };
-		E24C546628B8D97E00D341C4 /* UIImage+Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Assets.swift"; sourceTree = "<group>"; };
-		E24C546828B8E51700D341C4 /* ACCalendarArrowsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarArrowsView.swift; sourceTree = "<group>"; };
-		E24C546A28BCA4DD00D341C4 /* DPDateFormatType+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DPDateFormatType+Extensions.swift"; sourceTree = "<group>"; };
-		E24C546C28BCB33800D341C4 /* ACCalendarDateSelectionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarDateSelectionType.swift; sourceTree = "<group>"; };
-		E24C546E28BCBE6000D341C4 /* ACCalendarUITheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarUITheme.swift; sourceTree = "<group>"; };
-		E25719C028BE4677007326D9 /* ACCalendarYearModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarYearModel.swift; sourceTree = "<group>"; };
-		E25719CA28BE4FF6007326D9 /* ACCalendarRangeDateSelection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACCalendarRangeDateSelection.swift; sourceTree = "<group>"; };
-		E25719CB28BE4FF6007326D9 /* ACCalendarSingleDateSelection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACCalendarSingleDateSelection.swift; sourceTree = "<group>"; };
-		E25719CC28BE4FF6007326D9 /* ACCalendarDateSelectionProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACCalendarDateSelectionProtocol.swift; sourceTree = "<group>"; };
-		E28A55B428B7EA2F00FCB5C6 /* ACCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarView.swift; sourceTree = "<group>"; };
-		E28A55B728B7EBE800FCB5C6 /* Calendar+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Extensions.swift"; sourceTree = "<group>"; };
-		E28A55B928B7EC7F00FCB5C6 /* ACCalendarWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarWeekView.swift; sourceTree = "<group>"; };
 		E29FA7C328C20F30005366CB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		E29FA7C728C353E3005366CB /* ACCalendarBaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarBaseView.swift; sourceTree = "<group>"; };
-		E29FA7C928C35444005366CB /* ACCalendarDirection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarDirection.swift; sourceTree = "<group>"; };
-		E29FA7CB28C35C6B005366CB /* ACCalendarMultiDateSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarMultiDateSelection.swift; sourceTree = "<group>"; };
-		E29FA7CF28C3619A005366CB /* ACCalendarDateSelectionName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACCalendarDateSelectionName.swift; sourceTree = "<group>"; };
 		E2A6CA5928B4E05F006EAA6F /* ACUICalendarDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ACUICalendarDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2A6CA5C28B4E05F006EAA6F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E2A6CA6028B4E05F006EAA6F /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
-		E2A6CA6528B4E060006EAA6F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E2A6CA6828B4E060006EAA6F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E2A6CA6A28B4E060006EAA6F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E2B6763228B4E0AB00D8710A /* appcraft-ui-calendar-ios */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "appcraft-ui-calendar-ios"; path = ..; sourceTree = "<group>"; };
-		E2B6763628B5103F00D8710A /* ACCalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarService.swift; sourceTree = "<group>"; };
-		E2F0E31528B604FF008507D2 /* ACCalendarDayCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarDayCollectionView.swift; sourceTree = "<group>"; };
-		E2F0E31728B614E3008507D2 /* ACCalendarDayCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarDayCollectionViewCell.swift; sourceTree = "<group>"; };
-		E2F0E31928B61502008507D2 /* ACCalendarHorizontalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarHorizontalLayout.swift; sourceTree = "<group>"; };
-		E2F0E31B28B64F10008507D2 /* ACCalendarMonthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarMonthModel.swift; sourceTree = "<group>"; };
-		E2F0E31F28B6A558008507D2 /* ACCalendarBelongsToMonth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarBelongsToMonth.swift; sourceTree = "<group>"; };
-		E2F0E32128B6A578008507D2 /* ACCalendarDayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACCalendarDayModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,90 +29,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E220A69C28B825A200647377 /* DPSwift in Frameworks */,
+				E29FA7D328C37EE2005366CB /* ACUICalendar in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E24C547128BCC7AA00D341C4 /* Views */ = {
+		E29FA7D128C37EE2005366CB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E24C546828B8E51700D341C4 /* ACCalendarArrowsView.swift */,
-				E29FA7C728C353E3005366CB /* ACCalendarBaseView.swift */,
-				E2F0E31528B604FF008507D2 /* ACCalendarDayCollectionView.swift */,
-				E2F0E31728B614E3008507D2 /* ACCalendarDayCollectionViewCell.swift */,
-				E20C89C828BDBDFD0068629C /* ACCalendarMonthPickerView.swift */,
-				E24C546428B8D1F400D341C4 /* ACCalendarMonthSelectView.swift */,
-				E28A55B428B7EA2F00FCB5C6 /* ACCalendarView.swift */,
-				E28A55B928B7EC7F00FCB5C6 /* ACCalendarWeekView.swift */,
 			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		E24C547228BCC7AF00D341C4 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				E2F0E31928B61502008507D2 /* ACCalendarHorizontalLayout.swift */,
-				E24C546E28BCBE6000D341C4 /* ACCalendarUITheme.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
-		E25719C928BE4FF6007326D9 /* Selections */ = {
-			isa = PBXGroup;
-			children = (
-				E29FA7CF28C3619A005366CB /* ACCalendarDateSelectionName.swift */,
-				E25719CC28BE4FF6007326D9 /* ACCalendarDateSelectionProtocol.swift */,
-				E29FA7CB28C35C6B005366CB /* ACCalendarMultiDateSelection.swift */,
-				E25719CA28BE4FF6007326D9 /* ACCalendarRangeDateSelection.swift */,
-				E25719CB28BE4FF6007326D9 /* ACCalendarSingleDateSelection.swift */,
-			);
-			path = Selections;
-			sourceTree = "<group>";
-		};
-		E25719D028BE4FFF007326D9 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				E2F0E32128B6A578008507D2 /* ACCalendarDayModel.swift */,
-				E2F0E31B28B64F10008507D2 /* ACCalendarMonthModel.swift */,
-				E25719C028BE4677007326D9 /* ACCalendarYearModel.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		E28A55B028B7E39700FCB5C6 /* UI */ = {
-			isa = PBXGroup;
-			children = (
-				E24C547228BCC7AF00D341C4 /* Components */,
-				E24C547128BCC7AA00D341C4 /* Views */,
-			);
-			path = UI;
-			sourceTree = "<group>";
-		};
-		E28A55B128B7E39E00FCB5C6 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				E2F0E31F28B6A558008507D2 /* ACCalendarBelongsToMonth.swift */,
-				E24C546C28BCB33800D341C4 /* ACCalendarDateSelectionType.swift */,
-				E29FA7C928C35444005366CB /* ACCalendarDirection.swift */,
-				E2B6763628B5103F00D8710A /* ACCalendarService.swift */,
-				E25719D028BE4FFF007326D9 /* Models */,
-				E25719C928BE4FF6007326D9 /* Selections */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		E28A55B628B7EBD600FCB5C6 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				E28A55B728B7EBE800FCB5C6 /* Calendar+Extensions.swift */,
-				E24C546A28BCA4DD00D341C4 /* DPDateFormatType+Extensions.swift */,
-				E20C89C628BD16F60068629C /* UIColor+Extensions.swift */,
-				E24C546628B8D97E00D341C4 /* UIImage+Assets.swift */,
-			);
-			path = Extensions;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E2A6CA5028B4E05F006EAA6F = {
@@ -175,6 +49,7 @@
 				E2B6763128B4E0AB00D8710A /* Packages */,
 				E2A6CA5B28B4E05F006EAA6F /* ACUICalendarDemo */,
 				E2A6CA5A28B4E05F006EAA6F /* Products */,
+				E29FA7D128C37EE2005366CB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -193,8 +68,6 @@
 				E2A6CA5C28B4E05F006EAA6F /* AppDelegate.swift */,
 				E2A6CA6028B4E05F006EAA6F /* CalendarViewController.swift */,
 				E29FA7C328C20F30005366CB /* ViewController.swift */,
-				E2A6CA6528B4E060006EAA6F /* Assets.xcassets */,
-				E2B6763328B5101900D8710A /* For lib */,
 				E2A6CA6728B4E060006EAA6F /* LaunchScreen.storyboard */,
 			);
 			path = ACUICalendarDemo;
@@ -206,16 +79,6 @@
 				E2B6763228B4E0AB00D8710A /* appcraft-ui-calendar-ios */,
 			);
 			name = Packages;
-			sourceTree = "<group>";
-		};
-		E2B6763328B5101900D8710A /* For lib */ = {
-			isa = PBXGroup;
-			children = (
-				E28A55B628B7EBD600FCB5C6 /* Extensions */,
-				E28A55B128B7E39E00FCB5C6 /* Model */,
-				E28A55B028B7E39700FCB5C6 /* UI */,
-			);
-			path = "For lib";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -235,7 +98,7 @@
 			);
 			name = ACUICalendarDemo;
 			packageProductDependencies = (
-				E220A69B28B825A200647377 /* DPSwift */,
+				E29FA7D228C37EE2005366CB /* ACUICalendar */,
 			);
 			productName = ACUICalendarDemo;
 			productReference = E2A6CA5928B4E05F006EAA6F /* ACUICalendarDemo.app */;
@@ -266,7 +129,6 @@
 			);
 			mainGroup = E2A6CA5028B4E05F006EAA6F;
 			packageReferences = (
-				E220A69A28B825A200647377 /* XCRemoteSwiftPackageReference "DPSwift" */,
 			);
 			productRefGroup = E2A6CA5A28B4E05F006EAA6F /* Products */;
 			projectDirPath = "";
@@ -283,7 +145,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2A6CA6928B4E060006EAA6F /* LaunchScreen.storyboard in Resources */,
-				E2A6CA6628B4E060006EAA6F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,34 +156,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E29FA7C428C20F30005366CB /* ViewController.swift in Sources */,
-				E24C546528B8D1F400D341C4 /* ACCalendarMonthSelectView.swift in Sources */,
-				E28A55B528B7EA2F00FCB5C6 /* ACCalendarView.swift in Sources */,
-				E25719CE28BE4FF6007326D9 /* ACCalendarSingleDateSelection.swift in Sources */,
-				E2F0E31828B614E3008507D2 /* ACCalendarDayCollectionViewCell.swift in Sources */,
-				E29FA7C828C353E3005366CB /* ACCalendarBaseView.swift in Sources */,
 				E2A6CA6128B4E05F006EAA6F /* CalendarViewController.swift in Sources */,
 				E2A6CA5D28B4E05F006EAA6F /* AppDelegate.swift in Sources */,
-				E24C546B28BCA4DD00D341C4 /* DPDateFormatType+Extensions.swift in Sources */,
-				E2F0E31628B604FF008507D2 /* ACCalendarDayCollectionView.swift in Sources */,
-				E24C546928B8E51700D341C4 /* ACCalendarArrowsView.swift in Sources */,
-				E24C546D28BCB33800D341C4 /* ACCalendarDateSelectionType.swift in Sources */,
-				E2F0E31C28B64F10008507D2 /* ACCalendarMonthModel.swift in Sources */,
-				E24C546F28BCBE6000D341C4 /* ACCalendarUITheme.swift in Sources */,
-				E25719CF28BE4FF6007326D9 /* ACCalendarDateSelectionProtocol.swift in Sources */,
-				E20C89C728BD16F60068629C /* UIColor+Extensions.swift in Sources */,
-				E28A55B828B7EBE800FCB5C6 /* Calendar+Extensions.swift in Sources */,
-				E2B6763728B5103F00D8710A /* ACCalendarService.swift in Sources */,
-				E28A55BA28B7EC7F00FCB5C6 /* ACCalendarWeekView.swift in Sources */,
-				E25719CD28BE4FF6007326D9 /* ACCalendarRangeDateSelection.swift in Sources */,
-				E2F0E32228B6A578008507D2 /* ACCalendarDayModel.swift in Sources */,
-				E2F0E32028B6A558008507D2 /* ACCalendarBelongsToMonth.swift in Sources */,
-				E24C546728B8D97E00D341C4 /* UIImage+Assets.swift in Sources */,
-				E25719C128BE4677007326D9 /* ACCalendarYearModel.swift in Sources */,
-				E29FA7CC28C35C6B005366CB /* ACCalendarMultiDateSelection.swift in Sources */,
-				E2F0E31A28B61502008507D2 /* ACCalendarHorizontalLayout.swift in Sources */,
-				E20C89C928BDBDFD0068629C /* ACCalendarMonthPickerView.swift in Sources */,
-				E29FA7CA28C35444005366CB /* ACCalendarDirection.swift in Sources */,
-				E29FA7D028C3619A005366CB /* ACCalendarDateSelectionName.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,7 +292,6 @@
 		E2A6CA6E28B4E060006EAA6F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -485,7 +319,6 @@
 		E2A6CA6F28B4E060006EAA6F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -533,22 +366,10 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		E220A69A28B825A200647377 /* XCRemoteSwiftPackageReference "DPSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/DPLibs/DPSwift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		E220A69B28B825A200647377 /* DPSwift */ = {
+		E29FA7D228C37EE2005366CB /* ACUICalendar */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E220A69A28B825A200647377 /* XCRemoteSwiftPackageReference "DPSwift" */;
-			productName = DPSwift;
+			productName = ACUICalendar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import ACUICalendar
 
 class ViewController: UIViewController {
     
@@ -19,29 +20,7 @@ class ViewController: UIViewController {
         return result
     }()
     
-    lazy var datesTextField: UITextField = {
-        let result = UITextField()
-        result.inputView = self.calendarView
-        result.placeholder = "Select Dates"
-        result.borderStyle = .roundedRect
-        
-        let toolbar = UIToolbar()
-        toolbar.items = [
-            UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.tapCancel)),
-            UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.tapDone))
-        ]
-        toolbar.sizeToFit()
-        result.inputAccessoryView = toolbar
-        
-        return result
-    }()
-    
-    lazy var calendarView: ACCalendarView = {
-        let result = ACCalendarView(service: self.service)
-        result.frame = CGRect(x: 0, y: 0, width: 0, height: 352)
-        
-        return result
-    }()
+    lazy var datesLabel = UILabel()
     
     lazy var selectionNamesView: UIStackView = {
         let result = UIStackView()
@@ -88,7 +67,7 @@ class ViewController: UIViewController {
         self.view.backgroundColor = .backgroundColor
         let guide = self.view.safeAreaLayoutGuide
         
-        let dateSelectStackView = UIStackView(arrangedSubviews: [self.datesTextField, self.datesButton])
+        let dateSelectStackView = UIStackView(arrangedSubviews: [self.datesLabel, self.datesButton])
         dateSelectStackView.axis = .horizontal
         dateSelectStackView.spacing = 16
         dateSelectStackView.distribution = .fillEqually
@@ -108,7 +87,6 @@ class ViewController: UIViewController {
             stackView.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -16)
         ])
         
-        self.calendarView.service = self.service
         self.updateComponents()
     }
     
@@ -133,7 +111,7 @@ class ViewController: UIViewController {
             break
         }
         
-        self.datesTextField.text = datesText
+        self.datesLabel.text = datesText.isEmpty ? "Not selected dates" : datesText
         
         let selectionNamesViews: [UIView] = self.selectionNames.map { name in
             let button = UIButton(type: .system)
@@ -145,8 +123,6 @@ class ViewController: UIViewController {
         
         self.selectionNamesView.subviews.forEach({ $0.removeFromSuperview() })
         selectionNamesViews.forEach({ self.selectionNamesView.addArrangedSubview($0) })
-        
-        self.calendarView.service = self.service
     }
     
     @objc
@@ -164,17 +140,6 @@ class ViewController: UIViewController {
         }
         
         self.present(nc, animated: true)
-    }
-    
-    @objc
-    private func tapCancel() {
-        self.datesTextField.resignFirstResponder()
-    }
-    
-    @objc
-    private func tapDone() {
-        self.datesTextField.resignFirstResponder()
-        self.service = self.calendarView.service
     }
     
     @objc
