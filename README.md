@@ -2,9 +2,9 @@
 
 [![version](https://img.shields.io/badge/version-0.0.1-white.svg)](https://semver.org)
 
-<img src="/Resources/demo.gif"  width="60%" height="30%">
+<img src="/Resources/demo.gif" width="50%" height="50%">
 
-![](/Resources/demo.gif = width=100)
+<!-- ![](/Resources/demo.gif) -->
 
 ## Requirements
 * IOS 11 or above
