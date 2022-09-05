@@ -10,7 +10,7 @@
 * Xcode 12.5 or above
 
 ## Overview
-[How to use](#How to use)\
+[How to use](#How_to_use)\
 [Demo](#Demo)
 
 ## How to use
