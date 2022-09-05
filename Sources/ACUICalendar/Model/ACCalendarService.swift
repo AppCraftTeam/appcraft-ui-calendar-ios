@@ -30,8 +30,8 @@ public struct ACCalendarService {
     public init() {
         let calendar = Calendar.defaultACCalendar()
         let currentDate = Date()
-        let minDate = calendar.date(byAdding: .day, value: -2, to: currentDate) ?? currentDate
-        let maxDate = calendar.date(byAdding: .day, value: 2, to: currentDate) ?? currentDate
+        let minDate = calendar.date(byAdding: .year, value: -10, to: currentDate) ?? currentDate
+        let maxDate = calendar.date(byAdding: .year, value: 10, to: currentDate) ?? currentDate
         
         self.init(
             calendar: calendar,
