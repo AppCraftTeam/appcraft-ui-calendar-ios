@@ -15,6 +15,41 @@
 
 ## How to use
 
+Create a `ACCalendarView` and display it in the parent view:
+```swift
+var service = ACCalendarService()
+
+lazy var calendarView: ACCalendarView = {
+   let resutl = ACCalendarView(service: self.service)
+
+    result.didSelectDates = { [weak self] dates in
+        self.service.datesSelected = dates
+
+        // do something
+    }
+
+    return result
+}()
+
+override func viewDidLoad() {
+    super.viewDidLoad()
+        
+    let guide = self.view.safeAreaLayoutGuide
+        
+    self.calendarView.removeFromSuperview()
+    self.calendarView.translatesAutoresizingMaskIntoConstraints = false
+        
+    self.view.addSubview(self.calendarView)
+        
+     NSLayoutConstraint.activate([
+        self.calendarView.topAnchor.constraint(equalTo: guide.topAnchor),
+        self.calendarView.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+        self.calendarView.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
+        self.calendarView.heightAnchor.constraint(equalToConstant: 352)
+    ])
+}
+```
+
 ## Demo
 [Small project](/Demo) demonstrating the interaction of `ACUICalendar` modules in the application.
 
