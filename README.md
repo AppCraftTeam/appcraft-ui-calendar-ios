@@ -10,13 +10,10 @@
 * Xcode 12.5 or above
 
 ## Overview
-[ACCalendarService](#ACCalendarService)\
-[Views](#Strings)\
+[How to use](#How to use)\
 [Demo](#Demo)
 
-## ACCalendarService
-
-## Views
+## How to use
 
 ## Demo
 [Small project](/Demo) demonstrating the interaction of `ACUICalendar` modules in the application.
