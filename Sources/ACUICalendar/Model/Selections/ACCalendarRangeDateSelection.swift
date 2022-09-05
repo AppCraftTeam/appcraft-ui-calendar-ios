@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Select date range. Dates go strictly from smallest to largest in order.
 public struct ACCalendarRangeDateSelection: ACCalendarDateSelectionProtocol {
     
     // MARK: - Init

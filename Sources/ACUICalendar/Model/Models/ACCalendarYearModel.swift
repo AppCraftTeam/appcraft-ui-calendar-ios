@@ -7,8 +7,15 @@
 
 import Foundation
 
+/// Model for describing a calendar year.
 public struct ACCalendarYearModel {
+    
+    /// Year number.
     public let year: Int
+    
+    /// Year date.
     public let yearDate: Date
+    
+    /// All calendar months of the year.
     public let months: [ACCalendarMonthModel]
 }

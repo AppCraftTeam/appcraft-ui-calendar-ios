@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// A set of methods for working with calendar data.
 public struct ACCalendarService {
     
     // MARK: - Init
@@ -15,14 +16,12 @@ public struct ACCalendarService {
         minDate: Date,
         maxDate: Date,
         currentMonthDate: Date,
-        locale: Locale,
         selection: ACCalendarDateSelectionProtocol
     ) {
         self.calendar = calendar
         self.minDate = minDate
         self.maxDate = maxDate
         self.currentMonthDate = currentMonthDate
-        self.locale = locale
         self.selection = selection
         
         self.setupComponents()
@@ -31,36 +30,45 @@ public struct ACCalendarService {
     public init() {
         let calendar = Calendar.defaultACCalendar()
         let currentDate = Date()
-        let minDate = calendar.date(byAdding: .year, value: -10, to: currentDate) ?? currentDate
-        let maxDate = calendar.date(byAdding: .year, value: 10, to: currentDate) ?? currentDate
+        let minDate = calendar.date(byAdding: .day, value: -2, to: currentDate) ?? currentDate
+        let maxDate = calendar.date(byAdding: .day, value: 2, to: currentDate) ?? currentDate
         
         self.init(
             calendar: calendar,
             minDate: minDate,
             maxDate: maxDate,
             currentMonthDate: currentDate,
-            locale: .current,
             selection: ACCalendarSingleDateSelection(calendar: calendar, datesSelected: [])
         )
     }
 
     // MARK: - Props
+    
+    /// The current calendar, which is used for all calculations related to dates. When setting a new value, the `setupComponents()` method will be called.
     public var calendar: Calendar {
-        didSet { self.setupComponents() }
+        didSet {
+            guard self.calendar != oldValue else { return }
+            self.setupComponents()
+        }
     }
     
+    /// Minimum date. Starting from it, the data for the calendar will be calculated. When setting a new value, the `setupComponents()` method will be called.
     public var minDate: Date {
-        didSet { self.setupComponents() }
+        didSet {
+            guard self.minDate != oldValue else { return }
+            self.setupComponents()
+        }
     }
     
+    /// Maximum date. Calendar data will be calculated before it. When setting a new value, the `setupComponents()` method will be called.
     public var maxDate: Date {
-        didSet { self.setupComponents() }
+        didSet {
+            guard self.maxDate != oldValue else { return }
+            self.setupComponents()
+        }
     }
     
-    public var locale: Locale {
-        didSet { self.setupComponents() }
-    }
-    
+    /// Date of the currently displayed month
     public var currentMonthDate: Date
     
     public var selection: ACCalendarDateSelectionProtocol
@@ -76,6 +84,7 @@ public struct ACCalendarService {
     // MARK: - Methods
     public mutating func setupComponents() {
         self.selection.calendar = self.calendar
+        
         self.months = self.generateMonths()
         self.years = self.generateYears(from: self.months)
     }
@@ -90,7 +99,6 @@ extension ACCalendarService: Equatable {
         lhs.minDate == rhs.minDate &&
         lhs.maxDate == rhs.maxDate &&
         lhs.currentMonthDate == rhs.currentMonthDate &&
-        lhs.locale == rhs.locale &&
         lhs.selection.datesSelected == rhs.selection.datesSelected
     }
     
@@ -249,10 +257,12 @@ public extension ACCalendarService {
             }
         }
         
+        let locale = self.calendar.locale ?? .current
+        
         return ACCalendarDayModel(
             day: self.calendar.component(.day, from: dayDate),
             dayDate: dayDate,
-            dayDateText: dayDate.toLocalString(withFormatType: .day, locale: self.locale),
+            dayDateText: dayDate.toLocalString(withFormatType: .day, locale: locale),
             belongsToMonth: belongsToMonth
         )
     }
@@ -278,11 +288,21 @@ public extension ACCalendarService {
     }
     
     func daySelected(_ day: ACCalendarDayModel) -> ACCalendarDateSelectionType {
-        self.selection.dateSelected(day.dayDate)
+        let dayDate = day.dayDate
+        
+        if self.dateShouldSelect(dayDate) {
+            return self.selection.dateSelected(dayDate)
+        } else {
+            return .notAvailableSelect
+        }
     }
     
     mutating func daySelect(_ day: ACCalendarDayModel) {
-        guard day.belongsToMonth == .current else { return }
+        guard
+            day.belongsToMonth == .current,
+            self.dateShouldSelect(day.dayDate)
+        else { return }
+        
         self.selection.dateSelect(day.dayDate)
     }
     
@@ -318,6 +338,12 @@ public extension ACCalendarService {
         }
         
         return result
+    }
+    
+    func dateShouldSelect(_ date: Date) -> Bool {
+        (date.isLess(than: self.maxDate, toGranularity: .day, calendar: self.calendar) ||
+            date.isEqual(to: self.maxDate, toGranularity: .day, calendar: self.calendar)) &&
+        (date.isGreater(than: self.minDate, toGranularity: .day, calendar: self.calendar) || date.isEqual(to: self.minDate, toGranularity: .day, calendar: self.calendar))
     }
     
 }

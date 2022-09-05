@@ -23,6 +23,7 @@ public struct ACCalendarUITheme {
     public var dayNotCurrentMonthTextColor: UIColor = ACCalendarColor.textSecondaryColor
     public var dayCurrentMonthSelectedTextColor: UIColor = .black
     public var dayCurrentMonthNotSelectedTextColor: UIColor = ACCalendarColor.textPrimaryColor
+    public var dayCurrentMonthNotAvailableSelectTextColor: UIColor = ACCalendarColor.textSecondaryColor
     
     public var dayNotSelectedBackgroundColor: UIColor = .clear
     public var dayEdgeAtRangeBackgroundColor: UIColor = ACCalendarColor.accentPrimaryColor

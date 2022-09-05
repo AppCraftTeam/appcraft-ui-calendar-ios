@@ -133,6 +133,7 @@ extension ACCalendarMonthPickerView: UIPickerViewDataSource {
 extension ACCalendarMonthPickerView: UIPickerViewDelegate {
     
     public func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        let locale = self.service.calendar.locale ?? .current
         let label = view as? UILabel ?? UILabel()
         label.textAlignment = .center
         label.font = self.theme.monthPickerFont
@@ -143,11 +144,11 @@ extension ACCalendarMonthPickerView: UIPickerViewDelegate {
         switch type {
         case .month:
             let monthDate = self.months.element(at: row)?.monthDate
-            let monthText = monthDate?.toLocalString(withFormatType: .montLetters, locale: self.service.locale)
+            let monthText = monthDate?.toLocalString(withFormatType: .montLetters, locale: locale)
             label.text = monthText
         case .year:
             let yearDate = self.years.element(at: row)?.yearDate
-            let yearText = yearDate?.toLocalString(withFormatType: .year, locale: self.service.locale)
+            let yearText = yearDate?.toLocalString(withFormatType: .year, locale: locale)
             label.text = yearText
         }
         

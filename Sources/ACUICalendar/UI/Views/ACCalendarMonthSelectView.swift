@@ -85,7 +85,7 @@ open class ACCalendarMonthSelectView: ACCalendarBaseView {
     }
     
     open override func updateComponents() {
-        let locale = self.service.locale
+        let locale = self.service.calendar.locale ?? .current
         let monthDate = self.service.currentMonthDate
         
         let monthText = monthDate

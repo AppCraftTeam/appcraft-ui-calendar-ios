@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Selecting only one date.
 public struct ACCalendarSingleDateSelection: ACCalendarDateSelectionProtocol {
     
     // MARK: - Init

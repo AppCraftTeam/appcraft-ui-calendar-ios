@@ -39,7 +39,7 @@ open class ACCalendarWeekView: ACCalendarBaseView {
     
     open override func updateComponents() {
         let calendar = self.service.calendar
-        let locale = self.service.locale
+        let locale = self.service.calendar.locale ?? .current
         let weekDays = calendar.firstDPWeekDay.generateWeek()
         
         let views: [UIView] = weekDays.map { weekDay in

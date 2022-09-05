@@ -80,6 +80,8 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
     open func updateComponents() {
         guard let day = self.day else { return }
         
+        print("!!!", day.dayDateText, daySelection)
+        
         self.dayLabel.text = day.dayDateText
         self.dayLabel.font = self.theme.dayFont
         
@@ -100,11 +102,15 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
                 self.daySelectionView.backgroundColor = self.theme.dayEdgeAtRangeBackgroundColor
             case .endOfRange:
                 self.daySelectionView.backgroundColor = self.theme.dayEdgeAtRangeBackgroundColor
+            case .notAvailableSelect:
+                self.daySelectionView.backgroundColor = self.theme.dayNotSelectedBackgroundColor
             }
             
             switch self.daySelection {
             case .notSelected:
                 self.dayLabel.textColor = self.theme.dayCurrentMonthNotSelectedTextColor
+            case .notAvailableSelect:
+                self.dayLabel.textColor = self.theme.dayCurrentMonthNotAvailableSelectTextColor
             default:
                 self.dayLabel.textColor = self.theme.dayCurrentMonthSelectedTextColor
             }

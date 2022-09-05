@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Type of direction in the calendar.
 public enum ACCalendarDirection {
     case previous
     case next

@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Multiple date selection. The dates can be in any order.
 public struct ACCalendarMultiDateSelection: ACCalendarDateSelectionProtocol {
     
     // MARK: - Init
