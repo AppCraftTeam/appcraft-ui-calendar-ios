@@ -31,6 +31,9 @@ class CalendarViewController: UIViewController {
     
     var didTapCancel: Closure?
     var didTapDone: ContextClosure<ACCalendarService>?
+    
+    var scrollDirection: UICollectionView.ScrollDirection = .horizontal
+    var showsCurrentDaysInMonth = false
 
     // MARK: - Methods
     override func viewDidLoad() {
@@ -49,11 +52,19 @@ class CalendarViewController: UIViewController {
             self.calendarView.topAnchor.constraint(equalTo: guide.topAnchor),
             self.calendarView.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
             self.calendarView.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
-            self.calendarView.heightAnchor.constraint(equalToConstant: 352)
+//            self.calendarView.heightAnchor.constraint(equalToConstant: 352),
+            self.calendarView.bottomAnchor.constraint(equalTo: guide.bottomAnchor)
+
         ])
         
         self.navigationItem.leftBarButtonItem = .init(title: "Cancel", style: .plain, target: self, action: #selector(self.handleTapCancel))
         self.navigationItem.rightBarButtonItem = .init(title: "Done", style: .plain, target: self, action: #selector(self.handleTapDone))
+        
+        self.calendarView.dayCollectionView.setCollectionViewLayout(
+            scrollDirection == .horizontal ? .horizontal : .vertical,
+            animated: true
+        )
+        self.calendarView.dayCollectionView.showsOnlyCurrentDaysInMonth = showsCurrentDaysInMonth
     }
     
     @objc

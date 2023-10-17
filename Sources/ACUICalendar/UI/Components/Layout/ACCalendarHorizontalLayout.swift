@@ -8,23 +8,14 @@
 import Foundation
 import UIKit
 
-open class ACCalendarHorizontalLayout: UICollectionViewFlowLayout {
+open class ACCalendarHorizontalLayout: ACCalendarBaseLayout {
     
-    // MARK: - Props
-    open var attributesCashe: [UICollectionViewLayoutAttributes] = []
-    open var contentSize: CGSize = .zero
-    
-    open override var collectionViewContentSize: CGSize {
-        self.contentSize
-    }
-    
-    // MARK: - Methods
     open override func prepare() {
         super.prepare()
-        
-        guard let collectionView = self.collectionView else { return }
-        self.attributesCashe.removeAll()
-        
+        guard let collectionView else { return }
+        self.scrollDirection = .horizontal
+        collectionView.isPagingEnabled = true
+                
         let sectionWidth: CGFloat = collectionView.frame.width
         let sectionHeight: CGFloat = collectionView.frame.height
         let collumnsCount: Int = 7
@@ -39,7 +30,7 @@ open class ACCalendarHorizontalLayout: UICollectionViewFlowLayout {
             
             var currentColumn: Int = 0
             var currentRow: Int = 0
-
+            
             for item in 0..<numberOfItems {
                 let x = itemWidth * CGFloat(currentColumn) + contentX
                 let y = itemHeight * CGFloat(currentRow)
@@ -49,7 +40,7 @@ open class ACCalendarHorizontalLayout: UICollectionViewFlowLayout {
                 
                 let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
                 attributes.frame = frame
-                self.attributesCashe += [attributes]
+                self.itemLayoutAttributes += [attributes]
                 
                 if currentColumn >= collumnsCount - 1 {
                     currentColumn = 0
@@ -61,22 +52,6 @@ open class ACCalendarHorizontalLayout: UICollectionViewFlowLayout {
             
             contentX += sectionWidth
         }
-        
         self.contentSize = .init(width: contentX, height: sectionHeight)
     }
-    
-    open override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        self.attributesCashe.first(where: { $0.indexPath == indexPath })
-    }
-    
-    open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        var visibleLayoutAttributes: [UICollectionViewLayoutAttributes] = []
-      
-        for attributes in self.attributesCashe where attributes.frame.intersects(rect) {
-            visibleLayoutAttributes.append(attributes)
-        }
-        
-        return visibleLayoutAttributes
-    }
-    
 }

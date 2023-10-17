@@ -8,7 +8,7 @@
 import Foundation
 
 /// A set of methods for working with calendar data.
-public struct ACCalendarService {
+public class ACCalendarService {
     
     // MARK: - Init
     public init(
@@ -27,7 +27,7 @@ public struct ACCalendarService {
         self.setupComponents()
     }
     
-    public init() {
+    public convenience init() {
         let calendar = Calendar.defaultACCalendar()
         let currentDate = Date()
         let minDate = calendar.date(byAdding: .year, value: -10, to: currentDate) ?? currentDate
@@ -82,7 +82,7 @@ public struct ACCalendarService {
     }
     
     // MARK: - Methods
-    public mutating func setupComponents() {
+    public func setupComponents() {
         self.selection.calendar = self.calendar
         
         self.months = self.generateMonths()
@@ -297,7 +297,7 @@ public extension ACCalendarService {
         }
     }
     
-    mutating func daySelect(_ day: ACCalendarDayModel) {
+    func daySelect(_ day: ACCalendarDayModel) {
         guard
             day.belongsToMonth == .current,
             self.dateShouldSelect(day.dayDate)
@@ -342,8 +342,19 @@ public extension ACCalendarService {
     
     func dateShouldSelect(_ date: Date) -> Bool {
         (date.isLess(than: self.maxDate, toGranularity: .day, calendar: self.calendar) ||
-            date.isEqual(to: self.maxDate, toGranularity: .day, calendar: self.calendar)) &&
+         date.isEqual(to: self.maxDate, toGranularity: .day, calendar: self.calendar)) &&
         (date.isGreater(than: self.minDate, toGranularity: .day, calendar: self.calendar) || date.isEqual(to: self.minDate, toGranularity: .day, calendar: self.calendar))
     }
     
+}
+
+func measure(_ title: String = #function, block: (@escaping () -> ()) -> ()) {
+    
+    let startTime = DispatchTime.now().uptimeNanoseconds
+    
+    block {
+        let timeElapsed = Double(DispatchTime.now().uptimeNanoseconds - startTime) / 1e9
+        
+        NSLog("[Measure] - [\(title)]: Time: \(timeElapsed) seconds")
+    }
 }
