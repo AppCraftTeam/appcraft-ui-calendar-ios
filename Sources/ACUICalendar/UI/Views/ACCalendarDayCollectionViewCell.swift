@@ -41,6 +41,11 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
         return result
     }()
     
+    open var dayIsHidden: Bool {
+        get { dayLabel.alpha.isZero }
+        set { dayLabel.alpha = newValue ? 0 : 1 }
+    }
+    
     open var day: ACCalendarDayModel? {
         didSet { self.updateComponents() }
     }
@@ -80,7 +85,7 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
     open func updateComponents() {
         guard let day = self.day else { return }
         
-        print("!!!", day.dayDateText, daySelection)
+        // print("!!!", day.dayDateText, daySelection)
         
         self.dayLabel.text = day.dayDateText
         self.dayLabel.font = self.theme.dayFont
@@ -117,4 +122,9 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    open override func prepareForReuse() {
+        super.prepareForReuse()
+        self.dayLabel.text = nil
+        self.dayLabel.textColor = .black
+    }
 }

@@ -44,6 +44,7 @@ open class ACCalendarView: ACCalendarBaseView {
         
         result.didScrollToMonth = { [weak self] monthDate in
             self?.service.currentMonthDate = monthDate
+            self?.monthSelectView.updateMonthDateLabel()
         }
         
         result.didSelectDates = { [weak self] dates in

@@ -84,7 +84,7 @@ open class ACCalendarMonthSelectView: ACCalendarBaseView {
         self.updateComponents()
     }
     
-    open override func updateComponents() {
+    func updateMonthDateLabel() {
         let locale = self.service.calendar.locale ?? .current
         let monthDate = self.service.currentMonthDate
         
@@ -93,9 +93,12 @@ open class ACCalendarMonthSelectView: ACCalendarBaseView {
             .capitalizingFirstLetter()
         
         self.monthDateLabel.text = monthText
-        
-        self.monthDateLabel.textColor = self.theme.monthSelectDateTextColor
+    }
+    
+    open override func updateComponents() {
+        self.updateMonthDateLabel()
         self.monthDateLabel.font = self.theme.monthSelectDateFont
+        self.monthDateLabel.textColor = self.theme.monthSelectDateTextColor
         self.arrowImageView.tintColor = self.theme.monthSelectArrowImageTintColor
         
         let arrowImageTransform: CGAffineTransform = self.isOn ? CGAffineTransform(rotationAngle: CGFloat.pi / 2) : .identity

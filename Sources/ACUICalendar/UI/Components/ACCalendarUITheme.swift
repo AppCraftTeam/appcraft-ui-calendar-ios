@@ -9,29 +9,30 @@ import Foundation
 import UIKit
 
 public struct ACCalendarUITheme {
-    public var backgroundColor: UIColor = ACCalendarColor.backgroundColor
     
-    public var monthSelectDateTextColor: UIColor = ACCalendarColor.textPrimaryColor
+    public var backgroundColor: UIColor = .assetColor(name: "background")
+
+    public var monthSelectDateTextColor: UIColor = .assetColor(name: "textPrimary")
     public var monthSelectDateFont: UIFont = .systemFont(ofSize: 18, weight: .semibold)
-    public var monthSelectArrowImageTintColor: UIColor = ACCalendarColor.textPrimaryColor
+    public var monthSelectArrowImageTintColor: UIColor = .assetColor(name: "textPrimary")
     
-    public var arrowsTintColor: UIColor = ACCalendarColor.textPrimaryColor
+    public var arrowsTintColor: UIColor = .assetColor(name: "textPrimary")
     
-    public var weekDayTextColor: UIColor = ACCalendarColor.textSecondaryColor
+    public var weekDayTextColor: UIColor = .assetColor(name: "textSecondary")
     public var weekDayFont: UIFont = .systemFont(ofSize: 14)
     
-    public var dayNotCurrentMonthTextColor: UIColor = ACCalendarColor.textSecondaryColor
+    public var dayNotCurrentMonthTextColor: UIColor = .assetColor(name: "textSecondary")
     public var dayCurrentMonthSelectedTextColor: UIColor = .black
-    public var dayCurrentMonthNotSelectedTextColor: UIColor = ACCalendarColor.textPrimaryColor
-    public var dayCurrentMonthNotAvailableSelectTextColor: UIColor = ACCalendarColor.textSecondaryColor
+    public var dayCurrentMonthNotSelectedTextColor: UIColor = .assetColor(name: "textPrimary")
+    public var dayCurrentMonthNotAvailableSelectTextColor: UIColor = .assetColor(name: "textSecondary")
     
     public var dayNotSelectedBackgroundColor: UIColor = .clear
-    public var dayEdgeAtRangeBackgroundColor: UIColor = ACCalendarColor.accentPrimaryColor
-    public var dayMiddleAtRangeBackgroundColor: UIColor = ACCalendarColor.accentSecondaryColor
+    public var dayEdgeAtRangeBackgroundColor: UIColor = .assetColor(name: "accentPrimary")
+    public var dayMiddleAtRangeBackgroundColor: UIColor = .assetColor(name: "accentSecondary")
     public var dayFont: UIFont = .systemFont(ofSize: 20, weight: .regular)
     
-    public var monthPickerSelectedBackgroundColor: UIColor = ACCalendarColor.accentPrimaryColor
+    public var monthPickerSelectedBackgroundColor: UIColor = .assetColor(name: "accentPrimary")
     public var monthPickerFont: UIFont = .systemFont(ofSize: 23, weight: .regular)
-    public var monthPickerTextColor: UIColor = ACCalendarColor.textPrimaryColor
+    public var monthPickerTextColor: UIColor = .assetColor(name: "textPrimary")
 }
 

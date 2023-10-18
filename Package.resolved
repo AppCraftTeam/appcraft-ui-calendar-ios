@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "dpswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DPLibs/DPSwift.git",
+      "state" : {
+        "revision" : "e64c85582b9b5f5cec7243a24396736c98aea2bb",
+        "version" : "3.0.0"
+      }
+    },
+    {
+      "identity" : "keychain-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/evgenyneu/keychain-swift.git",
+      "state" : {
+        "revision" : "96fb84f45a96630e7583903bd7e08cf095c7a7ef",
+        "version" : "19.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}

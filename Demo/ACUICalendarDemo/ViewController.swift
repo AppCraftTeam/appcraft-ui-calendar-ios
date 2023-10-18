@@ -16,7 +16,6 @@ class ViewController: UIViewController {
         let result = UIButton(type: .system)
         result.setTitle("Select dates", for: .normal)
         result.addTarget(self, action: #selector(self.handleTapDatesButton), for: .touchUpInside)
-        
         return result
     }()
     
@@ -29,6 +28,8 @@ class ViewController: UIViewController {
         
         return result
     }()
+    
+    lazy var positionSegmentControl = UISegmentedControl(items: ["Horizontal", "Vertical"])
     
     var service = ACCalendarService() {
         didSet { self.updateComponents() }
@@ -60,6 +61,10 @@ class ViewController: UIViewController {
     
     var selectionNames: [ACCalendarDateSelectionName] = [.single, .multi, .range]
     
+    var scrollDirection: UICollectionView.ScrollDirection = .horizontal
+    
+    var showsCurrentDaysInMonth = false
+    
     // MARK: - Methods
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,7 +77,21 @@ class ViewController: UIViewController {
         dateSelectStackView.spacing = 16
         dateSelectStackView.distribution = .fillEqually
         
-        let stackView = UIStackView(arrangedSubviews: [dateSelectStackView, self.selectionNamesView, .init()])
+        let stackView = UIStackView(arrangedSubviews: [
+            dateSelectStackView,
+            makeTitleLabel("Selection type: "),
+            selectionNamesView,
+            makeTitleLabel("Position: "),
+            positionSegmentControl,
+            makeTitleLabel("Content visibility: "),
+            makeTitleWithSwitch(
+                text: "Shows only current days in month",
+                isOn: showsCurrentDaysInMonth,
+                onAction: { [weak self] (val) in
+                    self?.showsCurrentDaysInMonth = val
+            })
+        ])
+        
         stackView.axis = .vertical
         stackView.spacing = 16
         stackView.removeFromSuperview()
@@ -82,10 +101,12 @@ class ViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: guide.topAnchor, constant: 16),
-            stackView.bottomAnchor.constraint(equalTo: guide.bottomAnchor, constant: -16),
+            stackView.bottomAnchor.constraint(lessThanOrEqualTo: guide.bottomAnchor, constant: -16),
             stackView.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: 16),
             stackView.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -16)
         ])
+        
+        self.positionSegmentControl.addTarget(self, action: #selector(positionSegmentChanged(_:)), for: .valueChanged)
         
         self.updateComponents()
     }
@@ -116,24 +137,26 @@ class ViewController: UIViewController {
         let selectionNamesViews: [UIView] = self.selectionNames.map { name in
             let button = UIButton(type: .system)
             button.setTitle(name.identifer.capitalizingFirstLetter(), for: .normal)
-            
-            if name != self.selectionName {
-                button.setTitleColor(ACCalendarColor.textPrimaryColor, for: .normal)
-            }
-            
+            button.setTitleColor(name == selectionName ? .systemBlue : ACCalendarColor.textPrimaryColor, for: .normal)
             button.addTarget(self, action: #selector(self.handleTapSelectionNameView(_:)), for: .touchUpInside)
             return button
         }
         
         self.selectionNamesView.subviews.forEach({ $0.removeFromSuperview() })
         selectionNamesViews.forEach({ self.selectionNamesView.addArrangedSubview($0) })
+        
+        self.positionSegmentControl.selectedSegmentIndex = scrollDirection == .horizontal ? 0 : 1
     }
     
     @objc
     private func handleTapDatesButton() {
-        let vc = CalendarViewController(service: self.service)
+        let vc = CalendarViewController(
+            service: self.service,
+            height: scrollDirection == .horizontal ? .percent(0.4) : .fullscreen
+        )
         let nc = UINavigationController(rootViewController: vc)
-        
+        vc.scrollDirection = scrollDirection
+        vc.showsCurrentDaysInMonth = showsCurrentDaysInMonth
         vc.didTapDone = { [weak self, weak nc] service in
             self?.service = service
             nc?.dismiss(animated: true)
@@ -154,6 +177,58 @@ class ViewController: UIViewController {
         else { return }
         
         self.selectionName = name
+        self.reloadButtonStyles()
     }
     
+    private func reloadButtonStyles() {
+        let index = selectionNames.firstIndex(of: selectionName) ?? 0
+        let buttons = selectionNamesView.arrangedSubviews as? [UIButton] ?? []
+        
+        for (idx, button) in buttons.enumerated() {
+            button.setTitleColor(idx == index ? .systemBlue : ACCalendarColor.textPrimaryColor, for: .normal)
+        }
+    }
+     
+    @objc private
+    func positionSegmentChanged(_ control: UISegmentedControl) {
+        self.scrollDirection = {
+            control.selectedSegmentIndex == 0 ? .horizontal : .vertical
+        }()
+    }
+    
+    // MARK: - Component fabrication
+    
+    private func makeTitleLabel(_ text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        return label
+    }
+    
+    private func makeTitleWithSwitch(text: String, isOn: Bool, onAction: ((Bool) -> Void)?) -> UIView {
+        let view = UIView()
+        
+        let label = UILabel()
+        label.text = text
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        
+        let switchControl = ActionSwitchControl(isOn: isOn, onAction: onAction)
+        
+        view.addSubview(label)
+        view.addSubview(switchControl)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        switchControl.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: view.topAnchor),
+            label.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: switchControl.leadingAnchor),
+            
+            switchControl.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            switchControl.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        return view
+    }
 }
+
