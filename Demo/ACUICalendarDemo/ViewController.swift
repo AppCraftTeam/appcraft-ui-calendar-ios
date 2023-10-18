@@ -16,7 +16,6 @@ class ViewController: UIViewController {
         let result = UIButton(type: .system)
         result.setTitle("Select dates", for: .normal)
         result.addTarget(self, action: #selector(self.handleTapDatesButton), for: .touchUpInside)
-        
         return result
     }()
     
@@ -90,8 +89,7 @@ class ViewController: UIViewController {
                 isOn: showsCurrentDaysInMonth,
                 onAction: { [weak self] (val) in
                     self?.showsCurrentDaysInMonth = val
-            }),
-            makeTitleLabel("Geometry: ")
+            })
         ])
         
         stackView.axis = .vertical
@@ -139,11 +137,7 @@ class ViewController: UIViewController {
         let selectionNamesViews: [UIView] = self.selectionNames.map { name in
             let button = UIButton(type: .system)
             button.setTitle(name.identifer.capitalizingFirstLetter(), for: .normal)
-            
-            if name != self.selectionName {
-                button.setTitleColor(ACCalendarColor.textPrimaryColor, for: .normal)
-            }
-            
+            button.setTitleColor(name == selectionName ? .systemBlue : ACCalendarColor.textPrimaryColor, for: .normal)
             button.addTarget(self, action: #selector(self.handleTapSelectionNameView(_:)), for: .touchUpInside)
             return button
         }
@@ -156,7 +150,10 @@ class ViewController: UIViewController {
     
     @objc
     private func handleTapDatesButton() {
-        let vc = CalendarViewController(service: self.service)
+        let vc = CalendarViewController(
+            service: self.service,
+            height: scrollDirection == .horizontal ? .percent(0.4) : .fullscreen
+        )
         let nc = UINavigationController(rootViewController: vc)
         vc.scrollDirection = scrollDirection
         vc.showsCurrentDaysInMonth = showsCurrentDaysInMonth
@@ -180,8 +177,18 @@ class ViewController: UIViewController {
         else { return }
         
         self.selectionName = name
+        self.reloadButtonStyles()
     }
     
+    private func reloadButtonStyles() {
+        let index = selectionNames.firstIndex(of: selectionName) ?? 0
+        let buttons = selectionNamesView.arrangedSubviews as? [UIButton] ?? []
+        
+        for (idx, button) in buttons.enumerated() {
+            button.setTitleColor(idx == index ? .systemBlue : ACCalendarColor.textPrimaryColor, for: .normal)
+        }
+    }
+     
     @objc private
     func positionSegmentChanged(_ control: UISegmentedControl) {
         self.scrollDirection = {

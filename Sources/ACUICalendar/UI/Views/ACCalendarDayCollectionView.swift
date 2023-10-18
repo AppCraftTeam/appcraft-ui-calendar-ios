@@ -221,8 +221,9 @@ extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
     }
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let day = self.months.element(at: indexPath.section)?.days.element(at: indexPath.item) else { return }
+        guard let day = months.element(at: indexPath.section)?.days.element(at: indexPath.item) else { return }
         self.service.daySelect(day)
         self.didSelectDates?(self.service.datesSelected)
+        self.collectionView.reloadData()
     }
 }
