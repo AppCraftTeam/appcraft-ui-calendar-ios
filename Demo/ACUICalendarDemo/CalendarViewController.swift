@@ -45,10 +45,10 @@ class CalendarViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = ACCalendarColor.backgroundColor
+        self.view.backgroundColor = .white
         
         let guide = self.view.safeAreaLayoutGuide
-        
+        self.calendarView.backgroundColor = .white
         self.calendarView.removeFromSuperview()
         self.calendarView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -73,7 +73,7 @@ class CalendarViewController: UIViewController {
         self.navigationItem.rightBarButtonItem = .init(title: "Done", style: .plain, target: self, action: #selector(self.handleTapDone))
         
         self.calendarView.dayCollectionView.setCollectionViewLayout(
-            scrollDirection == .horizontal ? .horizontal : .vertical(),
+            scrollDirection == .horizontal ? .horizontal() : .vertical(),
             animated: true
         )
         self.calendarView.dayCollectionView.showsOnlyCurrentDaysInMonth = showsCurrentDaysInMonth

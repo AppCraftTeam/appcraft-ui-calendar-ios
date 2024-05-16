@@ -69,7 +69,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = ACCalendarColor.backgroundColor
+        self.view.backgroundColor = .white
         let guide = self.view.safeAreaLayoutGuide
         
         let dateSelectStackView = UIStackView(arrangedSubviews: [self.datesLabel, self.datesButton])
@@ -137,7 +137,7 @@ class ViewController: UIViewController {
         let selectionNamesViews: [UIView] = self.selectionNames.map { name in
             let button = UIButton(type: .system)
             button.setTitle(name.identifer.capitalizingFirstLetter(), for: .normal)
-            button.setTitleColor(name == selectionName ? .systemBlue : ACCalendarColor.textPrimaryColor, for: .normal)
+            button.setTitleColor(name == selectionName ? .systemBlue : .systemGray, for: .normal)
             button.addTarget(self, action: #selector(self.handleTapSelectionNameView(_:)), for: .touchUpInside)
             return button
         }
@@ -165,7 +165,7 @@ class ViewController: UIViewController {
         vc.didTapCancel = { [weak nc] in
             nc?.dismiss(animated: true)
         }
-        
+        vc.isModalInPresentation = true
         self.present(nc, animated: true)
     }
     
@@ -185,7 +185,7 @@ class ViewController: UIViewController {
         let buttons = selectionNamesView.arrangedSubviews as? [UIButton] ?? []
         
         for (idx, button) in buttons.enumerated() {
-            button.setTitleColor(idx == index ? .systemBlue : ACCalendarColor.textPrimaryColor, for: .normal)
+            button.setTitleColor(idx == index ? .systemBlue : .systemGray, for: .normal)
         }
     }
      
@@ -202,6 +202,7 @@ class ViewController: UIViewController {
         let label = UILabel()
         label.text = text
         label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.textColor = .black
         return label
     }
     
@@ -211,7 +212,7 @@ class ViewController: UIViewController {
         let label = UILabel()
         label.text = text
         label.font = .systemFont(ofSize: 14, weight: .regular)
-        
+        label.textColor = .black
         let switchControl = ActionSwitchControl(isOn: isOn, onAction: onAction)
         
         view.addSubview(label)
