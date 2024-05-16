@@ -29,6 +29,7 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
     open override func prepare() {
         super.prepare()
         guard let collectionView else { return }
+        self.resetLayoutAttributes()
         self.scrollDirection = .vertical
         
         let sectionWidth: CGFloat = collectionView.frame.width

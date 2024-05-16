@@ -84,9 +84,7 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
     
     open func updateComponents() {
         guard let day = self.day else { return }
-        
-        // print("!!!", day.dayDateText, daySelection)
-        
+                
         self.dayLabel.text = day.dayDateText
         self.dayLabel.font = self.theme.dayFont
         

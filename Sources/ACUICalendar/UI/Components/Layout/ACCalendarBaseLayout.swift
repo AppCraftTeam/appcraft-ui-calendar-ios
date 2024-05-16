@@ -20,6 +20,11 @@ open class ACCalendarBaseLayout: UICollectionViewFlowLayout {
         self.contentSize
     }
     
+    open func resetLayoutAttributes() {
+        self.itemLayoutAttributes.removeAll()
+        self.headerLayoutAttributes.removeAll()
+    }
+    
     // MARK: - Layout methods
         
     open override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {

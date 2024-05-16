@@ -53,7 +53,7 @@ open class ACCalendarMonthSelectView: ACCalendarBaseView {
         super.touchesEnded(touches, with: event)
         
         self.setHighlighted(false)
-        
+
         self.isOn.toggle()
         self.didToggle?(self.isOn)
     }
@@ -61,10 +61,10 @@ open class ACCalendarMonthSelectView: ACCalendarBaseView {
     open override func setupComponents() {
         self.monthDateLabel.removeFromSuperview()
         self.monthDateLabel.translatesAutoresizingMaskIntoConstraints = false
-        
+
         self.arrowImageView.removeFromSuperview()
         self.arrowImageView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         self.addSubview(self.monthDateLabel)
         self.addSubview(self.arrowImageView)
         
