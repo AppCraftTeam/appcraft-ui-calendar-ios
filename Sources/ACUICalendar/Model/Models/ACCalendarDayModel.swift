@@ -22,3 +22,10 @@ public struct ACCalendarDayModel {
     /// Month match.
     public let belongsToMonth: ACCalendarBelongsToMonth
 }
+
+extension ACCalendarDayModel: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.day == rhs.day && lhs.dayDate == rhs.dayDate && lhs.dayDateText == rhs.dayDateText && lhs.belongsToMonth == rhs.belongsToMonth
+    }
+
+}

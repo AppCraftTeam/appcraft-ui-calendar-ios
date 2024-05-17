@@ -39,8 +39,8 @@ public class ACCalendarService {
     public convenience init(isInfinity: Bool = false) {
         let calendar = Calendar.defaultACCalendar()
         let currentDate = Date()
-        let minDate = calendar.date(byAdding: .year, value: -10, to: currentDate) ?? currentDate
-        let maxDate = calendar.date(byAdding: .year, value: 10, to: currentDate) ?? currentDate
+        let minDate = calendar.date(byAdding: .year, value: -2, to: currentDate) ?? currentDate
+        let maxDate = calendar.date(byAdding: .year, value: 2, to: currentDate) ?? currentDate
         
         self.init(
             calendar: calendar,
@@ -50,9 +50,8 @@ public class ACCalendarService {
             selection: ACCalendarSingleDateSelection(calendar: calendar, datesSelected: [])
         )
     }
-
-    // MARK: - Props
-
+    
+    // MARK: - Props    
     lazy var pastMonthGenerator = PastMonthGenerator(
         calendar: calendar,
         currentDate: currentMonthDate,

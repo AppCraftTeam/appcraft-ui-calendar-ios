@@ -36,6 +36,7 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
     
     open lazy var daySelectionView: UIView = {
         let result = UIView()
+        result.layer.cornerRadius = 20
         return result
     }()
     
@@ -73,8 +74,8 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
             self.dayLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
             self.dayLabel.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
             
-            self.daySelectionView.widthAnchor.constraint(equalTo: self.contentView.heightAnchor),
-            self.daySelectionView.heightAnchor.constraint(equalTo: self.contentView.heightAnchor),
+            self.daySelectionView.widthAnchor.constraint(equalToConstant: 40),
+            self.daySelectionView.heightAnchor.constraint(equalToConstant: 40),
             self.daySelectionView.centerXAnchor.constraint(equalTo: self.dayLabel.centerXAnchor),
             self.daySelectionView.centerYAnchor.constraint(equalTo: self.dayLabel.centerYAnchor)
         ])
@@ -116,12 +117,6 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
                 self.dayLabel.textColor = self.theme.dayCurrentMonthSelectedTextColor
             }
         }
-    }
-    
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        self.daySelectionView.layer.cornerRadius = self.contentView.bounds.height / 2
-
     }
     
     open override func prepareForReuse() {
