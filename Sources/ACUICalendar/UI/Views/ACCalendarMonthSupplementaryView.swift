@@ -76,7 +76,7 @@ open class ACCalendarMonthSupplementaryView: UICollectionReusableView {
             guard let superview else { return }
             let width = superview.frame.width / 7
             let widthString = label.intrinsicContentSize.width
-            let leftInset = width * Double(model.previousMonthDates.count) + (width / 2)
+            let leftInset = width * Double(model.previousMonthDates.count) 
             
             if self.frame.width - leftInset > widthString {
                 self.labelLeadingConstraint?.constant = leftInset

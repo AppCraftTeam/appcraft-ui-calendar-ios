@@ -39,8 +39,6 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     open var showsOnlyCurrentDaysInMonth = false {
         didSet { collectionView.reloadData() }
     }
-    var lastContentOffset: CGPoint?
-    var isFirstPresentationSumplmentaryView = true
     
     open var monthHeader: ACMonthHeader? = .init(
         style: .default,
@@ -149,7 +147,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     
     // MARK: - Inserts
     func insertPastMonths() {
-        let objects = self.service.generatePastMonths(count: 10)
+        let objects = service.generatePastMonths(count: 8)
         
         if !objects.isEmpty {
             self.collectionView.reloadDataAndKeepOffset()
@@ -157,7 +155,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }
     
     func insertFutureMonths() {
-        let objects = self.service.generateFutureMonths(count: 2)
+        let objects = service.generateFutureMonths(count: 8)
         
         if !objects.isEmpty {
             self.collectionView.reloadData()
