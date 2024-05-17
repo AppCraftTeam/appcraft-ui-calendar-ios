@@ -53,21 +53,22 @@ open class ACCalendarView: ACCalendarBaseView {
         
         return result
     }()
-    
+
     open lazy var monthPickerView: ACCalendarMonthPickerView = {
         let result = ACCalendarMonthPickerView(service: self.service)
         
         result.didSelectMonth = { [weak self] monthDate in
             self?.service.currentMonthDate = monthDate
+            self?.dayCollectionView.scrollToMonth(with: monthDate, animated: false)
         }
-        
+
         return result
     }()
     
     open var contentInsets = NSDirectionalEdgeInsets(top: 16, leading: 16, bottom: -16, trailing: -16) {
         didSet { self.setupContentView() }
     }
-    
+
     // MARK: - Methods
     open override func setupComponents() {
         self.setupContentView()

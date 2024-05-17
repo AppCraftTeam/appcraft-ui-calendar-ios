@@ -135,18 +135,18 @@ public extension ACCalendarService {
             self.pastMonthGenerator.next()
         }
         if !months.isEmpty {
-            years.insert(contentsOf: generateYears(from: months), at: 0)
+            years = generateYears(from: self.months)
         }
         return months
     }
-    
+
     @discardableResult
     func generateFutureMonths(count: Int = 2) -> [ACCalendarMonthModel] {
         let months = (0...count + 1).compactMap { _ in
             self.futureMonthGenerator.next()
         }
         if !months.isEmpty {
-            years.append(contentsOf: generateYears(from: months))
+           years = generateYears(from: self.months)
         }
         return months
     }

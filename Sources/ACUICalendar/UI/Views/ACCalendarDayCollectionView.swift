@@ -134,9 +134,11 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
         }
         
         guard let index = self.months.firstIndex(where: { isEqual($0) }) else { return }
+        
         let position: UICollectionView.ScrollPosition = {
-            collectionViewLayout.scrollDirection == .vertical ? .centeredVertically : .left
+            collectionViewLayout.scrollDirection == .vertical ? .top : .left
         }()
+        
         self.collectionView.scrollToItem(at: .init(item: 0, section: index), at: position, animated: animated)
     }
     
