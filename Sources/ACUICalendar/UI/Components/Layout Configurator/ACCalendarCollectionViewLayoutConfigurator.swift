@@ -13,13 +13,14 @@ public protocol ACCalendarCollectionViewLayoutConfigurator {
     func makeInsertionRules() -> ACDateInsertRules?
 }
 
-// MARK: - Fabrications
-extension ACCalendarCollectionViewLayoutConfigurator {
-    static func vertical() -> ACCalendarVerticalCollectionViewLayoutConfigurtor {
-        ACCalendarVerticalCollectionViewLayoutConfigurtor()
+// MARK: - Fabrication
+public extension ACCalendarCollectionViewLayoutConfigurator where Self == ACCalendarVerticalCollectionViewLayoutConfigurator {
+    static func vertical() -> Self {
+        ACCalendarVerticalCollectionViewLayoutConfigurator()
     }
-    
-    static func horizontal() -> ACCalendarHorizontalCollectionViewLayoutConfigurtor {
-        ACCalendarHorizontalCollectionViewLayoutConfigurtor()
+}
+public extension ACCalendarCollectionViewLayoutConfigurator where Self == ACCalendarHorizontalCollectionViewLayoutConfigurator {
+    static func horizontal() -> Self {
+        ACCalendarHorizontalCollectionViewLayoutConfigurator()
     }
 }

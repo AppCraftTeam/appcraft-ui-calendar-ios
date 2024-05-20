@@ -15,7 +15,7 @@ open class MonthGenerator: IteratorProtocol {
 
     public let calendar: Calendar
 
-    init(calendar: Calendar) {
+    public init(calendar: Calendar) {
         self.calendar = calendar
     }
 

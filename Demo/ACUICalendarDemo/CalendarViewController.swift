@@ -47,10 +47,10 @@ class CalendarViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = ACCalendarUITheme().backgroundColor
         
         let guide = self.view.safeAreaLayoutGuide
-        self.calendarView.backgroundColor = .white
+        self.calendarView.backgroundColor = ACCalendarUITheme().backgroundColor
         self.calendarView.removeFromSuperview()
         self.calendarView.translatesAutoresizingMaskIntoConstraints = false
         

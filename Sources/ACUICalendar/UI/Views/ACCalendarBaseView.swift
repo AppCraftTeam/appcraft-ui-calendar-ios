@@ -20,7 +20,7 @@ open class ACCalendarBaseView: UIView {
     }
     
     public override init(frame: CGRect) {
-        self.service = ACCalendarService()
+        self.service = ACCalendarService.default()
         
         super.init(frame: frame)
         
@@ -28,7 +28,7 @@ open class ACCalendarBaseView: UIView {
     }
     
     public required init?(coder: NSCoder) {
-        self.service = ACCalendarService()
+        self.service = ACCalendarService.default()
         
         super.init(coder: coder)
         

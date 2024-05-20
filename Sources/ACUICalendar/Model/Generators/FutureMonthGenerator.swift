@@ -7,12 +7,12 @@
 
 import Foundation
 
-class FutureMonthGenerator: MonthGenerator {
+open class FutureMonthGenerator: MonthGenerator {
 
-    let maxDate: Date?
-    let currentDate: Date
+    public let maxDate: Date?
+    public let currentDate: Date
     
-    init(calendar: Calendar, currentDate: Date,  maxDate: Date? = nil) {
+    public init(calendar: Calendar, currentDate: Date,  maxDate: Date? = nil) {
         self.maxDate = maxDate
         self.currentDate = currentDate
         super.init(calendar: calendar)
@@ -22,7 +22,7 @@ class FutureMonthGenerator: MonthGenerator {
     }
     
     @discardableResult
-    public override func next() -> ACCalendarMonthModel? {
+    open override func next() -> ACCalendarMonthModel? {
         let lastMaxDate = self.months.last?.monthDate ?? currentDate
 
         guard let nextDate = calendar.date(byAdding: .month, value: 1, to: lastMaxDate) else {

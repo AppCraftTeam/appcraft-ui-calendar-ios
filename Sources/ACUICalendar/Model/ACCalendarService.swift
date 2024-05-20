@@ -26,21 +26,6 @@ public class ACCalendarService {
         self.setupComponents()
     }
 
-    public convenience init(isInfinity: Bool = false) {
-        let calendar = Calendar.defaultACCalendar()
-        let currentDate = Date()
-        let minDate = calendar.date(byAdding: .year, value: -2, to: currentDate) ?? currentDate
-        let maxDate = calendar.date(byAdding: .year, value: 2, to: currentDate) ?? currentDate
-        
-        self.init(
-            calendar: calendar,
-            minDate: minDate,
-            maxDate: maxDate,
-            currentMonthDate: currentDate,
-            selection: ACCalendarSingleDateSelection(calendar: calendar, datesSelected: [])
-        )
-    }
-    
     // MARK: - Props
     /// The generator of the past months
     open lazy var pastMonthGenerator: MonthGenerator = PastMonthGenerator(
@@ -241,13 +226,22 @@ public extension ACCalendarService {
     
 }
 
-func measure(_ title: String = #function, block: (@escaping () -> ()) -> ()) {
+// MARK: - Fabrication
+public extension ACCalendarService {
     
-    let startTime = DispatchTime.now().uptimeNanoseconds
-    
-    block {
-        let timeElapsed = Double(DispatchTime.now().uptimeNanoseconds - startTime) / 1e9
+    // Create a service with a range of -50...50 years from the current date
+    static func `default`() -> ACCalendarService {
+        let calendar = Calendar.defaultACCalendar()
+        let currentDate = Date()
+        let minDate = calendar.date(byAdding: .year, value: -50, to: currentDate) ?? currentDate
+        let maxDate = calendar.date(byAdding: .year, value: 50, to: currentDate) ?? currentDate
         
-        NSLog("[Measure] - [\(title)]: Time: \(timeElapsed) seconds")
+        return ACCalendarService(
+            calendar: calendar,
+            minDate: minDate,
+            maxDate: maxDate,
+            currentMonthDate: currentDate,
+            selection: ACCalendarSingleDateSelection(calendar: calendar, datesSelected: [])
+        )
     }
 }

@@ -8,6 +8,8 @@
 import UIKit
 
 public struct ACDateHorizontalInsertRules: ACDateInsertRules {
+
+    public init() { }
     
     public func needsInsertPastDates(_ scrollView: UIScrollView) -> Bool {
         let viewWidth = scrollView.frame.width

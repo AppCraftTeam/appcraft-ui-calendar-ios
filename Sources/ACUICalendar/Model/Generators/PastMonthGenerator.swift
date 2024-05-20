@@ -7,19 +7,19 @@
 
 import Foundation
 
-class PastMonthGenerator: MonthGenerator {
+open class PastMonthGenerator: MonthGenerator {
     
-    let minDate: Date?
-    let currentDate: Date
+    public let minDate: Date?
+    public let currentDate: Date
 
-    init(calendar: Calendar, currentDate: Date, minDate: Date? = nil) {
+    public init(calendar: Calendar, currentDate: Date, minDate: Date? = nil) {
         self.minDate = minDate
         self.currentDate = currentDate
         super.init(calendar: calendar)
     }
     
     @discardableResult
-    public override func next() -> ACCalendarMonthModel? {
+    open override func next() -> ACCalendarMonthModel? {
         let lastMinDate = self.months.first?.monthDate ?? currentDate
         guard let nextLeftDate = calendar.date(byAdding: .month, value: -1, to: lastMinDate) else {
             return nil

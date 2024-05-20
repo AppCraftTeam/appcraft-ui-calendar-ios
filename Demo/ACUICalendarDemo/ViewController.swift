@@ -31,7 +31,7 @@ class ViewController: UIViewController {
     
     lazy var positionSegmentControl = UISegmentedControl(items: ["Horizontal", "Vertical"])
     
-    var service = ACCalendarService() {
+    var service = ACCalendarService.default() {
         didSet { self.updateComponents() }
     }
     
@@ -69,7 +69,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = ACCalendarUITheme().backgroundColor
         let guide = self.view.safeAreaLayoutGuide
         
         let dateSelectStackView = UIStackView(arrangedSubviews: [self.datesLabel, self.datesButton])
@@ -137,7 +137,7 @@ class ViewController: UIViewController {
         let selectionNamesViews: [UIView] = self.selectionNames.map { name in
             let button = UIButton(type: .system)
             button.setTitle(name.identifer.capitalizingFirstLetter(), for: .normal)
-            button.setTitleColor(name == selectionName ? .systemBlue : .systemGray, for: .normal)
+            button.setTitleColor(name == selectionName ? .systemBlue : ACCalendarUITheme().weekDayTextColor, for: .normal)
             button.addTarget(self, action: #selector(self.handleTapSelectionNameView(_:)), for: .touchUpInside)
             return button
         }
@@ -185,7 +185,7 @@ class ViewController: UIViewController {
         let buttons = selectionNamesView.arrangedSubviews as? [UIButton] ?? []
         
         for (idx, button) in buttons.enumerated() {
-            button.setTitleColor(idx == index ? .systemBlue : .systemGray, for: .normal)
+            button.setTitleColor(idx == index ? .systemBlue : ACCalendarUITheme().monthSelectDateTextColor, for: .normal)
         }
     }
      
@@ -202,7 +202,7 @@ class ViewController: UIViewController {
         let label = UILabel()
         label.text = text
         label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textColor = .black
+        label.textColor = ACCalendarUITheme().monthSelectDateTextColor
         return label
     }
     
@@ -212,7 +212,7 @@ class ViewController: UIViewController {
         let label = UILabel()
         label.text = text
         label.font = .systemFont(ofSize: 14, weight: .regular)
-        label.textColor = .black
+        label.textColor = ACCalendarUITheme().monthSelectDateTextColor
         let switchControl = ActionSwitchControl(isOn: isOn, onAction: onAction)
         
         view.addSubview(label)

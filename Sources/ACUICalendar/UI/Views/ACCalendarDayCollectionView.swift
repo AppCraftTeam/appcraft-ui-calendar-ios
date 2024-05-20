@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 import DPSwift
 
-class ACCalendarCollectionView: UICollectionView {
+open class ACCalendarCollectionView: UICollectionView {
     
-    override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
+    public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
         self.showsVerticalScrollIndicator = false
         self.showsHorizontalScrollIndicator = false
@@ -27,7 +27,7 @@ class ACCalendarCollectionView: UICollectionView {
         )
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
@@ -41,7 +41,6 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }
     
     open var monthHeader: ACMonthHeader? = .init(
-        style: .default,
         horizonalPosition: .offsetFromPassDays
     )
     private var insertionRules: (any ACDateInsertRules)?
@@ -94,12 +93,12 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }
     
     open func setCollectionViewLayout(
-        _ setupFactory: ACCalendarCollectionViewLayoutFactory,
+        _ configurator: any ACCalendarCollectionViewLayoutConfigurator,
         animated: Bool,
         completion: ((Bool) -> Void)? = nil
     ) {
-        self.setPageProvider(setupFactory.makePageProvider())
-        self.collectionViewLayout = setupFactory.makeLayout()
+        self.setPageProvider(configurator.makePageProvider())
+        self.collectionViewLayout = configurator.makeLayout()
         
         self.collectionView.setCollectionViewLayout(
             collectionViewLayout,
@@ -107,7 +106,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             completion: completion
         )
         
-        self.insertionRules = setupFactory.makeInsertionRules()
+        self.insertionRules = configurator.makeInsertionRules()
     }
     
     open func setPageProvider(_ provider: ACPageProvider) {
@@ -234,6 +233,7 @@ extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
             ) as? ACCalendarMonthSupplementaryView else {
                 return UICollectionReusableView()
             }
+            view.theme = theme
             return view
         }
         return .init()

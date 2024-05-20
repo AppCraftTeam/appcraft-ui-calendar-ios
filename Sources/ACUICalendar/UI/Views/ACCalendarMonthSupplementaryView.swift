@@ -23,6 +23,11 @@ open class ACCalendarMonthSupplementaryView: UICollectionReusableView {
         "ACCalendarMonthSupplementaryView"
     }
     
+    open var theme = ACCalendarUITheme() {
+        didSet { self.updateTheme() }
+    }
+
+    
     // MARK: - Initialization
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -35,7 +40,6 @@ open class ACCalendarMonthSupplementaryView: UICollectionReusableView {
     
     // MARK: - Setup methods
     open func setupComponents() {
-        self.label.textColor = .black
         self.addSubview(label)
         self.label.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -59,8 +63,6 @@ open class ACCalendarMonthSupplementaryView: UICollectionReusableView {
         ).capitalized
         
         self.label.text = monthText
-        self.label.font = cfg.style.font
-        self.label.textColor = cfg.style.textColor
         
         switch cfg.horizonalPosition {
         case .center:
@@ -85,6 +87,11 @@ open class ACCalendarMonthSupplementaryView: UICollectionReusableView {
             }
             self.layoutIfNeeded()
         }
+    }
+    
+    private func updateTheme() {
+        self.label.font = theme.monthHeaderTextFont
+        self.label.textColor = theme.monthHeaderTextColor
     }
     
     private func getMonthName(

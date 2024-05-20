@@ -1,5 +1,5 @@
 //
-//  ACCalendarVerticalCollectionViewLayoutConfigurtor.swift
+//  ACCalendarVerticalCollectionViewLayoutConfigurator.swift
 //
 //
 //  Created by Damian on 20.05.2024.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct ACCalendarVerticalCollectionViewLayoutConfigurtor: ACCalendarCollectionViewLayoutConfigurtor {
+public struct ACCalendarVerticalCollectionViewLayoutConfigurator: ACCalendarCollectionViewLayoutConfigurator {
 
     public func makeLayout() -> UICollectionViewFlowLayout {
         ACCalendarVerticalLayout()

@@ -9,6 +9,8 @@ import UIKit
 
 public struct ACDateVerticalInsertRules: ACDateInsertRules {
     
+    public init() { }
+    
     public func needsInsertPastDates(_ scrollView: UIScrollView) -> Bool {
         let contentOffset = scrollView.contentOffset
         return contentOffset.y <= -scrollView.contentInset.top
