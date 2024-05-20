@@ -30,7 +30,9 @@ class CalendarViewController: UIViewController {
     
     // MARK: - Props
     var service: ACCalendarService
+    
     let calendarHeight: CalendarHeight
+    
     lazy var calendarView: ACCalendarView = {
         ACCalendarView(service: self.service)
     }()

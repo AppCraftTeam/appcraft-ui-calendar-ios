@@ -8,17 +8,17 @@
 import Foundation
 
 open class MonthGenerator: IteratorProtocol {
-    
+
     public typealias Element = ACCalendarMonthModel
-    
+
     open var months = [ACCalendarMonthModel]()
-    
+
     public let calendar: Calendar
-    
+
     init(calendar: Calendar) {
         self.calendar = calendar
     }
-    
+
     @discardableResult
     open func next() -> ACCalendarMonthModel? { nil }
 
@@ -29,13 +29,13 @@ open class MonthGenerator: IteratorProtocol {
             let nextMonthDates = self.generateNextMonthDates(for: monthDate),
             let monthDate = monthDates.first
         else { return nil }
-        
+
         let days = (previousMonthDates + monthDates + nextMonthDates)
             .sorted()
             .map({ date in
                 self.generateDay(date, previousMonthDates: previousMonthDates, nextMonthDates: nextMonthDates)
             })
-        
+
         return ACCalendarMonthModel(
             month: self.calendar.component(.month, from: monthDate),
             monthDate: monthDate,
@@ -45,30 +45,29 @@ open class MonthGenerator: IteratorProtocol {
             days: days
         )
     }
-    
+
     open func generateCurrentMonthDates(for monthDate: Date) -> [Date]? {
         guard
             let startOfMonth = self.startOfMonth(for: monthDate),
             let endOfMonth = self.endOfMonth(for: monthDate)
         else { return nil }
-        
+
         var result: [Date] = []
         var nextDate = startOfMonth
         
         var startCondition: Bool {
             let compare = nextDate.compare(startOfMonth)
             let condition = compare == .orderedDescending || compare == .orderedSame
-            
             return condition
         }
-        
+
         var endCondition: Bool {
             let compare = nextDate.compare(endOfMonth)
             let condition = compare == .orderedAscending || compare == .orderedSame
             
             return condition
         }
-        
+
         while startCondition && endCondition {
             result += [nextDate]
             
@@ -78,27 +77,27 @@ open class MonthGenerator: IteratorProtocol {
         
         return result.sorted()
     }
-    
+
     open func startOfMonth(for monthDate: Date) -> Date? {
         let date = self.calendar.startOfDay(for: monthDate)
         let dateComponents = self.calendar.dateComponents([.year, .month], from: date)
         
         return self.calendar.date(from: dateComponents)
     }
-    
+
     open func endOfMonth(for monthDate: Date) -> Date? {
         guard let startOfMonth = self.startOfMonth(for: monthDate) else { return nil }
         let dateComponents = DateComponents(month: 1, day: -1)
         
         return self.calendar.date(byAdding: dateComponents, to: startOfMonth)
     }
-    
+
     open func generatePreviousMonthDates(for monthDate: Date) -> [Date]? {
         guard
             let startOfMonth = self.startOfMonth(for: monthDate),
             let previousStartOfMonth = self.calendar.date(byAdding: .day, value: -1, to: startOfMonth)
         else { return nil }
-        
+
         var result: [Date] = []
         var nextDate = previousStartOfMonth
         
@@ -111,7 +110,7 @@ open class MonthGenerator: IteratorProtocol {
         
         return result.sorted()
     }
-    
+
     open func generateNextMonthDates(for monthDate: Date) -> [Date]? {
         guard
             let endOfMonth = self.endOfMonth(for: monthDate),
@@ -130,7 +129,7 @@ open class MonthGenerator: IteratorProtocol {
         
         return result.sorted()
     }
-    
+
     open func generateDay(_ dayDate: Date, previousMonthDates: [Date], nextMonthDates: [Date]) -> ACCalendarDayModel {
         func isContaints(date: Date, in dates: [Date]) -> Bool {
             dates.contains { dateFromDates in
@@ -147,7 +146,7 @@ open class MonthGenerator: IteratorProtocol {
                 return .current
             }
         }
-        
+
         let locale = self.calendar.locale ?? .current
         
         return ACCalendarDayModel(

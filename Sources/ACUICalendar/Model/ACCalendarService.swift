@@ -25,17 +25,7 @@ public class ACCalendarService {
         self.selection = selection
         self.setupComponents()
     }
-    
-    static func makeLessCurrentMinDate(_ currentMinDate: Date, calendar: Calendar) -> ACCalendarService {
-        ACCalendarService(
-            calendar: calendar,
-            minDate: calendar.date(byAdding: .year, value: -2, to: currentMinDate) ?? currentMinDate,
-            maxDate: currentMinDate,
-            currentMonthDate: currentMinDate,
-            selection: ACCalendarSingleDateSelection(calendar: calendar, datesSelected: [])
-        )
-    }
-    
+
     public convenience init(isInfinity: Bool = false) {
         let calendar = Calendar.defaultACCalendar()
         let currentDate = Date()
@@ -51,14 +41,16 @@ public class ACCalendarService {
         )
     }
     
-    // MARK: - Props    
-    lazy var pastMonthGenerator = PastMonthGenerator(
+    // MARK: - Props
+    /// The generator of the past months
+    open lazy var pastMonthGenerator: MonthGenerator = PastMonthGenerator(
         calendar: calendar,
         currentDate: currentMonthDate,
         minDate: minDate
     )
     
-    lazy var futureMonthGenerator = FutureMonthGenerator(
+    /// The generator of the future months
+    open lazy var futureMonthGenerator: MonthGenerator = FutureMonthGenerator(
         calendar: calendar,
         currentDate: currentMonthDate,
         maxDate: maxDate
