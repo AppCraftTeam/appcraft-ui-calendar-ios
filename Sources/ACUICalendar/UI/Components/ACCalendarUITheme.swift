@@ -10,6 +10,8 @@ import UIKit
 
 public struct ACCalendarUITheme {
     
+    public init() { }
+    
     public var backgroundColor: UIColor = .assetColor(name: "background")
 
     public var monthSelectDateTextColor: UIColor = .assetColor(name: "textPrimary")
@@ -34,5 +36,9 @@ public struct ACCalendarUITheme {
     public var monthPickerSelectedBackgroundColor: UIColor = .assetColor(name: "accentPrimary")
     public var monthPickerFont: UIFont = .systemFont(ofSize: 23, weight: .regular)
     public var monthPickerTextColor: UIColor = .assetColor(name: "textPrimary")
+    
+    public var monthHeaderTextFont: UIFont = .systemFont(ofSize: 18, weight: .semibold)
+    public var monthHeaderTextColor: UIColor = .assetColor(name: "textPrimary")
+
 }
 

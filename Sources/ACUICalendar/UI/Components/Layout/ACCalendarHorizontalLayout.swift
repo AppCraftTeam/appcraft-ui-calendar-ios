@@ -23,10 +23,10 @@ open class ACCalendarHorizontalLayout: ACCalendarBaseLayout {
         
         var contentX: CGFloat = 0
         
+        let itemHeight = sectionHeight / CGFloat(6)
+
         for section in 0..<collectionView.numberOfSections {
             let numberOfItems = collectionView.numberOfItems(inSection: section)
-            let rowsCount = numberOfItems / 7
-            let itemHeight = sectionHeight / CGFloat(rowsCount)
             
             var currentColumn: Int = 0
             var currentRow: Int = 0

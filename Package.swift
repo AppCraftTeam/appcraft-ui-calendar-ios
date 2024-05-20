@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "ACUICalendar",
     platforms: [
-        .iOS(.v11),
+        .iOS(.v13),
     ],
     products: [
         .library(
@@ -24,6 +24,10 @@ let package = Package(
                 "DPSwift"
             ],
             path: "Sources/ACUICalendar"
+        ),
+        .testTarget(
+            name: "ACUICalendarTests",
+            dependencies: ["ACUICalendar"]
         )
     ]
 )

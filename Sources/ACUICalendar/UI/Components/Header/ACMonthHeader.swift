@@ -17,8 +17,7 @@ public struct ACMonthHeader {
     /// > For example:
     ///  January, February, March, April, May, etc are the LLLL Format for the Month.
     public var format: String = "LLLL"
-    public var style: ACMonthHeaderStyle
     public var horizonalPosition: ACMonthHeaderHorizontalPosition
     
-    static var `default` = ACMonthHeader(style: .default, horizonalPosition: .right)
+    static var `default` = ACMonthHeader(horizonalPosition: .right)
 }

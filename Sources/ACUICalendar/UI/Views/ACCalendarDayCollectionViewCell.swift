@@ -37,7 +37,6 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
     open lazy var daySelectionView: UIView = {
         let result = UIView()
         result.layer.cornerRadius = 20
-        
         return result
     }()
     
@@ -57,7 +56,7 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
     open var theme = ACCalendarUITheme() {
         didSet { self.updateComponents() }
     }
-    
+
     // MARK: - Methods
     open func setupComponents() {
         self.dayLabel.removeFromSuperview()
@@ -85,8 +84,6 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
     open func updateComponents() {
         guard let day = self.day else { return }
         
-        // print("!!!", day.dayDateText, daySelection)
-        
         self.dayLabel.text = day.dayDateText
         self.dayLabel.font = self.theme.dayFont
         
@@ -97,7 +94,7 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
             self.dayLabel.textColor = self.theme.dayNotCurrentMonthTextColor
         case .current:
             self.daySelectionView.isHidden = false
-            
+
             switch self.daySelection {
             case .notSelected:
                 self.daySelectionView.backgroundColor = self.theme.dayNotSelectedBackgroundColor

@@ -9,48 +9,60 @@ import Foundation
 import UIKit
 import DPSwift
 
+open class ACCalendarCollectionView: UICollectionView {
+    
+    public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
+        super.init(frame: frame, collectionViewLayout: layout)
+        self.showsVerticalScrollIndicator = false
+        self.showsHorizontalScrollIndicator = false
+        self.contentInsetAdjustmentBehavior = .never
+        self.register(
+            ACCalendarMonthSupplementaryView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: ACCalendarMonthSupplementaryView.identifer
+        )
+        self.register(
+            ACCalendarDayCollectionViewCell.self,
+            forCellWithReuseIdentifier: ACCalendarDayCollectionViewCell.identifer
+        )
+    }
+    
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+
 open class ACCalendarDayCollectionView: ACCalendarBaseView {
     
-    // MARK: - Props
+    // MARK: Props
     open var showsOnlyCurrentDaysInMonth = false {
         didSet { collectionView.reloadData() }
     }
     
     open var monthHeader: ACMonthHeader? = .init(
-        style: .default,
         horizonalPosition: .offsetFromPassDays
     )
+    private var insertionRules: (any ACDateInsertRules)?
     private lazy var pageProvider: ACPageProvider = ACVerticalPageProvider()
     public private(set) lazy var collectionViewLayout: UICollectionViewFlowLayout = ACCalendarVerticalLayout()
     
     open lazy var collectionView: UICollectionView = {
-        let result = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
-        result.backgroundColor = .clear
-        result.showsVerticalScrollIndicator = false
-        result.showsHorizontalScrollIndicator = false
-        result.contentInsetAdjustmentBehavior = .never
-        result.register(
-            ACCalendarMonthSupplementaryView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: ACCalendarMonthSupplementaryView.identifer
-        )
-        result.register(
-            ACCalendarDayCollectionViewCell.self,
-            forCellWithReuseIdentifier: ACCalendarDayCollectionViewCell.identifer
-        )
-        result.dataSource = self
-        result.delegate = self
-        return result
+        let collectionView = ACCalendarCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        return collectionView
     }()
     
     open var months: [ACCalendarMonthModel] {
-        self.service.months
+        self.service.pastMonthGenerator.months + self.service.futureMonthGenerator.months
     }
     
-    open var didScrollToMonth: ContextClosure<Date>?
     open var didSelectDates: ContextClosure<[Date]>?
+    open var didScrollToMonth: ContextClosure<Date>?
     
     // MARK: - Methods
+    
     open override func setupComponents() {
         self.collectionView.removeFromSuperview()
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -68,7 +80,11 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }
     
     open override func updateComponents() {
+        
+        self.backgroundColor = self.theme.backgroundColor
+        
         self.collectionView.reloadData()
+        self.collectionView.backgroundColor = self.theme.backgroundColor
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10)) { [weak self] in
             guard let date = self?.service.currentMonthDate else { return }
@@ -77,35 +93,27 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }
     
     open func setCollectionViewLayout(
-        _ layout: UICollectionViewFlowLayout,
+        _ configurator: any ACCalendarCollectionViewLayoutConfigurator,
         animated: Bool,
         completion: ((Bool) -> Void)? = nil
-    )  {
-        self.collectionViewLayout = layout
-        self.collectionView.setCollectionViewLayout(layout, animated: animated, completion: completion)
+    ) {
+        self.setPageProvider(configurator.makePageProvider())
+        self.collectionViewLayout = configurator.makeLayout()
         
-        self.setPageProvider(for: layout)
-    }
-    
-    open func setPageProvider(for layout: UICollectionViewFlowLayout) {
-        let provider = getPageProvider(for: layout)
-        self.setPageProvider(provider)
+        self.collectionView.setCollectionViewLayout(
+            collectionViewLayout,
+            animated: animated,
+            completion: completion
+        )
+        
+        self.insertionRules = configurator.makeInsertionRules()
     }
     
     open func setPageProvider(_ provider: ACPageProvider) {
         self.pageProvider = provider
         self.setupPageProvider()
     }
-    
-    open func getPageProvider(for layout: UICollectionViewFlowLayout) -> ACPageProvider {
-        switch layout {
-        case is ACCalendarVerticalLayout:
-            return ACVerticalPageProvider()
-        default:
-            return ACHorizontalPageProvider()
-        }
-    }
-    
+        
     private func setupPageProvider() {
         self.pageProvider.onChangePage = { [weak self] page in
             guard let self else { return }
@@ -123,12 +131,34 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
         }
         
         guard let index = self.months.firstIndex(where: { isEqual($0) }) else { return }
-        self.collectionView.scrollToItem(at: .init(item: 0, section: index), at: .left, animated: animated)
+        
+        let position: UICollectionView.ScrollPosition = {
+            collectionViewLayout.scrollDirection == .vertical ? .top : .left
+        }()
+        
+        self.collectionView.scrollToItem(at: .init(item: 0, section: index), at: position, animated: animated)
     }
     
     open func scrollToMonth(on direction: ACCalendarDirection, animated: Bool) {
         guard let monthDate = self.service.month(on: direction) else { return }
         self.scrollToMonth(with: monthDate, animated: animated)
+    }
+    
+    // MARK: - Inserts
+    func insertPastMonths() {
+        let objects = service.generatePastMonths(count: 8)
+        
+        if !objects.isEmpty {
+            self.collectionView.reloadDataAndKeepOffset()
+        }
+    }
+    
+    func insertFutureMonths() {
+        let objects = service.generateFutureMonths(count: 8)
+        
+        if !objects.isEmpty {
+            self.collectionView.reloadData()
+        }
     }
 }
 
@@ -139,16 +169,29 @@ extension ACCalendarDayCollectionView: UICollectionViewDataSource {
         months.count
     }
     
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
         guard months.indices.contains(section) else { return 0 }
         return months[section].days.count
     }
     
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard months.indices.contains(indexPath.section) else { return .init() }
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        guard months.indices.contains(indexPath.section) else {
+            return .init()
+        }
         let days = self.months[indexPath.section].days
         
-        guard days.indices.contains(indexPath.item) else { return .init() }
+        guard days.indices.contains(indexPath.item) else {
+            return collectionView.dequeueReusableCell(
+                withReuseIdentifier: ACCalendarDayCollectionViewCell.identifer,
+                for: indexPath
+            ) as? ACCalendarDayCollectionViewCell ?? .init()
+        }
         
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: ACCalendarDayCollectionViewCell.identifer,
@@ -169,13 +212,14 @@ extension ACCalendarDayCollectionView: UICollectionViewDataSource {
         }
         
         cell.daySelection = service.daySelected(day)
-        cell.theme = self.theme
+        cell.theme = theme
         return cell
     }
 }
 
-// MARK: - ACCalendarService
+// MARK: - UICollectionViewDelegateFlowLayout methods
 extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
+    
     public func collectionView(
         _ collectionView: UICollectionView,
         viewForSupplementaryElementOfKind kind: String,
@@ -189,6 +233,7 @@ extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
             ) as? ACCalendarMonthSupplementaryView else {
                 return UICollectionReusableView()
             }
+            view.theme = theme
             return view
         }
         return .init()
@@ -214,6 +259,12 @@ extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         self.pageProvider.scrollViewDidScroll(scrollView)
+        
+        if insertionRules?.needsInsertFutureDates(scrollView) ?? false {
+            self.insertFutureMonths()
+        } else if insertionRules?.needsInsertPastDates(scrollView) ?? false {
+            self.insertPastMonths()
+        }
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
