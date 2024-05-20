@@ -15,28 +15,28 @@ final class MonthsGeneratorTests: XCTestCase {
         let expectedModel = ACCalendarMonthModel(
             month: 1,
             monthDate: Calendar.current.date(
-                from: DateComponents(year: 2006, month: 12, day: 31)
+                from: DateComponents(year: 2006, month: 12, day: 32)
             )!,
-            monthDates: (0...32).map({ day in
+            monthDates: (0...30).map({ day in
                 if day == 0 {
                     return Calendar.current.date(
-                        from: DateComponents(year: 2006, month: 12, day: 31)
+                        from: DateComponents(year: 2006, month: 12, day: 32)
                     )!
                 } else {
                     return Calendar.current.date(
-                        from: DateComponents(year: 2007, month: 1, day: day)
+                        from: DateComponents(year: 2007, month: 1, day: day + 1)
                     )!
                 }
             }),
             previousMonthDates: [],
-            nextMonthDates: (0...5).map({ idx in
+            nextMonthDates: (0...3).map({ idx in
                 if idx == 0 {
                     return Calendar.current.date(
-                        from: DateComponents(year: 2007, month: 31, day: 1)
+                        from: DateComponents(year: 2007, month: 1, day: 32)
                     )!
                 } else {
                     return  Calendar.current.date(
-                        from: DateComponents(year: 2007, month: 02, day: idx)
+                        from: DateComponents(year: 2007, month: 02, day: idx + 1)
                     )!
                 }
             }),
@@ -73,10 +73,14 @@ final class MonthsGeneratorTests: XCTestCase {
                        return day + 1
                     }
                 }()
-                return .init(day: dayNumber, dayDate: dayDate, dayDateText: "\(dayNumber)", belongsToMonth: .current)
+                return .init(
+                    day: dayNumber,
+                    dayDate: dayDate,
+                    dayDateText: "\(dayNumber)",
+                    belongsToMonth: day >= 31 ? .next : .current
+                )
             })
         )
-        
         XCTAssertEqual(month.days, expectedModel.days)
         XCTAssertEqual(month.month, expectedModel.month)
         XCTAssertEqual(month.monthDate, expectedModel.monthDate)
