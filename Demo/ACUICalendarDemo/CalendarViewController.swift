@@ -42,7 +42,9 @@ class CalendarViewController: UIViewController {
     
     var scrollDirection: UICollectionView.ScrollDirection = .horizontal
     var showsCurrentDaysInMonth = false
-
+    
+    var portraitConstraint: NSLayoutConstraint?
+    var landscapeConstraint: NSLayoutConstraint?
     // MARK: - Methods
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,15 +64,13 @@ class CalendarViewController: UIViewController {
             self.calendarView.trailingAnchor.constraint(equalTo: guide.trailingAnchor)
         ])
         
-        switch calendarHeight {
-        case .fullscreen:
-            self.calendarView.bottomAnchor.constraint(equalTo: guide.bottomAnchor).isActive = true
-        case .fix(let value):
-            self.calendarView.heightAnchor.constraint(equalToConstant: value).isActive = true
-        case .percent(let value):
-            self.calendarView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: value).isActive = true
-        }
+        self.setupCalendarViewSizeConstraint()
         
+        if UIDevice.current.orientation.isLandscape {
+            self.landscapeConstraint?.isActive = true
+        } else {
+            self.portraitConstraint?.isActive = true
+        }
         self.navigationItem.leftBarButtonItem = .init(title: "Cancel", style: .plain, target: self, action: #selector(self.handleTapCancel))
         self.navigationItem.rightBarButtonItem = .init(title: "Done", style: .plain, target: self, action: #selector(self.handleTapDone))
         
@@ -79,6 +79,34 @@ class CalendarViewController: UIViewController {
             animated: true
         )
         self.calendarView.dayCollectionView.showsOnlyCurrentDaysInMonth = showsCurrentDaysInMonth
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        if UIDevice.current.orientation.isLandscape {
+            self.portraitConstraint?.isActive = false
+            self.landscapeConstraint?.isActive = true
+        } else {
+            self.landscapeConstraint?.isActive = false
+            self.portraitConstraint?.isActive = true
+        }
+    }
+    
+    private func setupCalendarViewSizeConstraint() {
+        
+        let guide = self.view.safeAreaLayoutGuide
+        
+        self.landscapeConstraint = self.calendarView.bottomAnchor.constraint(equalTo: guide.bottomAnchor)
+
+        self.portraitConstraint = switch calendarHeight {
+        case .fullscreen:
+             self.calendarView.bottomAnchor.constraint(equalTo: guide.bottomAnchor)
+        case .fix(let value):
+            self.calendarView.heightAnchor.constraint(equalToConstant: value)
+        case .percent(let value):
+            self.calendarView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: value)
+        }
     }
     
     @objc
@@ -90,7 +118,4 @@ class CalendarViewController: UIViewController {
     private func handleTapDone() {
         self.didTapDone?(self.calendarView.service)
     }
-
 }
-
-

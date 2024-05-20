@@ -152,7 +152,7 @@ class ViewController: UIViewController {
     private func handleTapDatesButton() {
         let vc = CalendarViewController(
             service: self.service,
-            height: scrollDirection == .horizontal ? .percent(0.4) : .fullscreen
+            height: scrollDirection == .horizontal ? .fix(400) : .fullscreen
         )
         let nc = UINavigationController(rootViewController: vc)
         vc.scrollDirection = scrollDirection

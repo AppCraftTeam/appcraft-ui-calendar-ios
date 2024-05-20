@@ -91,7 +91,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             self?.scrollToMonth(with: date, animated: false)
         }
     }
-    
+
     open func setCollectionViewLayout(
         _ configurator: any ACCalendarCollectionViewLayoutConfigurator,
         animated: Bool,
