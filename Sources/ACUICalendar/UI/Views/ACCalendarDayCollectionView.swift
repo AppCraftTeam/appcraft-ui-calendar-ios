@@ -36,6 +36,9 @@ open class ACCalendarCollectionView: UICollectionView {
 open class ACCalendarDayCollectionView: ACCalendarBaseView {
     
     // MARK: Props
+    
+    var isPortraitOrientation = UIDevice.current.orientation.isPortrait
+    
     open var showsOnlyCurrentDaysInMonth = false {
         didSet { collectionView.reloadData() }
     }
@@ -43,6 +46,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     open var monthHeader: ACMonthHeader? = .init(
         horizonalPosition: .offsetFromPassDays
     )
+
     private var insertionRules: (any ACDateInsertRules)?
     private lazy var pageProvider: ACPageProvider = ACVerticalPageProvider()
     public private(set) lazy var collectionViewLayout: UICollectionViewFlowLayout = ACCalendarVerticalLayout()
@@ -91,7 +95,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             self?.scrollToMonth(with: date, animated: false)
         }
     }
-    
+
     open func setCollectionViewLayout(
         _ configurator: any ACCalendarCollectionViewLayoutConfigurator,
         animated: Bool,
@@ -124,7 +128,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             self.didScrollToMonth?(monthDate)
         }
     }
-    
+
     open func scrollToMonth(with monthDate: Date, animated: Bool) {
         func isEqual(_ month: ACCalendarMonthModel) -> Bool {
             self.service.calendar.compare(monthDate, to: month.monthDate, toGranularity: .month) == .orderedSame
@@ -144,7 +148,13 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
         self.scrollToMonth(with: monthDate, animated: animated)
     }
     
-    // MARK: - Inserts
+    // MARK: - Lifecycle methods
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        self.checkOrientationChange()
+    }
+
+    // MARK: - Data insertion methods
     func insertPastMonths() {
         let objects = service.generatePastMonths(count: 8)
         
@@ -160,6 +170,24 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             self.collectionView.reloadData()
         }
     }
+    
+    // MARK: - Orientation methods
+    open func checkOrientationChange() {
+        if isPortraitOrientation != UIDevice.current.orientation.isPortrait {
+            self.isPortraitOrientation = UIDevice.current.orientation.isPortrait
+            self.updateFlowLayoutAfterChangingOrientation()
+        }
+    }
+    
+    open func updateFlowLayoutAfterChangingOrientation() {
+        guard let layout = collectionViewLayout as? ACCalendarBaseLayout else  { return }
+        layout.isPortraitOrientation = isPortraitOrientation
+        layout.resetLayoutAttributes()
+        layout.invalidateLayout()
+        self.collectionView.reloadData()
+        
+        self.scrollToMonth(with: service.currentMonthDate, animated: false)
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -168,7 +196,7 @@ extension ACCalendarDayCollectionView: UICollectionViewDataSource {
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         months.count
     }
-    
+
     public func collectionView(
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
@@ -219,7 +247,7 @@ extension ACCalendarDayCollectionView: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegateFlowLayout methods
 extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
-    
+
     public func collectionView(
         _ collectionView: UICollectionView,
         viewForSupplementaryElementOfKind kind: String,

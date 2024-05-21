@@ -33,7 +33,9 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
         self.scrollDirection = .vertical
         
         let sectionWidth: CGFloat = collectionView.frame.width
-        let sectionHeight: CGFloat = collectionView.frame.height * 0.5
+        let sectionHeight: CGFloat = {
+            isPortraitOrientation ? collectionView.frame.height * 0.5 : collectionView.frame.height
+        }()
         let collumnsCount: Int = 7
         let itemWidth = sectionWidth / CGFloat(collumnsCount)
         
