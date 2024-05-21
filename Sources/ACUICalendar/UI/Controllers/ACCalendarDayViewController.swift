@@ -18,7 +18,7 @@ open class ACCalendarDayViewController: UIViewController {
     }
 
     // MARK: - Init
-    public init(service: ACCalendarService, height: CalendarHeight = .fullscreen) {
+    public init(service: ACCalendarService = .default(), height: CalendarHeight = .fullscreen) {
         self.service = service
         self.calendarHeight = height
         super.init(nibName: nil, bundle: nil)
