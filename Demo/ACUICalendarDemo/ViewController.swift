@@ -63,7 +63,7 @@ class ViewController: UIViewController {
     
     var scrollDirection: UICollectionView.ScrollDirection = .horizontal
     
-    var showsCurrentDaysInMonth = false
+    var showsOnlyCurrentDaysInMonth = false
     
     // MARK: - Methods
     override func viewDidLoad() {
@@ -86,9 +86,9 @@ class ViewController: UIViewController {
             makeTitleLabel("Content visibility: "),
             makeTitleWithSwitch(
                 text: "Shows only current days in month",
-                isOn: showsCurrentDaysInMonth,
+                isOn: showsOnlyCurrentDaysInMonth,
                 onAction: { [weak self] (val) in
-                    self?.showsCurrentDaysInMonth = val
+                    self?.showsOnlyCurrentDaysInMonth = val
             })
         ])
         
@@ -150,19 +150,24 @@ class ViewController: UIViewController {
     
     @objc
     private func handleTapDatesButton() {
-        let vc = CalendarViewController(
+        let vc = ACCalendarDayViewController(
             service: self.service,
             height: scrollDirection == .horizontal ? .fix(400) : .fullscreen
         )
         let nc = UINavigationController(rootViewController: vc)
-        vc.scrollDirection = scrollDirection
-        vc.showsCurrentDaysInMonth = showsCurrentDaysInMonth
-        vc.didTapDone = { [weak self, weak nc] service in
+        vc.setCalendarLayout(
+            scrollDirection == .horizontal ? .horizontal() : .vertical(),
+            animated: false
+        )
+        vc.monthDatePickerViewEnabled = false
+        vc.monthArrowSwitcherIsHidden = scrollDirection == .horizontal ? false : true
+        vc.showsOnlyCurrentDaysInMonth = showsOnlyCurrentDaysInMonth
+        vc.onTapDone = { [weak self, weak nc] service in
             self?.service = service
             nc?.dismiss(animated: true)
         }
         
-        vc.didTapCancel = { [weak nc] in
+        vc.onTapCancel = { [weak nc] in
             nc?.dismiss(animated: true)
         }
         vc.isModalInPresentation = true
