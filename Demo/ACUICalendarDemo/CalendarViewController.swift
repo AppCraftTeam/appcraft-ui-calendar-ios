@@ -36,16 +36,19 @@ class CalendarViewController: UIViewController {
     lazy var calendarView: ACCalendarView = {
         ACCalendarView(service: self.service)
     }()
-    
+
     var didTapCancel: Closure?
     var didTapDone: ContextClosure<ACCalendarService>?
-    
+
     var scrollDirection: UICollectionView.ScrollDirection = .horizontal
     var showsCurrentDaysInMonth = false
-    
+
+    var isPortraitOrientation = UIDevice.current.orientation.isPortrait
+
     var portraitConstraint: NSLayoutConstraint?
     var landscapeConstraint: NSLayoutConstraint?
-    // MARK: - Methods
+
+    // MARK: - Lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -71,6 +74,7 @@ class CalendarViewController: UIViewController {
         } else {
             self.portraitConstraint?.isActive = true
         }
+        
         self.navigationItem.leftBarButtonItem = .init(title: "Cancel", style: .plain, target: self, action: #selector(self.handleTapCancel))
         self.navigationItem.rightBarButtonItem = .init(title: "Done", style: .plain, target: self, action: #selector(self.handleTapDone))
         
@@ -80,24 +84,24 @@ class CalendarViewController: UIViewController {
         )
         self.calendarView.dayCollectionView.showsOnlyCurrentDaysInMonth = showsCurrentDaysInMonth
     }
-    
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+
+    override func viewWillTransition(
+        to size: CGSize,
+        with coordinator: UIViewControllerTransitionCoordinator
+    ) {
         super.viewWillTransition(to: size, with: coordinator)
-        
-        if UIDevice.current.orientation.isLandscape {
-            self.portraitConstraint?.isActive = false
-            self.landscapeConstraint?.isActive = true
-        } else {
-            self.landscapeConstraint?.isActive = false
-            self.portraitConstraint?.isActive = true
+        if isPortraitOrientation != UIDevice.current.orientation.isPortrait {
+            self.isPortraitOrientation = UIDevice.current.orientation.isPortrait
+            self.updateConstraintsAfterChangingOrientation()
         }
     }
-    
+
+    // MARK: - Setup & Update methods
     private func setupCalendarViewSizeConstraint() {
-        
+
         let guide = self.view.safeAreaLayoutGuide
-        
-        self.landscapeConstraint = self.calendarView.bottomAnchor.constraint(equalTo: guide.bottomAnchor)
+
+        self.landscapeConstraint = calendarView.bottomAnchor.constraint(equalTo: guide.bottomAnchor)
 
         self.portraitConstraint = switch calendarHeight {
         case .fullscreen:
@@ -109,13 +113,24 @@ class CalendarViewController: UIViewController {
         }
     }
     
+    open func updateConstraintsAfterChangingOrientation() {
+        if isPortraitOrientation {
+            self.landscapeConstraint?.isActive = false
+            self.portraitConstraint?.isActive = true
+        } else {
+            self.portraitConstraint?.isActive = false
+            self.landscapeConstraint?.isActive = true
+        }
+    }
+    
+    // MARK: - Actions
     @objc
     private func handleTapCancel() {
         self.didTapCancel?()
     }
-    
+
     @objc
     private func handleTapDone() {
-        self.didTapDone?(self.calendarView.service)
+        self.didTapDone?(calendarView.service)
     }
 }
