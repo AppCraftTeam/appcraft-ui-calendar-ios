@@ -28,6 +28,12 @@ open class ACCalendarMonthSelectView: ACCalendarBaseView {
         didSet { self.updateComponents() }
     }
     
+    open override var isUserInteractionEnabled: Bool {
+        didSet {
+            self.arrowImageView.isHidden = !isUserInteractionEnabled
+        }
+    }
+    
     open var didToggle: ContextClosure<Bool>?
     
     // MARK: - Methods
