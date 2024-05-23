@@ -13,7 +13,7 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
     
     open var headerHeight: Double {
         didSet {
-            invalidateLayout()
+            self.reloadLayout()
         }
     }
     
@@ -33,8 +33,12 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
         self.scrollDirection = .vertical
         
         let sectionWidth: CGFloat = collectionView.frame.width
-        let sectionHeight: CGFloat = {
-            isPortraitOrientation ? collectionView.frame.height * 0.5 : collectionView.frame.height
+        var sectionHeight: CGFloat = {
+            if isLandscapeOrientation {
+                return collectionView.frame.height
+            } else {
+                return self.itemHeight == .zero ? collectionView.frame.height * 0.5 : self.itemHeight * 6
+            }
         }()
         let collumnsCount: Int = 7
         let itemWidth = sectionWidth / CGFloat(collumnsCount)
@@ -44,7 +48,12 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
         for section in 0..<collectionView.numberOfSections {
             let numberOfItems = collectionView.numberOfItems(inSection: section)
             let rowsCount = numberOfItems / 7
+            
+            if self.itemHeight != .zero && !self.isLandscapeOrientation {
+                sectionHeight = Double(rowsCount) * self.itemHeight
+            }
             let itemHeight = sectionHeight / CGFloat(rowsCount)
+            
             var currentRow: Int = 0
             var currentColumn: Int = 0
             

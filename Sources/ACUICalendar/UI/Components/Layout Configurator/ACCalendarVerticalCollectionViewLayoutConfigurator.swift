@@ -9,7 +9,7 @@ import UIKit
 
 public struct ACCalendarVerticalCollectionViewLayoutConfigurator: ACCalendarCollectionViewLayoutConfigurator {
 
-    public func makeLayout() -> UICollectionViewFlowLayout {
+    public func makeLayout() -> ACCalendarBaseLayout {
         ACCalendarVerticalLayout()
     }
 

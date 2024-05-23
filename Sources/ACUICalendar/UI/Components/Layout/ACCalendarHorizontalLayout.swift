@@ -8,22 +8,36 @@
 import Foundation
 import UIKit
 
+
 open class ACCalendarHorizontalLayout: ACCalendarBaseLayout {
-    
+
     open override func prepare() {
         super.prepare()
         guard let collectionView else { return }
         self.scrollDirection = .horizontal
         collectionView.isPagingEnabled = true
-                
+        
+        let rowsCount: Double = 6
+        let columnsCount: Int = 7
         let sectionWidth: CGFloat = collectionView.frame.width
-        let sectionHeight: CGFloat = collectionView.frame.height
-        let collumnsCount: Int = 7
-        let itemWidth = sectionWidth / CGFloat(collumnsCount)
         
-        var contentX: CGFloat = 0
+        let sectionHeight: CGFloat = {
+            if isLandscapeOrientation {
+                return collectionView.frame.height
+            } else {
+                if self.itemHeight == .zero {
+                    return collectionView.frame.height
+                } else {
+                    return min(collectionView.frame.height, self.itemHeight * rowsCount)
+                }
+            }
+        }()
         
-        let itemHeight = sectionHeight / CGFloat(6)
+        let itemWidth = sectionWidth / CGFloat(columnsCount)
+        
+        var contentX = 0.0
+        
+        let itemHeight = sectionHeight / rowsCount
 
         for section in 0..<collectionView.numberOfSections {
             let numberOfItems = collectionView.numberOfItems(inSection: section)
@@ -42,7 +56,7 @@ open class ACCalendarHorizontalLayout: ACCalendarBaseLayout {
                 attributes.frame = frame
                 self.itemLayoutAttributes += [attributes]
                 
-                if currentColumn >= collumnsCount - 1 {
+                if currentColumn >= columnsCount - 1 {
                     currentColumn = 0
                     currentRow += 1
                 } else {
