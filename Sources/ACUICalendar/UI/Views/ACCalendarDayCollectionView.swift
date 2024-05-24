@@ -5,39 +5,14 @@
 //  Created by Дмитрий Поляков on 24.08.2022.
 //
 
-import Foundation
 import UIKit
 import DPSwift
-
-open class ACCalendarCollectionView: UICollectionView {
-    
-    public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
-        super.init(frame: frame, collectionViewLayout: layout)
-        self.showsVerticalScrollIndicator = false
-        self.showsHorizontalScrollIndicator = false
-        self.contentInsetAdjustmentBehavior = .never
-        self.register(
-            ACCalendarMonthSupplementaryView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: ACCalendarMonthSupplementaryView.identifer
-        )
-        self.register(
-            ACCalendarDayCollectionViewCell.self,
-            forCellWithReuseIdentifier: ACCalendarDayCollectionViewCell.identifer
-        )
-    }
-    
-    required public init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
+import Foundation
 
 open class ACCalendarDayCollectionView: ACCalendarBaseView {
     
     // MARK: Props
-    
-    var isPortraitOrientation = UIDevice.current.orientation.isPortrait
+    var isLandscapeOrientation = UIDevice.current.orientation.isLandscape
     
     open var showsOnlyCurrentDaysInMonth = false {
         didSet { collectionView.reloadData() }
@@ -46,10 +21,11 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     open var monthHeader: ACMonthHeader? = .init(
         horizonalPosition: .offsetFromPassDays
     )
-
+    
     private var insertionRules: (any ACDateInsertRules)?
     private lazy var pageProvider: ACPageProvider = ACVerticalPageProvider()
-    public private(set) lazy var collectionViewLayout: UICollectionViewFlowLayout = ACCalendarVerticalLayout()
+    
+    public private(set) lazy var collectionViewLayout: ACCalendarLayout = ACCalendarVerticalLayout()
     
     open lazy var collectionView: UICollectionView = {
         let collectionView = ACCalendarCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
@@ -65,6 +41,15 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     open var didSelectDates: ContextClosure<[Date]>?
     open var didScrollToMonth: ContextClosure<Date>?
     
+    open var itemHeight: Double {
+        get {
+            self.collectionViewLayout.itemHeight
+        } 
+        set {
+            self.collectionViewLayout.itemHeight = newValue
+        }
+    }
+
     // MARK: - Methods
     
     open override func setupComponents() {
@@ -103,16 +88,16 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     ) {
         self.setPageProvider(configurator.makePageProvider())
         self.collectionViewLayout = configurator.makeLayout()
-        
+
         self.collectionView.setCollectionViewLayout(
             collectionViewLayout,
             animated: animated,
             completion: completion
         )
-        
+
         self.insertionRules = configurator.makeInsertionRules()
     }
-    
+
     open func setPageProvider(_ provider: ACPageProvider) {
         self.pageProvider = provider
         self.setupPageProvider()
@@ -173,19 +158,14 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     
     // MARK: - Orientation methods
     open func checkOrientationChange() {
-        if isPortraitOrientation != UIDevice.current.orientation.isPortrait {
-            self.isPortraitOrientation = UIDevice.current.orientation.isPortrait
+        if isLandscapeOrientation != UIDevice.current.orientation.isLandscape {
+            self.isLandscapeOrientation = UIDevice.current.orientation.isLandscape
             self.updateFlowLayoutAfterChangingOrientation()
         }
     }
     
     open func updateFlowLayoutAfterChangingOrientation() {
-        guard let layout = collectionViewLayout as? ACCalendarBaseLayout else  { return }
-        layout.isPortraitOrientation = isPortraitOrientation
-        layout.resetLayoutAttributes()
-        layout.invalidateLayout()
-        self.collectionView.reloadData()
-        
+        self.collectionViewLayout.isLandscapeOrientation = isLandscapeOrientation
         self.scrollToMonth(with: service.currentMonthDate, animated: false)
     }
 }

@@ -5,11 +5,11 @@ final class ACUICalendarTests: XCTestCase {
 
 }
 
-func TimeMeasure(_ title: String = #function, block: (@escaping () -> ()) -> ()) {
+func TimeMeasure<T>(_ title: String = #function, block: (@escaping () -> ()) -> T) -> T {
     
     let startTime = DispatchTime.now().uptimeNanoseconds
     
-    block {
+    return block {
         let timeElapsed = Double(DispatchTime.now().uptimeNanoseconds - startTime) / 1e9
         
         NSLog("[Measure] - [\(title)]: Time: \(timeElapsed) seconds")

@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import ACUICalendar
 
+final
 class ViewController: UIViewController {
     
     // MARK: - Props
@@ -30,6 +31,8 @@ class ViewController: UIViewController {
     }()
     
     lazy var positionSegmentControl = UISegmentedControl(items: ["Horizontal", "Vertical"])
+    
+    lazy var itemSizeSlider = Slider()
     
     var service = ACCalendarService.default() {
         didSet { self.updateComponents() }
@@ -58,7 +61,7 @@ class ViewController: UIViewController {
             }
         }
     }
-    
+    var calendarItemSize: Double = .zero
     var selectionNames: [ACCalendarDateSelectionName] = [.single, .multi, .range]
     
     var scrollDirection: UICollectionView.ScrollDirection = .horizontal
@@ -83,13 +86,15 @@ class ViewController: UIViewController {
             selectionNamesView,
             makeTitleLabel("Position: "),
             positionSegmentControl,
+            makeTitleLabel("Item height: "),
+            itemSizeSlider,
             makeTitleLabel("Content visibility: "),
             makeTitleWithSwitch(
                 text: "Shows only current days in month",
                 isOn: showsOnlyCurrentDaysInMonth,
                 onAction: { [weak self] (val) in
                     self?.showsOnlyCurrentDaysInMonth = val
-            })
+                })
         ])
         
         stackView.axis = .vertical
@@ -107,7 +112,10 @@ class ViewController: UIViewController {
         ])
         
         self.positionSegmentControl.addTarget(self, action: #selector(positionSegmentChanged(_:)), for: .valueChanged)
-        
+        self.itemSizeSlider.value = 0
+        self.itemSizeSlider.minimumValue = 0
+        self.itemSizeSlider.maximumValue = 100
+        self.itemSizeSlider.addTarget(self, action: #selector(sliderValueChanged), for: .valueChanged)
         self.updateComponents()
     }
     
@@ -152,16 +160,19 @@ class ViewController: UIViewController {
     private func handleTapDatesButton() {
         let vc = ACCalendarDayViewController(
             service: self.service,
-            height: scrollDirection == .horizontal ? .fix(400) : .fullscreen
+            height:  .fullscreen // scrollDirection == .horizontal ? .fix(400) : .fullscreen
         )
-        let nc = UINavigationController(rootViewController: vc)
         vc.setCalendarLayout(
             scrollDirection == .horizontal ? .horizontal() : .vertical(),
             animated: false
         )
+        vc.itemHeight = calendarItemSize
         vc.monthDatePickerViewEnabled = false
         vc.monthArrowSwitcherIsHidden = scrollDirection == .horizontal ? false : true
         vc.showsOnlyCurrentDaysInMonth = showsOnlyCurrentDaysInMonth
+        
+        let nc = UINavigationController(rootViewController: vc)
+        
         vc.onTapDone = { [weak self, weak nc] service in
             self?.service = service
             nc?.dismiss(animated: true)
@@ -193,12 +204,17 @@ class ViewController: UIViewController {
             button.setTitleColor(idx == index ? .systemBlue : ACCalendarUITheme().monthSelectDateTextColor, for: .normal)
         }
     }
-     
+    
     @objc private
     func positionSegmentChanged(_ control: UISegmentedControl) {
         self.scrollDirection = {
             control.selectedSegmentIndex == 0 ? .horizontal : .vertical
         }()
+    }
+    
+    @objc private
+    func sliderValueChanged(_ control: UISlider) {
+        self.calendarItemSize = control.value.toDouble.rounded()
     }
     
     // MARK: - Component fabrication
