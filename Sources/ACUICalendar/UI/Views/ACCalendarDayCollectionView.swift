@@ -24,7 +24,8 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     
     private var insertionRules: (any ACDateInsertRules)?
     private lazy var pageProvider: ACPageProvider = ACVerticalPageProvider()
-    public private(set) lazy var collectionViewLayout: ACCalendarBaseLayout = ACCalendarVerticalLayout()
+    
+    public private(set) lazy var collectionViewLayout: ACCalendarLayout = ACCalendarVerticalLayout()
     
     open lazy var collectionView: UICollectionView = {
         let collectionView = ACCalendarCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)

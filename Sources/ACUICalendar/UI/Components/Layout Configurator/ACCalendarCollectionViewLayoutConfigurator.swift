@@ -8,7 +8,7 @@
 import UIKit
 
 public protocol ACCalendarCollectionViewLayoutConfigurator {
-    func makeLayout() -> ACCalendarBaseLayout
+    func makeLayout() -> ACCalendarLayout
     func makePageProvider() -> ACPageProvider
     func makeInsertionRules() -> ACDateInsertRules?
 }

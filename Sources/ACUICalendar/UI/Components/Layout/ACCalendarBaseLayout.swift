@@ -7,8 +7,8 @@
 
 import UIKit
 
-open class ACCalendarBaseLayout: UICollectionViewFlowLayout {
-    
+open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayout {
+
     // MARK: Attributes
     open var itemHeight: Double = .zero {
         didSet {
@@ -31,7 +31,7 @@ open class ACCalendarBaseLayout: UICollectionViewFlowLayout {
         self.itemLayoutAttributes.removeAll()
         self.headerLayoutAttributes.removeAll()
     }
-    
+
     open func reloadLayout() {
         self.resetLayoutAttributes()
         self.invalidateLayout()
