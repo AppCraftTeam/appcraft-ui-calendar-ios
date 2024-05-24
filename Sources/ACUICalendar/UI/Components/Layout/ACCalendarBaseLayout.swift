@@ -15,7 +15,12 @@ open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayout {
             self.reloadLayout()
         }
     }
-    open var isLandscapeOrientation = UIDevice.current.orientation.isLandscape
+
+    open var isLandscapeOrientation = UIDevice.current.orientation.isLandscape {
+        didSet {
+            self.reloadLayout()
+        }
+    }
 
     open var itemLayoutAttributes: [UICollectionViewLayoutAttributes] = []
     open var headerLayoutAttributes: [UICollectionViewLayoutAttributes] = []

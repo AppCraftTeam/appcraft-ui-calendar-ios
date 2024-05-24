@@ -166,9 +166,6 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     
     open func updateFlowLayoutAfterChangingOrientation() {
         self.collectionViewLayout.isLandscapeOrientation = isLandscapeOrientation
-        self.collectionViewLayout.reloadLayout()
-        self.collectionView.reloadData()
-        
         self.scrollToMonth(with: service.currentMonthDate, animated: false)
     }
 }
