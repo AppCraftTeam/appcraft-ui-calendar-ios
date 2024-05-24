@@ -10,7 +10,7 @@ import UIKit
 open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayout {
 
     // MARK: Attributes
-    open var itemHeight: Double = .zero {
+    open var itemHeight: CGFloat = .zero {
         didSet {
             self.reloadLayout()
         }

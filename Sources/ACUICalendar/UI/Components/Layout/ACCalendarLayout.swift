@@ -8,7 +8,7 @@
 import UIKit
 
 public protocol ACCalendarLayout: UICollectionViewFlowLayout {
-    var itemHeight: Double { get set }
+    var itemHeight: CGFloat { get set }
     var isLandscapeOrientation: Bool { get set }
     
     func reloadLayout()
