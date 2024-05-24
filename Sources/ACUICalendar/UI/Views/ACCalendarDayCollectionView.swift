@@ -5,32 +5,9 @@
 //  Created by Дмитрий Поляков on 24.08.2022.
 //
 
-import Foundation
 import UIKit
 import DPSwift
-
-open class ACCalendarCollectionView: UICollectionView {
-    
-    public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
-        super.init(frame: frame, collectionViewLayout: layout)
-        self.showsVerticalScrollIndicator = false
-        self.showsHorizontalScrollIndicator = false
-        self.contentInsetAdjustmentBehavior = .never
-        self.register(
-            ACCalendarMonthSupplementaryView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: ACCalendarMonthSupplementaryView.identifer
-        )
-        self.register(
-            ACCalendarDayCollectionViewCell.self,
-            forCellWithReuseIdentifier: ACCalendarDayCollectionViewCell.identifer
-        )
-    }
-    
-    required public init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
+import Foundation
 
 open class ACCalendarDayCollectionView: ACCalendarBaseView {
     
