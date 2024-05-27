@@ -12,6 +12,7 @@ import Foundation
 open class ACCalendarDayCollectionView: ACCalendarBaseView {
     
     // MARK: Props
+    var canInsertSections = true
     var isLandscapeOrientation = UIDevice.current.orientation.isLandscape
     
     open var showsOnlyCurrentDaysInMonth = false {
@@ -69,7 +70,6 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }
     
     open override func updateComponents() {
-        
         self.backgroundColor = self.theme.backgroundColor
         
         self.collectionView.reloadData()
@@ -141,18 +141,30 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
 
     // MARK: - Data insertion methods
     func insertPastMonths() {
-        let objects = service.generatePastMonths(count: 8)
-        
-        if !objects.isEmpty {
-            self.collectionView.reloadDataAndKeepOffset()
+        guard self.canInsertSections else { return }
+        self.canInsertSections.toggle()
+        let months = self.service.generatePastMonths(count: 24)
+        if !months.isEmpty {
+            UIView.performWithoutAnimation {
+                self.collectionView.insertSectionsAndKeepOffset(.init(months.indices.reversed()))
+            }
+            self.canInsertSections.toggle()
         }
     }
     
     func insertFutureMonths() {
-        let objects = service.generateFutureMonths(count: 8)
-        
-        if !objects.isEmpty {
-            self.collectionView.reloadData()
+        guard canInsertSections else { return }
+        self.canInsertSections = false
+        let months = service.generateFutureMonths(count: 12)
+        let startIndex = service.months.count - months.count
+        let range = startIndex...startIndex + months.count - 1
+        if !months.isEmpty {
+            UIView.performWithoutAnimation {
+                self.collectionView.insertSections(.init(range))
+                self.collectionView.performBatchUpdates({}, completion: { completed in
+                    self.canInsertSections = true
+                })
+            }
         }
     }
     

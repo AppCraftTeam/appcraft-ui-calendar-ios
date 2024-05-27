@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 /// A set of methods for working with calendar data.
 public class ACCalendarService {
     
@@ -83,11 +84,11 @@ public class ACCalendarService {
     // MARK: - Methods
     public func setupComponents() {
         self.selection.calendar = self.calendar
-        self.generatePastMonths()
-        self.generateFutureMonths()
+        self.generatePastMonths(count: 8)
+        self.generateFutureMonths(count: 8)
         self.years = self.generateYears(from: self.months)
     }
-    
+    var generatorQueue = DispatchQueue(label: "generator.serial.queue", qos: .userInteractive)
 }
 
 // MARK: - Equatable
@@ -107,8 +108,15 @@ public extension ACCalendarService {
     
     @discardableResult
     func generatePastMonths(count: Int = 2) -> [ACCalendarMonthModel] {
-        let months = (0...count + 1).compactMap { _ in
-            self.pastMonthGenerator.next()
+        
+        var months = [ACCalendarMonthModel]()
+        
+        for _ in (0..<count) {
+            if let month = self.pastMonthGenerator.next() {
+                months.insert(month, at: 0)
+            } else {
+                break
+            }
         }
         if !months.isEmpty {
             years = generateYears(from: self.months)
@@ -118,7 +126,7 @@ public extension ACCalendarService {
 
     @discardableResult
     func generateFutureMonths(count: Int = 2) -> [ACCalendarMonthModel] {
-        let months = (0...count + 1).compactMap { _ in
+        let months = (0..<count).compactMap { _ in
             self.futureMonthGenerator.next()
         }
         if !months.isEmpty {

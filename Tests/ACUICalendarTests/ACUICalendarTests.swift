@@ -5,6 +5,7 @@ final class ACUICalendarTests: XCTestCase {
 
 }
 
+@discardableResult
 func TimeMeasure<T>(_ title: String = #function, block: (@escaping () -> ()) -> T) -> T {
     
     let startTime = DispatchTime.now().uptimeNanoseconds

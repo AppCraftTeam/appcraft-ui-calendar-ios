@@ -16,6 +16,7 @@ open class FutureMonthGenerator: MonthGenerator {
         self.maxDate = maxDate
         self.currentDate = currentDate
         super.init(calendar: calendar)
+        
         if let month = self.generateMonth(for: currentDate) {
             self.months.append(month)
         }

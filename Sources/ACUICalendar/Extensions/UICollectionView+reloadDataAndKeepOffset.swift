@@ -20,4 +20,17 @@ extension UICollectionView {
         )
         contentOffset = newOffset
     }
+    
+    public func insertSectionsAndKeepOffset(_ sections: IndexSet) {
+        let beforeContentSize = contentSize
+        insertSections(sections)
+        layoutIfNeeded()
+        let afterContentSize = contentSize
+        
+        let newOffset = CGPoint(
+            x: contentOffset.x + (afterContentSize.width - beforeContentSize.width),
+            y: contentOffset.y + (afterContentSize.height - beforeContentSize.height)
+        )
+        contentOffset = newOffset
+    }
 }
