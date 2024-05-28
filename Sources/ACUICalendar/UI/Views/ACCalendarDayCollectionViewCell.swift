@@ -45,17 +45,11 @@ open class ACCalendarDayCollectionViewCell: UICollectionViewCell {
         set { dayLabel.alpha = newValue ? 0 : 1 }
     }
     
-    open var day: ACCalendarDayModel? {
-        didSet { self.updateComponents() }
-    }
+    open var day: ACCalendarDayModel?
     
-    open var daySelection: ACCalendarDateSelectionType = .notSelected {
-        didSet { self.updateComponents() }
-    }
+    open var daySelection: ACCalendarDateSelectionType = .notSelected
     
-    open var theme = ACCalendarUITheme() {
-        didSet { self.updateComponents() }
-    }
+    open var theme = ACCalendarUITheme()
 
     // MARK: - Methods
     open func setupComponents() {

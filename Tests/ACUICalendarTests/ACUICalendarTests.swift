@@ -2,7 +2,9 @@ import XCTest
 @testable import ACUICalendar
 
 final class ACUICalendarTests: XCTestCase {
-
+    func testGenerationPerformance() {
+        
+    }
 }
 
 @discardableResult
@@ -16,3 +18,4 @@ func TimeMeasure<T>(_ title: String = #function, block: (@escaping () -> ()) -> 
         NSLog("[Measure] - [\(title)]: Time: \(timeElapsed) seconds")
     }
 }
+ 

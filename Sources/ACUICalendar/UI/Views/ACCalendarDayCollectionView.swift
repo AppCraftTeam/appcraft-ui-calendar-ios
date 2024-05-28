@@ -36,9 +36,9 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }()
     
     open var months: [ACCalendarMonthModel] {
-        self.service.pastMonthGenerator.months + self.service.futureMonthGenerator.months
+        self.service.months
     }
-    
+
     open var didSelectDates: ContextClosure<[Date]>?
     open var didScrollToMonth: ContextClosure<Date>?
     
@@ -143,19 +143,29 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     func insertPastMonths() {
         guard self.canInsertSections else { return }
         self.canInsertSections.toggle()
-        let months = self.service.generatePastMonths(count: 24)
-        if !months.isEmpty {
-            UIView.performWithoutAnimation {
-                self.collectionView.insertSectionsAndKeepOffset(.init(months.indices.reversed()))
+        
+        self.service.asyncGeneratePastDates(count: 12) { months in
+            if !months.isEmpty {
+                UIView.performWithoutAnimation {
+                    self.collectionView.insertSectionsAndKeepOffset(.init(months.indices.reversed()))
+                }
+                self.canInsertSections.toggle()
             }
-            self.canInsertSections.toggle()
         }
+        
+//        let months = self.service.generatePastDates(count: 12)
+//        if !months.isEmpty {
+//            UIView.performWithoutAnimation {
+//                self.collectionView.insertSectionsAndKeepOffset(.init(months.indices.reversed()))
+//            }
+//            self.canInsertSections.toggle()
+//        }
     }
     
     func insertFutureMonths() {
         guard canInsertSections else { return }
         self.canInsertSections = false
-        let months = service.generateFutureMonths(count: 12)
+        let months = service.generateFutureDates(count: 12)
         let startIndex = service.months.count - months.count
         let range = startIndex...startIndex + months.count - 1
         if !months.isEmpty {
@@ -233,6 +243,7 @@ extension ACCalendarDayCollectionView: UICollectionViewDataSource {
         
         cell.daySelection = service.daySelected(day)
         cell.theme = theme
+        cell.updateComponents()
         return cell
     }
 }

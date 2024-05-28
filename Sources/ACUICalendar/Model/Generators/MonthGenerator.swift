@@ -7,11 +7,79 @@
 
 import Foundation
 
+public class SafeCollection<Value>: CustomDebugStringConvertible {
+    
+    private var collection = [Value]()
+    
+    private let queue = DispatchQueue(
+        label: "com.atomic.collection.\(UUID().uuidString)",
+        qos: .utility,
+        attributes: .concurrent,
+        autoreleaseFrequency: .inherit,
+        target: .global()
+    )
+    
+    public init() {}
+    
+    public subscript(index: Int) -> Value? {
+        get {
+            self.queue.sync { collection[index] }
+        }
+        set { queue.async(flags: .barrier) { [weak self] in
+            self?.collection[safe: index] = newValue
+        }
+        }
+    }
+    
+    public var debugDescription: String {
+        return collection.debugDescription
+    }
+    
+    public func insert(
+        _ newElement: Value,
+        at i: Int
+    ) {
+        queue.async(flags: .barrier) { [weak self] in
+            self?.collection.insert(newElement, at: i)
+        }
+    }
+    
+    public func append(_ newElement: Value) {
+        queue.async(flags: .barrier) { [weak self] in
+            self?.collection.append(newElement)
+        }
+    }
+    
+    public var original: [Value] {
+        self.queue.sync {
+            collection
+        }
+    }
+    
+    public var first: Value? {
+        self.queue.sync {
+            collection.first
+        }
+    }
+    
+    public var last: Value? {
+        self.queue.sync {
+            collection.last
+        }
+    }
+    
+    static func + (lhs: SafeCollection, rhs: SafeCollection) -> [Value] {
+        lhs.original + rhs.original
+    }
+    
+}
+
+
 open class MonthGenerator: IteratorProtocol {
 
     public typealias Element = ACCalendarMonthModel
 
-    open var months = [ACCalendarMonthModel]()
+    open var months = SafeCollection<ACCalendarMonthModel>()
 
     public let calendar: Calendar
 
@@ -37,7 +105,7 @@ open class MonthGenerator: IteratorProtocol {
             })
 
         return ACCalendarMonthModel(
-            month: self.calendar.component(.month, from: monthDate),
+            month: calendar.component(.month, from: monthDate),
             monthDate: monthDate,
             monthDates: monthDates,
             previousMonthDates: previousMonthDates,
@@ -113,17 +181,17 @@ open class MonthGenerator: IteratorProtocol {
 
     open func generateNextMonthDates(for monthDate: Date) -> [Date]? {
         guard
-            let endOfMonth = self.endOfMonth(for: monthDate),
-            let nextEndOfMonth = self.calendar.date(byAdding: .day, value: 1, to: endOfMonth)
+            let endOfMonth = endOfMonth(for: monthDate),
+            let nextEndOfMonth = calendar.date(byAdding: .day, value: 1, to: endOfMonth)
         else { return nil }
         
         var result: [Date] = []
         var nextDate = nextEndOfMonth
         
-        while self.calendar.component(.weekOfYear, from: endOfMonth) == self.calendar.component(.weekOfYear, from: nextDate) {
+        while calendar.component(.weekOfYear, from: endOfMonth) == calendar.component(.weekOfYear, from: nextDate) {
             result += [nextDate]
             
-            guard let dateAddingDay = self.calendar.date(byAdding: .day, value: 1, to: nextDate) else { break }
+            guard let dateAddingDay = calendar.date(byAdding: .day, value: 1, to: nextDate) else { break }
             nextDate = dateAddingDay
         }
         
