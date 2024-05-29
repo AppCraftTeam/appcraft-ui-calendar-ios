@@ -143,37 +143,32 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     func insertPastMonths() {
         guard self.canInsertSections else { return }
         self.canInsertSections.toggle()
-        
-        self.service.asyncGeneratePastDates(count: 12) { months in
+
+        self.service.asyncGeneratePastDates(count: 12) { [weak self] months in
+            guard let self else { return }
             if !months.isEmpty {
                 UIView.performWithoutAnimation {
                     self.collectionView.insertSectionsAndKeepOffset(.init(months.indices.reversed()))
                 }
-                self.canInsertSections.toggle()
             }
+            self.canInsertSections.toggle()
         }
-        
-//        let months = self.service.generatePastDates(count: 12)
-//        if !months.isEmpty {
-//            UIView.performWithoutAnimation {
-//                self.collectionView.insertSectionsAndKeepOffset(.init(months.indices.reversed()))
-//            }
-//            self.canInsertSections.toggle()
-//        }
     }
     
     func insertFutureMonths() {
         guard canInsertSections else { return }
         self.canInsertSections = false
-        let months = service.generateFutureDates(count: 12)
-        let startIndex = service.months.count - months.count
-        let range = startIndex...startIndex + months.count - 1
-        if !months.isEmpty {
-            UIView.performWithoutAnimation {
-                self.collectionView.insertSections(.init(range))
-                self.collectionView.performBatchUpdates({}, completion: { completed in
-                    self.canInsertSections = true
-                })
+        self.service.asyncGenerateFeatureDates(count: 12) { [weak self] monts in
+            guard let self else { return }
+            if !self.months.isEmpty {
+                CATransaction.begin()
+                CATransaction.setCompletionBlock { [weak self] in
+                    self?.canInsertSections.toggle()
+                }
+                self.collectionView.reloadData()
+                CATransaction.commit()
+            } else {
+                self.canInsertSections.toggle()
             }
         }
     }

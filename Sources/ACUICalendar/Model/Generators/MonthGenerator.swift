@@ -7,79 +7,11 @@
 
 import Foundation
 
-public class SafeCollection<Value>: CustomDebugStringConvertible {
-    
-    private var collection = [Value]()
-    
-    private let queue = DispatchQueue(
-        label: "com.atomic.collection.\(UUID().uuidString)",
-        qos: .utility,
-        attributes: .concurrent,
-        autoreleaseFrequency: .inherit,
-        target: .global()
-    )
-    
-    public init() {}
-    
-    public subscript(index: Int) -> Value? {
-        get {
-            self.queue.sync { collection[index] }
-        }
-        set { queue.async(flags: .barrier) { [weak self] in
-            self?.collection[safe: index] = newValue
-        }
-        }
-    }
-    
-    public var debugDescription: String {
-        return collection.debugDescription
-    }
-    
-    public func insert(
-        _ newElement: Value,
-        at i: Int
-    ) {
-        queue.async(flags: .barrier) { [weak self] in
-            self?.collection.insert(newElement, at: i)
-        }
-    }
-    
-    public func append(_ newElement: Value) {
-        queue.async(flags: .barrier) { [weak self] in
-            self?.collection.append(newElement)
-        }
-    }
-    
-    public var original: [Value] {
-        self.queue.sync {
-            collection
-        }
-    }
-    
-    public var first: Value? {
-        self.queue.sync {
-            collection.first
-        }
-    }
-    
-    public var last: Value? {
-        self.queue.sync {
-            collection.last
-        }
-    }
-    
-    static func + (lhs: SafeCollection, rhs: SafeCollection) -> [Value] {
-        lhs.original + rhs.original
-    }
-    
-}
-
-
 open class MonthGenerator: IteratorProtocol {
 
     public typealias Element = ACCalendarMonthModel
 
-    open var months = SafeCollection<ACCalendarMonthModel>()
+    open var months = ACSafeCollection<ACCalendarMonthModel>()
 
     public let calendar: Calendar
 

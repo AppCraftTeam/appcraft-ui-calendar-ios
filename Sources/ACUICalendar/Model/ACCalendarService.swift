@@ -100,6 +100,7 @@ extension ACCalendarService: Equatable {
         lhs.selection.datesSelected == rhs.selection.datesSelected
     }
 }
+
 // MARK: - Generators
 public extension ACCalendarService {
     
@@ -110,7 +111,10 @@ public extension ACCalendarService {
         return pastMonths + futureMonths
     }
     
-    func asyncGeneratePastDates(count: Int, completion: @escaping ([ACCalendarMonthModel]) -> Void) {
+    func asyncGeneratePastDates(
+        count: Int,
+        completion: @escaping ([ACCalendarMonthModel]) -> Void
+    ) {
         DispatchQueue.global(qos: .userInitiated).async {
             let months = self.generateMonths(count: count, generator: self.pastMonthGenerator)
 
@@ -123,7 +127,23 @@ public extension ACCalendarService {
             }
         }
     }
-    
+
+    func asyncGenerateFeatureDates(
+        count: Int,
+        completion: @escaping ([ACCalendarMonthModel]) -> Void
+    ) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let months = self.generateMonths(count: count, generator: self.futureMonthGenerator)
+
+            if !months.isEmpty {
+                self.years = self.generateYears(from: self.months)
+            }
+            DispatchQueue.main.async {
+                completion(months)
+            }
+        }
+    }
+
     @discardableResult
     func generateMonths(count: Int, generator: MonthGenerator) -> [ACCalendarMonthModel] {
         var months = [ACCalendarMonthModel]()
@@ -137,7 +157,7 @@ public extension ACCalendarService {
         }
         return months
     }
-    
+
     @discardableResult
     func generatePastDates(count: Int = 2) -> [ACCalendarMonthModel] {
         
