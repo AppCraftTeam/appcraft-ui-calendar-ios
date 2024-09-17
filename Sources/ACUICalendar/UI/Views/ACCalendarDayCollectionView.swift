@@ -25,6 +25,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     
     private var insertionRules: (any ACDateInsertRules)?
     private lazy var pageProvider: ACPageProvider = ACVerticalPageProvider()
+    private var isAnimationBusy = false
     
     public private(set) lazy var collectionViewLayout: ACCalendarLayout = ACCalendarVerticalLayout()
     
@@ -38,19 +39,19 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     open var months: [ACCalendarMonthModel] {
         self.service.months
     }
-
+    
     open var didSelectDates: ContextClosure<[Date]>?
     open var didScrollToMonth: ContextClosure<Date>?
     
     open var itemHeight: Double {
         get {
             self.collectionViewLayout.itemHeight
-        } 
+        }
         set {
             self.collectionViewLayout.itemHeight = newValue
         }
     }
-
+    
     // MARK: - Methods
     
     open override func setupComponents() {
@@ -80,7 +81,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             self?.scrollToMonth(with: date, animated: false)
         }
     }
-
+    
     open func setCollectionViewLayout(
         _ configurator: any ACCalendarCollectionViewLayoutConfigurator,
         animated: Bool,
@@ -88,32 +89,34 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     ) {
         self.setPageProvider(configurator.makePageProvider())
         self.collectionViewLayout = configurator.makeLayout()
-
+        
         self.collectionView.setCollectionViewLayout(
             collectionViewLayout,
             animated: animated,
             completion: completion
         )
-
+        
         self.insertionRules = configurator.makeInsertionRules()
     }
-
+    
     open func setPageProvider(_ provider: ACPageProvider) {
         self.pageProvider = provider
         self.setupPageProvider()
     }
-        
+    
     private func setupPageProvider() {
         self.pageProvider.onChangePage = { [weak self] page in
             guard let self else { return }
             guard let monthDate = self.months.element(at: page)?.monthDate else {
                 return
             }
-            self.service.currentMonthDate = monthDate
-            self.didScrollToMonth?(monthDate)
+            if !self.isAnimationBusy {
+                self.service.currentMonthDate = monthDate
+                self.didScrollToMonth?(monthDate)
+            }
         }
     }
-
+    
     open func scrollToMonth(with monthDate: Date, animated: Bool) {
         func isEqual(_ month: ACCalendarMonthModel) -> Bool {
             self.service.calendar.compare(monthDate, to: month.monthDate, toGranularity: .month) == .orderedSame
@@ -125,7 +128,14 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             collectionViewLayout.scrollDirection == .vertical ? .top : .left
         }()
         
-        self.collectionView.scrollToItem(at: .init(item: 0, section: index), at: position, animated: animated)
+        self.isAnimationBusy = true
+        self.collectionView.scrollToItemWithCompletion(
+            at: IndexPath(item: 0, section: index),
+            position: position,
+            animated: true
+        ) {
+            self.isAnimationBusy = false
+        }
     }
     
     open func scrollToMonth(on direction: ACCalendarDirection, animated: Bool) {
@@ -138,12 +148,11 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
         super.layoutSubviews()
         self.checkOrientationChange()
     }
-
+    
     // MARK: - Data insertion methods
     func insertPastMonths() {
         guard self.canInsertSections else { return }
         self.canInsertSections.toggle()
-
         self.service.asyncGeneratePastDates(count: 12) { [weak self] months in
             guard let self else { return }
             if !months.isEmpty {
@@ -156,7 +165,16 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }
     
     func insertFutureMonths() {
-        guard canInsertSections else { return }
+        var isAllowFetchNewMonth: Bool {
+            guard let lastMonth = service.months.last?.monthDate else {
+                return true
+            }
+            
+            return service.currentMonthDate.yearsToDate(endDate: lastMonth) <= 2
+        }
+        
+        guard isAllowFetchNewMonth,
+              canInsertSections else { return }
         self.canInsertSections = false
         self.service.asyncGenerateFeatureDates(count: 12) { [weak self] monts in
             guard let self else { return }
@@ -191,9 +209,10 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
 extension ACCalendarDayCollectionView: UICollectionViewDataSource {
     
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        months.count
+        print("months.count - \(months.count)")
+        return months.count
     }
-
+    
     public func collectionView(
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
@@ -245,7 +264,7 @@ extension ACCalendarDayCollectionView: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegateFlowLayout methods
 extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
-
+    
     public func collectionView(
         _ collectionView: UICollectionView,
         viewForSupplementaryElementOfKind kind: String,
