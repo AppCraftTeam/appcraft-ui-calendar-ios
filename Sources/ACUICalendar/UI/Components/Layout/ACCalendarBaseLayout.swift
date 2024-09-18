@@ -43,18 +43,27 @@ open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayout {
     }
 
     // MARK: - Layout methods
+    private var attributesByIndexPath: [IndexPath: UICollectionViewLayoutAttributes] = [:]
+    
+    open override func prepare() {
+        super.prepare()
+        
+        attributesByIndexPath = [:]
+        for attribute in itemLayoutAttributes {
+            attributesByIndexPath[attribute.indexPath] = attribute
+        }
+    }
 
     open override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        self.searchItemLayoutAttribute(
-            itemLayoutAttributes.sorted(by: { $0.indexPath < $1.indexPath }),
-            where: indexPath
-        )
+        print("layoutSubviews layoutAttributesForItem, all \(attributesByIndexPath.count)")
+        return attributesByIndexPath[indexPath]
     }
 
     open override func layoutAttributesForSupplementaryView(
         ofKind elementKind: String,
         at indexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
+        print("layoutSubviews layoutAttributesForSupplementaryView")
         if headerLayoutAttributes.indices.contains(indexPath.section) {
             return headerLayoutAttributes[indexPath.section]
         }
@@ -62,6 +71,8 @@ open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayout {
     }
 
     open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        print("layoutSubviews layoutAttributesForElements")
+
         let visibleCellLayoutAttributes = itemLayoutAttributes.filter { rect.intersects($0.frame) }
         let visibleHeaderLayoutAttributes = headerLayoutAttributes.filter { rect.intersects($0.frame) }
         return visibleCellLayoutAttributes + visibleHeaderLayoutAttributes

@@ -40,6 +40,7 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
                 return self.itemHeight == .zero ? collectionView.frame.height * 0.5 : self.itemHeight * 6
             }
         }()
+        
         let collumnsCount: Int = 7
         let itemWidth = sectionWidth / CGFloat(collumnsCount)
         

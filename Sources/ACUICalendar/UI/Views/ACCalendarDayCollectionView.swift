@@ -146,6 +146,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     // MARK: - Lifecycle methods
     open override func layoutSubviews() {
         super.layoutSubviews()
+        print("layoutSubviews ACCalendarDayCollectionView")
         self.checkOrientationChange()
     }
     
