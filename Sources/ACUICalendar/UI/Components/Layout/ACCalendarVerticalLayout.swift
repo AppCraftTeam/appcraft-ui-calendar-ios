@@ -31,7 +31,10 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
         guard let collectionView else { return }
         self.resetLayoutAttributes()
         self.scrollDirection = .vertical
-        
+        self.calculateLayout(for: collectionView)
+    }
+    
+    private func calculateLayout(for collectionView: UICollectionView) {
         let sectionWidth: CGFloat = collectionView.frame.width
         var sectionHeight: CGFloat = {
             if isLandscapeOrientation {
@@ -70,15 +73,15 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
             }
             
             for item in 0..<numberOfItems {
-                let x = itemWidth * CGFloat(currentColumn)
-                let y = itemHeight * CGFloat(currentRow) + contentY
-                
-                let frame = CGRect(x: x, y: y, width: itemWidth, height: itemHeight)
-                let indexPath = IndexPath(item: item, section: section)
-                
-                let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
-                attributes.frame = frame
-                
+                let attributes = createLayoutAttribute(
+                    itemWidth: itemWidth,
+                    currentColumn: currentColumn,
+                    itemHeight: itemHeight,
+                    currentRow: currentRow,
+                    contentY: contentY,
+                    item: item,
+                    section: section
+                )
                 self.itemLayoutAttributes.append(attributes)
                 
                 if currentColumn >= collumnsCount - 1 {
@@ -88,9 +91,33 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
                     currentColumn += 1
                 }
             }
+            
             contentY += sectionHeight
         }
+        
+        print("contentSize.... - \(sectionWidth), sectionHeight \(headerHeight)")
         self.headerReferenceSize = .init(width: sectionWidth, height: headerHeight)
         self.contentSize = .init(width: sectionWidth, height: contentY)
+    }
+    
+    private func createLayoutAttribute(
+        itemWidth: CGFloat,
+        currentColumn: Int,
+        itemHeight: CGFloat,
+        currentRow: Int,
+        contentY: CGFloat,
+        item: Int,
+        section: Int
+    ) -> UICollectionViewLayoutAttributes {
+        let x = itemWidth * CGFloat(currentColumn)
+        let y = itemHeight * CGFloat(currentRow) + contentY
+        
+        let frame = CGRect(x: x, y: y, width: itemWidth, height: itemHeight)
+        let indexPath = IndexPath(item: item, section: section)
+        
+        let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+        attributes.frame = frame
+        
+        return attributes
     }
 }
