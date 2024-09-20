@@ -69,39 +69,12 @@ open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayout {
         }
         return nil
     }
-
-    open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        print("layoutSubviews layoutAttributesForElements")
-
-        let visibleCellLayoutAttributes = itemLayoutAttributes.filter { rect.intersects($0.frame) }
-        let visibleHeaderLayoutAttributes = headerLayoutAttributes.filter { rect.intersects($0.frame) }
-        return visibleCellLayoutAttributes + visibleHeaderLayoutAttributes
-    }
     
-    // MARK: - Utils
-    private func searchItemLayoutAttribute(
-        _ list: [UICollectionViewLayoutAttributes],
-        where indexPath: IndexPath
-    ) -> UICollectionViewLayoutAttributes? {
-        var low = 0
-        var high = list.count - 1
-        
-        while low <= high {
-            let mid = (high + low) / 2
-            let midAttr = list[mid]
-            
-            if indexPath == midAttr.indexPath {
-                return midAttr
-            }
-            else if midAttr.indexPath > indexPath {
-                high = mid - 1
-            } else {
-                low = mid + 1
-            }
-        }
-        return nil
-    }
-
+     open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+         let visibleCellLayoutAttributes = itemLayoutAttributes.binarySearchRange(for: rect)
+         let visibleHeaderLayoutAttributes = headerLayoutAttributes.binarySearchRange(for: rect)
+         return visibleCellLayoutAttributes + visibleHeaderLayoutAttributes
+     }
 }
 
 // MARK: - Fabrications

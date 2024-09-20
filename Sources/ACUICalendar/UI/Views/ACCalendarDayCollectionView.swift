@@ -227,23 +227,23 @@ extension ACCalendarDayCollectionView: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         guard months.indices.contains(indexPath.section) else {
-            return .init()
+            return UICollectionViewCell()
         }
-        let days = self.months[indexPath.section].days
+
+        let days = months[indexPath.section].days
         
         guard days.indices.contains(indexPath.item) else {
             return collectionView.dequeueReusableCell(
                 withReuseIdentifier: ACCalendarDayCollectionViewCell.identifer,
                 for: indexPath
-            ) as? ACCalendarDayCollectionViewCell ?? .init()
+            )
         }
-        
+
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: ACCalendarDayCollectionViewCell.identifer,
             for: indexPath
-        ) as? ACCalendarDayCollectionViewCell
-        else {
-            return .init()
+        ) as? ACCalendarDayCollectionViewCell else {
+            return UICollectionViewCell()
         }
         
         let day = days[indexPath.item]
@@ -251,7 +251,7 @@ extension ACCalendarDayCollectionView: UICollectionViewDataSource {
         cell.day = day
         
         if showsOnlyCurrentDaysInMonth {
-            cell.dayIsHidden = day.belongsToMonth != .current ? true : false
+            cell.dayIsHidden = day.belongsToMonth != .current
         } else {
             cell.dayIsHidden = false
         }

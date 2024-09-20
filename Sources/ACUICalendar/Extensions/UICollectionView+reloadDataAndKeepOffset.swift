@@ -22,7 +22,6 @@ extension UICollectionView {
     }
     
     public func insertSectionsAndKeepOffset(_ sections: IndexSet) {
-        print("insertSectionsAndKeepOffset")
         let beforeContentSize = contentSize
         insertSections(sections)
         layoutIfNeeded()
@@ -34,25 +33,27 @@ extension UICollectionView {
         )
         contentOffset = newOffset
     }
-
+    
     public func insertSectionsAndKeepOffsetWithBatchUpdates(_ sections: IndexSet) {
-        DispatchQueue.main.async {
-            let beforeContentSize = self.contentSize
-
-            self.performBatchUpdates({
-                self.insertSections(sections)
-            }, completion: { _ in
-                let afterContentSize = self.contentSize
-                
-                let newOffset = CGPoint(
-                    x: self.contentOffset.x + (afterContentSize.width - beforeContentSize.width),
-                    y: self.contentOffset.y + (afterContentSize.height - beforeContentSize.height)
-                )
-
-                UIView.performWithoutAnimation {
-                    self.contentOffset = newOffset
-                }
-            })
-        }
+        let beforeContentOffset = self.contentOffset
+        let beforeContentSize = self.contentSize
+        
+        self.performBatchUpdates({
+            self.insertSections(sections)
+        }, completion: { _ in
+            let afterContentSize = self.contentSize
+            
+            let deltaX = afterContentSize.width - beforeContentSize.width
+            let deltaY = afterContentSize.height - beforeContentSize.height
+            
+            let newOffset = CGPoint(
+                x: beforeContentOffset.x + deltaX,
+                y: beforeContentOffset.y + deltaY
+            )
+            
+            UIView.performWithoutAnimation {
+                self.setContentOffset(newOffset, animated: false)
+            }
+        })
     }
 }
