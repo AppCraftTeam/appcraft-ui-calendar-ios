@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2DB4CAF92BFF8F8400A240BC /* Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB4CAF82BFF8F8400A240BC /* Slider.swift */; };
-		2DDF89E32AB0671300802A72 /* ActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDF89E22AB0671300802A72 /* ActionButton.swift */; };
+		95095C8C2C9DB060001B05BB /* ActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95095C8A2C9DB060001B05BB /* ActionButton.swift */; };
+		95095C8D2C9DB060001B05BB /* Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95095C8B2C9DB060001B05BB /* Slider.swift */; };
 		E29FA7C428C20F30005366CB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29FA7C328C20F30005366CB /* ViewController.swift */; };
 		E29FA7D328C37EE2005366CB /* ACUICalendar in Frameworks */ = {isa = PBXBuildFile; productRef = E29FA7D228C37EE2005366CB /* ACUICalendar */; };
 		E2A6CA5D28B4E05F006EAA6F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A6CA5C28B4E05F006EAA6F /* AppDelegate.swift */; };
@@ -16,8 +16,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2DB4CAF82BFF8F8400A240BC /* Slider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slider.swift; sourceTree = "<group>"; };
-		2DDF89E22AB0671300802A72 /* ActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButton.swift; sourceTree = "<group>"; };
+		95095C8A2C9DB060001B05BB /* ActionButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ActionButton.swift; path = ACUICalendarDemo/Components/ActionButton.swift; sourceTree = SOURCE_ROOT; };
+		95095C8B2C9DB060001B05BB /* Slider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Slider.swift; path = ACUICalendarDemo/Components/Slider.swift; sourceTree = SOURCE_ROOT; };
 		E29FA7C328C20F30005366CB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		E2A6CA5928B4E05F006EAA6F /* ACUICalendarDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ACUICalendarDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2A6CA5C28B4E05F006EAA6F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -41,8 +41,8 @@
 		2DDF89E12AB0670600802A72 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				2DB4CAF82BFF8F8400A240BC /* Slider.swift */,
-				2DDF89E22AB0671300802A72 /* ActionButton.swift */,
+				95095C8A2C9DB060001B05BB /* ActionButton.swift */,
+				95095C8B2C9DB060001B05BB /* Slider.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -58,6 +58,7 @@
 			isa = PBXGroup;
 			children = (
 				E2B6763128B4E0AB00D8710A /* Packages */,
+				2DDF89E12AB0670600802A72 /* Components */,
 				E2A6CA5B28B4E05F006EAA6F /* ACUICalendarDemo */,
 				E2A6CA5A28B4E05F006EAA6F /* Products */,
 				E29FA7D128C37EE2005366CB /* Frameworks */,
@@ -75,7 +76,6 @@
 		E2A6CA5B28B4E05F006EAA6F /* ACUICalendarDemo */ = {
 			isa = PBXGroup;
 			children = (
-				2DDF89E12AB0670600802A72 /* Components */,
 				E2A6CA6A28B4E060006EAA6F /* Info.plist */,
 				E2A6CA5C28B4E05F006EAA6F /* AppDelegate.swift */,
 				E29FA7C328C20F30005366CB /* ViewController.swift */,
@@ -166,10 +166,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DB4CAF92BFF8F8400A240BC /* Slider.swift in Sources */,
 				E29FA7C428C20F30005366CB /* ViewController.swift in Sources */,
 				E2A6CA5D28B4E05F006EAA6F /* AppDelegate.swift in Sources */,
-				2DDF89E32AB0671300802A72 /* ActionButton.swift in Sources */,
+				95095C8D2C9DB060001B05BB /* Slider.swift in Sources */,
+				95095C8C2C9DB060001B05BB /* ActionButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,7 +308,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4S5S22456Z;
+				DEVELOPMENT_TEAM = CVFSZXK7VF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ACUICalendarDemo/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -337,7 +337,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4S5S22456Z;
+				DEVELOPMENT_TEAM = CVFSZXK7VF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ACUICalendarDemo/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

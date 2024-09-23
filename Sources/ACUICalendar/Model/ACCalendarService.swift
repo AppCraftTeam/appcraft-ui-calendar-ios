@@ -80,12 +80,42 @@ public class ACCalendarService {
         get { self.selection.datesSelected }
         set { self.selection.datesSelected = newValue }
     }
-    
+        
+    /// Limit the maximum number of months to display in a collection view
+    public var maxDisplayedMonthsCount = 24
+
     // MARK: - Methods
     public func setupComponents() {
         self.selection.calendar = self.calendar
         self.generateMonths(count: 12)
         self.generateYearsAtCurrentMonths()
+    }
+    
+    /// Ensure that the number of elements in the month array does not exceed the maximum value, i.e. the collection always contains only current values
+    public func provideMonthsLimit(isAddedPast: Bool) {
+        let totalMonths = self.months.count
+        print("provideMonthsLimit isAddedPast - \(isAddedPast), totalMonths - \(totalMonths), maxDisplayedMonthsCount - \(maxDisplayedMonthsCount)")
+        if totalMonths > maxDisplayedMonthsCount {
+            let excessMonths = totalMonths - maxDisplayedMonthsCount
+            print("provideMonthsLimit excessMonths - \(excessMonths)")
+
+            if isAddedPast {
+                let delCount = min(excessMonths, totalMonths)
+                futureMonthGenerator.months.removeLast(delCount)
+                print("futureMonthsToRemoved, now - \(futureMonthGenerator.months.count), delCount \(delCount)")
+
+//                let remainingMonthsToRemove = excessMonths - futureMonthsToRemove
+//                print("remainingMonthsToRemove - \(remainingMonthsToRemove)")
+//                if remainingMonthsToRemove > 0 {
+//                    let pastMonthsToRemove = min(remainingMonthsToRemove, pastMonthGenerator.months.count)
+//                    print("pastMonthsToRemove - \(pastMonthsToRemove)")
+//                    pastMonthGenerator.months.removeFirst(pastMonthsToRemove)
+//                }
+            } else {
+                pastMonthGenerator.months.removeFirst(min(excessMonths, totalMonths))
+            }
+            print("provideMonthsLimit removed, now \(self.months.count)")
+        }
     }
 }
 
@@ -111,39 +141,33 @@ public extension ACCalendarService {
         return pastMonths + futureMonths
     }
     
-    func asyncGeneratePastDates(
-        count: Int,
-        completion: @escaping ([ACCalendarMonthModel]) -> Void
-    ) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            let months = self.generateMonths(count: count, generator: self.pastMonthGenerator)
+    func asyncGeneratePastDates(count: Int, completion: @escaping ([ACCalendarMonthModel]) -> Void) {
+            DispatchQueue.global(qos: .userInitiated).async {
+                let months = self.generateMonths(count: count, generator: self.pastMonthGenerator)
 
-            if !months.isEmpty {
-                self.years = self.generateYears(from: self.months)
-            }
-            
-            DispatchQueue.main.async {
-                completion(months)
+                if !months.isEmpty {
+                    self.years = self.generateYears(from: self.months)
+                }
+                
+                DispatchQueue.main.async {
+                    completion(months)
+                }
             }
         }
-    }
 
-    func asyncGenerateFeatureDates(
-        count: Int,
-        completion: @escaping ([ACCalendarMonthModel]) -> Void
-    ) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            let months = self.generateMonths(count: count, generator: self.futureMonthGenerator)
+    func asyncGenerateFeatureDates(count: Int, completion: @escaping ([ACCalendarMonthModel]) -> Void) {
+            DispatchQueue.global(qos: .userInitiated).async {
+                let months = self.generateMonths(count: count, generator: self.futureMonthGenerator)
 
-            if !months.isEmpty {
-                self.years = self.generateYears(from: self.months)
-            }
-            DispatchQueue.main.async {
-                completion(months)
+                if !months.isEmpty {
+                    self.years = self.generateYears(from: self.months)
+                }
+
+                DispatchQueue.main.async {
+                    completion(months)
+                }
             }
         }
-    }
-
     @discardableResult
     func generateMonths(count: Int, generator: MonthGenerator) -> [ACCalendarMonthModel] {
         var months = [ACCalendarMonthModel]()

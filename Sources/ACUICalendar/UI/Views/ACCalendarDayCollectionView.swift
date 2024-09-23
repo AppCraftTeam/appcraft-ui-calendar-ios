@@ -122,8 +122,11 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             self.service.calendar.compare(monthDate, to: month.monthDate, toGranularity: .month) == .orderedSame
         }
         
-        guard let index = self.months.firstIndex(where: { isEqual($0) }) else { return }
-        
+        guard let index = months.firstIndex(where: { isEqual($0) }),
+              service.currentMonthDate != monthDate else {
+            return
+        }
+
         let position: UICollectionView.ScrollPosition = {
             collectionViewLayout.scrollDirection == .vertical ? .top : .left
         }()
@@ -149,7 +152,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
         print("layoutSubviews ACCalendarDayCollectionView")
         self.checkOrientationChange()
     }
-    
+        
     // MARK: - Data insertion methods
     func insertPastMonths() {
         guard self.canInsertSections else { return }
@@ -160,11 +163,45 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
                 UIView.performWithoutAnimation {
                     self.collectionView.insertSectionsAndKeepOffset(.init(months.indices.reversed()))
                 }
+                
+                #warning("TODO test delay")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
+                    let monthsCount = self.service.months.count
+                    if monthsCount > self.service.maxDisplayedMonthsCount {
+                        print("deleteSections.... 1 monthsCount \(monthsCount), self - \(self.numberOfSections(in: self.collectionView)), need \(self.service.maxDisplayedMonthsCount - monthsCount)")
+                        let updatedMonthsCount = self.service.months.count
+                        let sectionsToDelete = IndexSet((self.service.maxDisplayedMonthsCount..<updatedMonthsCount).reversed())
+                        self.service.provideMonthsLimit(isAddedPast: true)
+                        print("deleteSections.... 2 updatedMonthsCount \(updatedMonthsCount), sectionsToDelete - \(sectionsToDelete), self - \(self.numberOfSections(in: self.collectionView))")
+                        self.deleteSectionsSafely(sectionsToDelete: sectionsToDelete)
+                    }
+                })
             }
             self.canInsertSections.toggle()
         }
     }
     
+    func deleteSectionsSafely(sectionsToDelete: IndexSet) {
+        let numberOfSections = collectionView.numberOfSections
+        print("deleteSectionsSafely sectionsToDelete \(sectionsToDelete), all - \(numberOfSections)")
+
+        // Фильтруем только те секции, которые существуют в collectionView
+        let validSections = sectionsToDelete.filter { $0 < numberOfSections }
+
+        // Преобразуем отфильтрованные секции в IndexSet
+        let validIndexSet = IndexSet(validSections)
+
+        if !validIndexSet.isEmpty {
+            collectionView.performBatchUpdates {
+                collectionView.deleteSections(validIndexSet)
+            } completion: { finished in
+                print("Sections \(sectionsToDelete) deleted successfully")
+            }
+        } else {
+            print("No valid sections to delete \(sectionsToDelete)")
+        }
+    }
+
     func insertFutureMonths() {
         var isAllowFetchNewMonth: Bool {
             guard let lastMonth = service.months.last?.monthDate else {
@@ -321,6 +358,6 @@ extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
         guard let day = months.element(at: indexPath.section)?.days.element(at: indexPath.item) else { return }
         self.service.daySelect(day)
         self.didSelectDates?(self.service.datesSelected)
-        self.collectionView.reloadData()
+        self.collectionView.reloadSections(IndexSet(integer: indexPath.section))
     }
 }

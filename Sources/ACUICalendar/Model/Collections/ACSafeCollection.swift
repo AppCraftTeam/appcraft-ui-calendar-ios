@@ -17,15 +17,14 @@ public class ACSafeCollection<Value>: CustomDebugStringConvertible {
         target: .global()
     )
     
-    public init() {}
-    
     public subscript(index: Int) -> Value? {
         get {
-            self.queue.sync { collection[index] }
+            self.queue.sync { collection[safe: index] }
         }
-        set { queue.async(flags: .barrier) { [weak self] in
-            self?.collection[safe: index] = newValue
-        }
+        set {
+            queue.async(flags: .barrier) { [weak self] in
+                self?.collection[safe: index] = newValue
+            }
         }
     }
     
@@ -33,10 +32,7 @@ public class ACSafeCollection<Value>: CustomDebugStringConvertible {
         return collection.debugDescription
     }
     
-    public func insert(
-        _ newElement: Value,
-        at i: Int
-    ) {
+    public func insert(_ newElement: Value, at i: Int) {
         queue.async(flags: .barrier) { [weak self] in
             self?.collection.insert(newElement, at: i)
         }
@@ -66,7 +62,34 @@ public class ACSafeCollection<Value>: CustomDebugStringConvertible {
         }
     }
     
+    public var count: Int {
+        collection.count
+    }
+    
+    
     public static func + (lhs: ACSafeCollection, rhs: ACSafeCollection) -> [Value] {
         lhs.original + rhs.original
+    }
+    
+    public func removeLast(_ counter: Int) {
+        print("removeLast counter \(counter), all - \(self.count)")
+        self.queue.sync {
+            if count <= collection.count {
+                collection.removeLast(count)
+            } else {
+                print("Failed removeLast")
+            }
+        }
+    }
+    
+    public func removeFirst(_ counter: Int) {
+        print("removeFirst counter \(counter)")
+        self.queue.sync {
+            if count <= collection.count {
+                collection.removeFirst(count)
+            } else {
+                print("Failed removeFirst")
+            }
+        }
     }
 }

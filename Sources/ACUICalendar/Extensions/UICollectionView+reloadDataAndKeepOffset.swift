@@ -32,6 +32,7 @@ extension UICollectionView {
             y: contentOffset.y + (afterContentSize.height - beforeContentSize.height)
         )
         contentOffset = newOffset
+        print("insertSectionsAndKeepOffset end")
     }
     
     public func insertSectionsAndKeepOffsetWithBatchUpdates(_ sections: IndexSet) {

@@ -55,7 +55,7 @@ open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayout {
     }
 
     open override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        print("layoutSubviews layoutAttributesForItem, all \(attributesByIndexPath.count)")
+        //print("layoutSubviews layoutAttributesForItem, all \(attributesByIndexPath.count)")
         return attributesByIndexPath[indexPath]
     }
 
@@ -63,7 +63,7 @@ open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayout {
         ofKind elementKind: String,
         at indexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
-        print("layoutSubviews layoutAttributesForSupplementaryView")
+        //print("layoutSubviews layoutAttributesForSupplementaryView")
         if headerLayoutAttributes.indices.contains(indexPath.section) {
             return headerLayoutAttributes[indexPath.section]
         }
