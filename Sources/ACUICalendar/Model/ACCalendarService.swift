@@ -82,7 +82,7 @@ public class ACCalendarService {
     }
         
     /// Limit the maximum number of months to display in a collection view
-    public var maxDisplayedMonthsCount = 24
+    public var maxDisplayedMonthsCount = 48
 
     // MARK: - Methods
     public func setupComponents() {
@@ -94,6 +94,7 @@ public class ACCalendarService {
     /// Ensure that the number of elements in the month array does not exceed the maximum value, i.e. the collection always contains only current values
     public func provideMonthsLimit(isAddedPast: Bool) {
         let totalMonths = self.months.count
+        print("provideMonthsLimit start, now \(self.months.count), pastMonthGenerator \(pastMonthGenerator.months.count), futureMonthGenerator \(futureMonthGenerator.months.count)")
         print("provideMonthsLimit isAddedPast - \(isAddedPast), totalMonths - \(totalMonths), maxDisplayedMonthsCount - \(maxDisplayedMonthsCount)")
         if totalMonths > maxDisplayedMonthsCount {
             let excessMonths = totalMonths - maxDisplayedMonthsCount
@@ -101,20 +102,32 @@ public class ACCalendarService {
 
             if isAddedPast {
                 let delCount = min(excessMonths, totalMonths)
-                futureMonthGenerator.months.removeLast(delCount)
-                print("futureMonthsToRemoved, now - \(futureMonthGenerator.months.count), delCount \(delCount)")
+                let futureMonthCount = futureMonthGenerator.months.count
 
-//                let remainingMonthsToRemove = excessMonths - futureMonthsToRemove
-//                print("remainingMonthsToRemove - \(remainingMonthsToRemove)")
-//                if remainingMonthsToRemove > 0 {
-//                    let pastMonthsToRemove = min(remainingMonthsToRemove, pastMonthGenerator.months.count)
-//                    print("pastMonthsToRemove - \(pastMonthsToRemove)")
-//                    pastMonthGenerator.months.removeFirst(pastMonthsToRemove)
-//                }
+                if delCount <= futureMonthCount {
+                    futureMonthGenerator.months.removeLast(delCount)
+                    print("Removed \(delCount) from futureMonthGenerator, left \(futureMonthGenerator.months.count)")
+                } else {
+                    let delFromFuture = futureMonthCount
+                    let delFromPast = delCount - delFromFuture
+
+                    futureMonthGenerator.months.removeLast(delFromFuture)
+                    print("Removed \(delFromFuture) from futureMonthGenerator, left \(futureMonthGenerator.months.count)")
+
+                    if delFromPast > 0 {
+                        let pastMonthCount = pastMonthGenerator.months.count
+                        if delFromPast <= pastMonthCount {
+                            pastMonthGenerator.months.removeLast(delFromPast)
+                            print("Removed \(delFromPast) from pastMonthGenerator, left \(pastMonthGenerator.months.count)")
+                        } else {
+                            print("Failed remove, snall elements in pastMonthGenerator for \(delFromPast)")
+                        }
+                    }
+                }
             } else {
                 pastMonthGenerator.months.removeFirst(min(excessMonths, totalMonths))
             }
-            print("provideMonthsLimit removed, now \(self.months.count)")
+            print("provideMonthsLimit removed, now \(self.months.count), pastMonthGenerator \(pastMonthGenerator.months.count), futureMonthGenerator \(futureMonthGenerator.months.count)")
         }
     }
 }

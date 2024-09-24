@@ -74,8 +74,10 @@ public class ACSafeCollection<Value>: CustomDebugStringConvertible {
     public func removeLast(_ counter: Int) {
         print("removeLast counter \(counter), all - \(self.count)")
         self.queue.sync {
-            if count <= collection.count {
-                collection.removeLast(count)
+            if counter <= collection.count {
+                let monthData = Array(collection.suffix(counter)) as? [ACCalendarMonthModel]
+                print("removeLast \(monthData?.map({ $0.monthDate }))")
+                collection.removeLast(counter)
             } else {
                 print("Failed removeLast")
             }
@@ -85,8 +87,10 @@ public class ACSafeCollection<Value>: CustomDebugStringConvertible {
     public func removeFirst(_ counter: Int) {
         print("removeFirst counter \(counter)")
         self.queue.sync {
-            if count <= collection.count {
-                collection.removeFirst(count)
+            if counter <= collection.count {
+                let monthData = Array(collection.prefix(counter)) as? [ACCalendarMonthModel]
+                print("removeFirst \(monthData?.map({ $0.monthDate }))")
+                collection.removeFirst(counter)
             } else {
                 print("Failed removeFirst")
             }

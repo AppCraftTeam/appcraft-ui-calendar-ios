@@ -34,11 +34,17 @@ public class ACVerticalPageProvider: ACPageProvider {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard let firstVisibleSection = getCurrentFirstVisibleSection(in: scrollView) else { return }
         if let previousVisibleSection = self.previousVisibleSection {
+            if previousVisibleSection == 0 {
+                print("firstVisibleSection - zero")
+                self.onChangePage?(firstVisibleSection)
+            }
             if firstVisibleSection != previousVisibleSection {
+                print("firstVisibleSection - \(firstVisibleSection), previousVisibleSection - \(previousVisibleSection)")
                 self.previousVisibleSection = firstVisibleSection
                 self.onChangePage?(firstVisibleSection)
             }
         } else {
+            print("firstVisibleSection set - \(firstVisibleSection)")
             self.previousVisibleSection = firstVisibleSection
         }
     }
