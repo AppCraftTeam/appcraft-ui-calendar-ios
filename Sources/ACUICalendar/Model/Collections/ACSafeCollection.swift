@@ -96,4 +96,10 @@ public class ACSafeCollection<Value>: CustomDebugStringConvertible {
             }
         }
     }
+    
+    public func clear() {
+        self.queue.sync {
+            self.collection = []
+        }
+    }
 }

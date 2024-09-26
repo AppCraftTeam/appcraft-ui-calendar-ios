@@ -156,6 +156,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
         
     // MARK: - Data insertion methods
     func insertPastMonths() {
+        print("canInsertSections insertPastMonths- \(canInsertSections), all \(self.service.months.count)")
         guard self.canInsertSections else { return }
         print("insertPastMonths")
         self.canInsertSections.toggle()
@@ -165,31 +166,99 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
                 UIView.performWithoutAnimation {
                     self.collectionView.insertSectionsAndKeepOffset(.init(months.indices.reversed()))
                 }
-                
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-                    let monthsCount = self.service.months.count
-                    if monthsCount > self.service.maxDisplayedMonthsCount {
-                        print("deleteSections.... 1 monthsCount \(monthsCount), self -  \(self.numberOfSections(in: self.collectionView)), need \(self.service.maxDisplayedMonthsCount - monthsCount)")
-                        let updatedMonthsCount = self.service.months.count
-                        let sectionsToDelete = IndexSet((self.service.maxDisplayedMonthsCount..<updatedMonthsCount).reversed())
-                        self.service.provideMonthsLimit(isAddedPast: true)
-                        print("deleteSections.... 2 updatedMonthsCount \(updatedMonthsCount), sectionsToDelete - \(sectionsToDelete), self - \(self.numberOfSections(in: self.collectionView))")
-                        self.deleteSectionsSafely(sectionsToDelete: sectionsToDelete)
-                        self.canInsertSections.toggle()
-                    }
+                    print("zzzzzz ")
+                    self.limitMonthDataAfterScrollToTop(for: self.service.currentMonthDate)
+                    self.canInsertSections = true
                 })
             }
         }
     }
     
+    // scroll to past
+    func limitMonthDataAfterScrollToTop(for currentMonthDate: Date) {
+        print("limitMonthDataAfterScrollToTop for \(currentMonthDate)")
+        let calendar = Calendar.current
+        
+        guard let startDate = calendar.date(byAdding: .month, value: -12, to: currentMonthDate),
+              let endDate = calendar.date(byAdding: .month, value: 12, to: currentMonthDate) else {
+            return
+        }
+        print("limitMonthDataAfterScrollToTop startDate - \(startDate), endDate - \(endDate)")
+
+        var sectionsToDelete = IndexSet()
+        
+        self.service.months.enumerated().forEach { (index, monthModel) in
+            if monthModel.monthDate < startDate || monthModel.monthDate > endDate {
+                sectionsToDelete.insert(index)
+            }
+        }
+        print("limitMonthDataAfterScrollToTop sectionsToDelete \(sectionsToDelete)")
+
+        let updatedMonths = months.enumerated().filter { (index, monthModel) in
+            !sectionsToDelete.contains(index)
+        }.map { $0.element }
+        
+        print("limitMonthDataAfterScrollToTop updatedMonths \(updatedMonths.map({ $0.monthDate }))")
+        
+        self.service.pastMonthGenerator.months.clear()
+        Array(updatedMonths.prefix(12)).forEach({
+            self.service.pastMonthGenerator.months.append($0)
+        })
+        
+        self.service.futureMonthGenerator.months.clear()
+        Array(updatedMonths.suffix(12)).forEach({
+            self.service.futureMonthGenerator.months.append($0)
+        })
+                
+        collectionView.reloadData()
+    }
+    
+    // scroll to future
+    func limitMonthDataAfterScrollToBottom(for currentMonthDate: Date) {
+        print("limitMonthDataAfterScrollToBottom for \(currentMonthDate)")
+        let calendar = Calendar.current
+        
+        guard let startDate = calendar.date(byAdding: .month, value: -12, to: currentMonthDate),
+              let endDate = calendar.date(byAdding: .month, value: 12, to: currentMonthDate) else {
+            return
+        }
+        print("limitMonthDataAfterScrollToBottom startDate - \(startDate), endDate - \(endDate)")
+
+        var sectionsToDelete = IndexSet()
+        
+        self.service.months.enumerated().forEach { (index, monthModel) in
+            if monthModel.monthDate < startDate || monthModel.monthDate > endDate {
+                sectionsToDelete.insert(index)
+            }
+        }
+        print("limitMonthDataAfterScrollToBottom sectionsToDelete \(sectionsToDelete)")
+
+        let updatedMonths = months.enumerated().filter { (index, monthModel) in
+            !sectionsToDelete.contains(index)
+        }.map { $0.element }
+        
+        print("limitMonthDataAfterScrollToBottom updatedMonths \(updatedMonths.map({ $0.monthDate }))")
+        
+        self.service.pastMonthGenerator.months.clear()
+        Array(updatedMonths.prefix(12)).forEach({
+            self.service.pastMonthGenerator.months.append($0)
+        })
+        
+        self.service.futureMonthGenerator.months.clear()
+        Array(updatedMonths.suffix(12)).forEach({
+            self.service.futureMonthGenerator.months.append($0)
+        })
+                
+        collectionView.reloadData()
+    }
+
     func deleteSectionsSafely(sectionsToDelete: IndexSet) {
         let numberOfSections = collectionView.numberOfSections
         print("deleteSectionsSafely sectionsToDelete \(sectionsToDelete), all - \(numberOfSections)")
 
-        // Фильтруем только те секции, которые существуют в collectionView
         let validSections = sectionsToDelete.filter { $0 < numberOfSections }
-
-        // Преобразуем отфильтрованные секции в IndexSet
         let validIndexSet = IndexSet(validSections)
 
         if !validIndexSet.isEmpty {
@@ -221,9 +290,13 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             if !self.months.isEmpty {
                 CATransaction.begin()
                 CATransaction.setCompletionBlock { [weak self] in
-                    self?.canInsertSections.toggle()
+                    guard let self else { return }
+
+                    //self.limitMonthDataAfterScrollToBottom(for: self.service.currentMonthDate)
+                    self.canInsertSections.toggle()
                 }
                 self.collectionView.reloadData()
+                self.limitMonthDataAfterScrollToBottom(for: self.service.currentMonthDate)
                 CATransaction.commit()
             } else {
                 self.canInsertSections.toggle()

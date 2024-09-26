@@ -103,7 +103,11 @@ public class ACCalendarService {
             if isAddedPast {
                 let delCount = min(excessMonths, totalMonths)
                 let futureMonthCount = futureMonthGenerator.months.count
-
+                let zz = futureMonthGenerator.months.original.map({ $0.monthDate })
+                print("removeLast futureMonthGenerator ALL \(zz)")
+                
+                let zzs = pastMonthGenerator.months.original.map({ $0.monthDate })
+                print("removeLast pastMonthGenerator ALL \(zzs)")
                 if delCount <= futureMonthCount {
                     futureMonthGenerator.months.removeLast(delCount)
                     print("Removed \(delCount) from futureMonthGenerator, left \(futureMonthGenerator.months.count)")
@@ -197,7 +201,6 @@ public extension ACCalendarService {
 
     @discardableResult
     func generatePastDates(count: Int = 2) -> [ACCalendarMonthModel] {
-        
         let months = generateMonths(count: count, generator: pastMonthGenerator)
         
         if !months.isEmpty {
