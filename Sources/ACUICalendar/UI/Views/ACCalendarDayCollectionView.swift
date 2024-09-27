@@ -110,7 +110,10 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             guard let monthDate = self.months.element(at: page)?.monthDate else {
                 return
             }
-            print("page - \(page), monthDate - \(monthDate), \(self.service.currentMonthDate)")
+            
+            print("page - \(page), monthDate - \(monthDate), \(self.service.currentMonthDate) OR \(self.service.allMonths.element(at: page)?.monthDate)")
+
+
             if !self.isAnimationBusy {
                 self.service.currentMonthDate = monthDate
                 self.didScrollToMonth?(monthDate)
@@ -119,6 +122,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }
     
     open func scrollToMonth(with monthDate: Date, animated: Bool) {
+        print("sscrollToMonth \(monthDate)")
         func isEqual(_ month: ACCalendarMonthModel) -> Bool {
             self.service.calendar.compare(monthDate, to: month.monthDate, toGranularity: .month) == .orderedSame
         }
@@ -211,47 +215,59 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
         Array(updatedMonths.suffix(12)).forEach({
             self.service.futureMonthGenerator.months.append($0)
         })
-                
-        collectionView.reloadData()
+               
+        //collectionView.reloadData()
+        collectionView.reloadDataAndKeepOffset()
     }
     
     // scroll to future
     func limitMonthDataAfterScrollToBottom(for currentMonthDate: Date) {
-        print("limitMonthDataAfterScrollToBottom for \(currentMonthDate)")
         let calendar = Calendar.current
         
-        guard let startDate = calendar.date(byAdding: .month, value: -12, to: currentMonthDate),
-              let endDate = calendar.date(byAdding: .month, value: 12, to: currentMonthDate) else {
+        guard let startDate = calendar.date(byAdding: .year, value: -1, to: currentMonthDate),
+              let endDate = calendar.date(byAdding: .year, value: 1, to: currentMonthDate) else {
             return
         }
-        print("limitMonthDataAfterScrollToBottom startDate - \(startDate), endDate - \(endDate)")
-
-        var sectionsToDelete = IndexSet()
         
-        self.service.months.enumerated().forEach { (index, monthModel) in
-            if monthModel.monthDate < startDate || monthModel.monthDate > endDate {
-                sectionsToDelete.insert(index)
-            }
+        print("limitMonthDataAfterScrollToBottom startDate - \(startDate), endDate - \(endDate), currentMonthDate - \(currentMonthDate)")
+
+        let past = service.pastMonthGenerator.months.original.filter {
+            $0.monthDate >= startDate && $0.monthDate <= endDate
         }
-        print("limitMonthDataAfterScrollToBottom sectionsToDelete \(sectionsToDelete)")
-
-        let updatedMonths = months.enumerated().filter { (index, monthModel) in
-            !sectionsToDelete.contains(index)
-        }.map { $0.element }
-        
-        print("limitMonthDataAfterScrollToBottom updatedMonths \(updatedMonths.map({ $0.monthDate }))")
-        
-        self.service.pastMonthGenerator.months.clear()
-        Array(updatedMonths.prefix(12)).forEach({
+        service.pastMonthGenerator.months.clear()
+        past.forEach {
+            print("limitMonthDataAfterScrollToBottom pastMonths insert: \($0.monthDate)")
             self.service.pastMonthGenerator.months.append($0)
-        })
+        }
         
-        self.service.futureMonthGenerator.months.clear()
-        Array(updatedMonths.suffix(12)).forEach({
+        let future = service.futureMonthGenerator.months.original.filter {
+            $0.monthDate >= startDate && $0.monthDate <= endDate
+        }
+        service.futureMonthGenerator.months.clear()
+        future.forEach {
+            print("limitMonthDataAfterScrollToBottom futureMonths insert: \($0.monthDate)")
             self.service.futureMonthGenerator.months.append($0)
+        }
+        
+        print("limitMonthDataAfterScrollToBottom pastMonths: \(service.pastMonthGenerator.months.original.map { $0.monthDate })")
+        print("limitMonthDataAfterScrollToBottom futureMonths: \(service.futureMonthGenerator.months.original.map { $0.monthDate })")
+        
+        /*
+        CATransaction.begin()
+        CATransaction.setCompletionBlock { [weak self] in
+            self?.canInsertSections.toggle()
+        }
+        self.collectionView.reloadData()
+        CATransaction.commit()
+         */
+        
+        UIView.performWithoutAnimation {
+            self.collectionView.reloadData()
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: {
+            self.canInsertSections.toggle()
         })
-                
-        collectionView.reloadData()
     }
 
     func deleteSectionsSafely(sectionsToDelete: IndexSet) {
@@ -271,13 +287,14 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             print("No valid sections to delete \(sectionsToDelete)")
         }
     }
-
+    
     func insertFutureMonths() {
         var isAllowFetchNewMonth: Bool {
             guard let lastMonth = service.months.last?.monthDate else {
                 return true
             }
-            
+            print("isAllowFetchNewMonth - lastMonth \(lastMonth), \(service.currentMonthDate)")
+
             return service.currentMonthDate.yearsToDate(endDate: lastMonth) <= 2
         }
         print("isAllowFetchNewMonth - \(isAllowFetchNewMonth),last \(service.months.last?.monthDate), or \(service.pastMonthGenerator.months.last?.monthDate) and \(service.futureMonthGenerator.months.last?.monthDate)")
@@ -288,16 +305,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             print("isAllowFetchNewMonth -new monts - \(monts.first?.monthDate) to \(monts.last?.monthDate)")
             guard let self else { return }
             if !self.months.isEmpty {
-                CATransaction.begin()
-                CATransaction.setCompletionBlock { [weak self] in
-                    guard let self else { return }
-
-                    //self.limitMonthDataAfterScrollToBottom(for: self.service.currentMonthDate)
-                    self.canInsertSections.toggle()
-                }
-                self.collectionView.reloadData()
                 self.limitMonthDataAfterScrollToBottom(for: self.service.currentMonthDate)
-                CATransaction.commit()
             } else {
                 self.canInsertSections.toggle()
             }
@@ -323,8 +331,10 @@ extension ACCalendarDayCollectionView: UICollectionViewDataSource {
     
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         print("months.count - \(months.count)")
+        print("months.count alt - \(service.allMonths.count)")
         print("months.count - \(months.first?.monthDate) and \(months.last?.monthDate)")
         print("months.counts - \(months.map({ $0.monthDate }))")
+        print("months.counts alt - \(service.allMonths.map({ $0.monthDate }))")
 
         return months.count
     }

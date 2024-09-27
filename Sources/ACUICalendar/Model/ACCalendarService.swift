@@ -74,6 +74,13 @@ public class ACCalendarService {
     public var months: [ACCalendarMonthModel] {
         pastMonthGenerator.months + futureMonthGenerator.months
     }
+    
+    public var allPastMonths = [ACCalendarMonthModel]()
+    public var allFutureMonths = [ACCalendarMonthModel]()
+
+    public var allMonths: [ACCalendarMonthModel] {
+        allPastMonths + allFutureMonths
+    }
     public var years: [ACCalendarYearModel] = []
     
     public var datesSelected: [Date] {
@@ -153,8 +160,26 @@ public extension ACCalendarService {
     
     @discardableResult
     func generateMonths(count: Int = 4) -> [ACCalendarMonthModel] {
-        let pastMonths = generateMonths(count: count, generator: pastMonthGenerator)
+        //let pastMonths = generateMonths(count: count, generator: pastMonthGenerator)
+        let pastMonths: [ACCalendarMonthModel] = []
         let futureMonths = generateMonths(count: count, generator: futureMonthGenerator)
+        
+        print("asyncGenerateFeatureDates c pastMonths \(pastMonths.map({ $0.monthDate }))")
+        print("asyncGenerateFeatureDates c futureMonths \(futureMonths.map({ $0.monthDate }))")
+
+        self.allPastMonths = pastMonths.sorted(by: { lel, rel in
+            lel.monthDate < rel.monthDate
+        })
+        
+        if let month = futureMonthGenerator.generateMonth(for: currentMonthDate) {
+            print("insert....month \(month) for \(currentMonthDate)")
+            self.allFutureMonths.append(month)
+        }
+        self.allFutureMonths += futureMonths
+        self.allFutureMonths = self.allFutureMonths.removingDuplicates().sorted(by: { lel, rel in
+            lel.monthDate < rel.monthDate
+        })
+
         return pastMonths + futureMonths
     }
     
@@ -167,6 +192,7 @@ public extension ACCalendarService {
                 }
                 
                 DispatchQueue.main.async {
+                    self.allPastMonths += months
                     completion(months)
                 }
             }
@@ -175,12 +201,14 @@ public extension ACCalendarService {
     func asyncGenerateFeatureDates(count: Int, completion: @escaping ([ACCalendarMonthModel]) -> Void) {
             DispatchQueue.global(qos: .userInitiated).async {
                 let months = self.generateMonths(count: count, generator: self.futureMonthGenerator)
+                print("asyncGenerateFeatureDates c months \(months.map({ $0.monthDate }))")
 
                 if !months.isEmpty {
                     self.years = self.generateYears(from: self.months)
                 }
 
                 DispatchQueue.main.async {
+                    self.allFutureMonths += months
                     completion(months)
                 }
             }
@@ -196,6 +224,8 @@ public extension ACCalendarService {
                 break
             }
         }
+        print("asyncGenerateFeatureDates months! \(months.map({ $0.monthDate }))")
+
         return months
     }
 
@@ -213,7 +243,7 @@ public extension ACCalendarService {
     func generateFutureDates(count: Int = 2) -> [ACCalendarMonthModel] {
         
         let months = generateMonths(count: count, generator: futureMonthGenerator)
-
+        print("generateFutureDates months - \(months.map({ $0.monthDate }))")
         if !months.isEmpty {
            years = generateYears(from: self.months)
         }

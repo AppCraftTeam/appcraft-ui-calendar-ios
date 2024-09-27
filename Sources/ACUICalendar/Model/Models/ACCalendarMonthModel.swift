@@ -8,7 +8,7 @@
 import Foundation
 
 /// Model for describing a calendar month.
-public struct ACCalendarMonthModel {
+public struct ACCalendarMonthModel: Hashable {
     
     /// Month number
     public let month: Int
@@ -27,4 +27,8 @@ public struct ACCalendarMonthModel {
     
     /// All calendar days of the month.
     public let days: [ACCalendarDayModel]
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(monthDate)
+    }
 }

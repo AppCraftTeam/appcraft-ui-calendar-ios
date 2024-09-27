@@ -31,7 +31,8 @@ open class PastMonthGenerator: MonthGenerator {
             return nil
         }
         self.months.insert(nextMonth, at: 0)
-        
+        print("asyncGenerateFeatureDates months! \(nextMonth.monthDate)")
+
         return nextMonth
     }
 }
