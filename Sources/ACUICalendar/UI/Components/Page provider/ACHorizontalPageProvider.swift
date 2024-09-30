@@ -13,6 +13,7 @@ import Foundation
 final
 public class ACHorizontalPageProvider: ACPageProvider {
 
+    public var currentPage: Int = 0
     public var onChangePage: ((Int) -> Void)? = nil
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -25,6 +26,7 @@ public class ACHorizontalPageProvider: ACPageProvider {
     
     private func getPageNumber(in scrollView: UIScrollView) {
         let page = scrollView.contentOffset.x / scrollView.frame.width
+        self.currentPage = Int(page)
         self.onChangePage?(Int(page))
     }
 }

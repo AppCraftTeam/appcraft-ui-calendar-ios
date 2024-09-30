@@ -25,6 +25,8 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    public var visibleSections: [Int] = []
     
     open override func prepare() {
         super.prepare()
@@ -35,6 +37,8 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
     }
     
     private func calculateLayout(for collectionView: UICollectionView) {
+        let start = Date().timeIntervalSince1970
+        
         let sectionWidth: CGFloat = collectionView.frame.width
         var sectionHeight: CGFloat = {
             if isLandscapeOrientation {
@@ -48,54 +52,77 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
         let itemWidth = sectionWidth / CGFloat(collumnsCount)
         
         var contentY: CGFloat = 0
-        
+        print("visibleSections - \(visibleSections), all - \(collectionView.numberOfSections)")
         for section in 0..<collectionView.numberOfSections {
-            let numberOfItems = collectionView.numberOfItems(inSection: section)
-            let rowsCount = numberOfItems / 7
-            
-            if self.itemHeight != .zero && !self.isLandscapeOrientation {
-                sectionHeight = Double(rowsCount) * self.itemHeight
-            }
-            let itemHeight = sectionHeight / CGFloat(rowsCount)
-            
-            var currentRow: Int = 0
-            var currentColumn: Int = 0
-            
-            if headerHeight > 0 {
-                let attr = UICollectionViewLayoutAttributes(
-                    forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-                    with: IndexPath(item: 0, section: section)
-                )
-                attr.frame = CGRect(x: 0, y: contentY, width: sectionWidth, height: headerHeight)
-                
-                self.headerLayoutAttributes.append(attr)
-                contentY += headerHeight + self.sectionInset.top
-            }
-            
-            for item in 0..<numberOfItems {
-                let attributes = createLayoutAttribute(
-                    itemWidth: itemWidth,
-                    currentColumn: currentColumn,
-                    itemHeight: itemHeight,
-                    currentRow: currentRow,
-                    contentY: contentY,
-                    item: item,
-                    section: section
-                )
-                self.itemLayoutAttributes.append(attributes)
-                
-                if currentColumn >= collumnsCount - 1 {
-                    currentColumn = 0
-                    currentRow += 1
+            if !visibleSections.isEmpty {
+                if self.visibleSections.contains(section) {
+                    //print("is visible \(section)")
+                    calc()
                 } else {
-                    currentColumn += 1
+                    if headerHeight > 0 {
+                        let attr = UICollectionViewLayoutAttributes(
+                            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                            with: IndexPath(item: 0, section: section)
+                        )
+                        attr.frame = CGRect(x: 0, y: contentY, width: sectionWidth, height: headerHeight)
+                        
+                        self.headerLayoutAttributes.append(attr)
+                        contentY += headerHeight + self.sectionInset.top
+                    }
+                    contentY += 0.0
                 }
+            } else {
+                calc()
             }
             
-            contentY += sectionHeight
+            func calc() {
+                let numberOfItems = collectionView.numberOfItems(inSection: section)
+                let rowsCount = numberOfItems / 7
+                
+                if self.itemHeight != .zero && !self.isLandscapeOrientation {
+                    sectionHeight = Double(rowsCount) * self.itemHeight
+                }
+                let itemHeight = sectionHeight / CGFloat(rowsCount)
+                
+                var currentRow: Int = 0
+                var currentColumn: Int = 0
+                
+                if headerHeight > 0 {
+                    let attr = UICollectionViewLayoutAttributes(
+                        forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                        with: IndexPath(item: 0, section: section)
+                    )
+                    attr.frame = CGRect(x: 0, y: contentY, width: sectionWidth, height: headerHeight)
+                    
+                    self.headerLayoutAttributes.append(attr)
+                    contentY += headerHeight + self.sectionInset.top
+                }
+                
+                for item in 0..<numberOfItems {
+                    let attributes = createLayoutAttribute(
+                        itemWidth: itemWidth,
+                        currentColumn: currentColumn,
+                        itemHeight: itemHeight,
+                        currentRow: currentRow,
+                        contentY: contentY,
+                        item: item,
+                        section: section
+                    )
+                    self.itemLayoutAttributes.append(attributes)
+                    
+                    if currentColumn >= collumnsCount - 1 {
+                        currentColumn = 0
+                        currentRow += 1
+                    } else {
+                        currentColumn += 1
+                    }
+                }
+                
+                contentY += sectionHeight
+            }
         }
         
-        print("contentSize.... - \(sectionWidth), sectionHeight \(headerHeight)")
+        print("\(Date().timeIntervalSince1970 - start) contentSize.... - \(sectionWidth), sectionHeight \(headerHeight), visibleSections - \(visibleSections.count)")
         self.headerReferenceSize = .init(width: sectionWidth, height: headerHeight)
         self.contentSize = .init(width: sectionWidth, height: contentY)
     }

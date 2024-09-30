@@ -12,6 +12,7 @@ import Foundation
 final
 public class ACVerticalPageProvider: ACPageProvider {
     
+    public var currentPage: Int = 0
     private var previousVisibleSection: Int?
     
     public var onChangePage: ((Int) -> Void)?
@@ -37,6 +38,7 @@ public class ACVerticalPageProvider: ACPageProvider {
         if let previousVisibleSection = self.previousVisibleSection {
             if firstVisibleSection != previousVisibleSection {
                 self.previousVisibleSection = firstVisibleSection
+                self.currentPage = firstVisibleSection
                 self.onChangePage?(firstVisibleSection)
             }
         } else {

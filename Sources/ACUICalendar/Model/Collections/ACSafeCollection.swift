@@ -103,3 +103,38 @@ public class ACSafeCollection<Value>: CustomDebugStringConvertible {
         }
     }
 }
+
+public enum ScrollType {
+    case top, bottom
+}
+
+extension ACSafeCollection where Value == ACCalendarMonthModel {
+    func forEachVisibleDates(
+        scrollType: ScrollType,
+        startDate: Date,
+        endDate: Date,
+        pastMonthCount: Int,
+        action: (Int) -> Void
+    ) {
+        self.queue.sync {
+            for (index, month) in self.collection.enumerated() {
+                let itemDate = month.monthDate
+                var isVisible: Bool {
+                    switch scrollType {
+                    case .top:
+                        //print("itemDate - \(itemDate), startDate - \(startDate), endDate - \(endDate) -> is \(itemDate >= startDate && itemDate <= endDate)")
+                        return itemDate >= startDate && itemDate <= endDate //itemDate <= startDate || itemDate >= endDate
+                    case .bottom:
+                        return itemDate >= startDate && itemDate <= endDate
+                    }
+                }
+                self.collection[index].isVisible = isVisible
+                
+                if isVisible {
+                    print("visible section - \(self.collection[index].monthDate)")
+                    action(index)
+                }
+            }
+        }
+    }
+}

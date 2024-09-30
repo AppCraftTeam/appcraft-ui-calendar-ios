@@ -28,6 +28,9 @@ public struct ACCalendarMonthModel: Hashable {
     /// All calendar days of the month.
     public let days: [ACCalendarDayModel]
     
+    public var isVisible = true
+
+    
     public func hash(into hasher: inout Hasher) {
         hasher.combine(monthDate)
     }

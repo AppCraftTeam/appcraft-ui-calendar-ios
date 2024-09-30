@@ -17,6 +17,8 @@ import Foundation
 /// in the custom ``UICollectionViewFlowLayout``.
 public protocol ACPageProvider {
     
+    var currentPage: Int { get }
+
     /// Callback with page number
     var onChangePage: ((Int) -> Void)? { get set }
         
