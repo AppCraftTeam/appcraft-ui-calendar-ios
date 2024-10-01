@@ -66,6 +66,8 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             self.collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             self.collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
         ])
+        print("zzzz layot \(self.collectionView.collectionViewLayout)")
+        (collectionViewLayout as? ACCalendarVerticalLayout)?.delegate = self
         self.setupPageProvider()
         self.updateComponents()
     }
@@ -216,11 +218,13 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }
 
     func setVisibleSections(fot scrollType: ScrollType) {
+        return ;
+        
         let currentMonthDate = self.service.currentMonthDate
         let calendar = Calendar.current
 
-        guard let startDate = calendar.date(byAdding: .month, value: -12, to: currentMonthDate),
-              let endDate = calendar.date(byAdding: .month, value: 12, to: currentMonthDate) else {
+        guard let startDate = calendar.date(byAdding: .year, value: -2, to: currentMonthDate),
+              let endDate = calendar.date(byAdding: .year, value: 2, to: currentMonthDate) else {
             return
         }
         let startedDate = Date().timeIntervalSince1970
@@ -250,6 +254,11 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
         print("setVisibleSections indexes - \(indexes), time - \(Date().timeIntervalSince1970 - startedDate), now current - \(self.service.currentMonthDate)")
 
         (self.collectionView.collectionViewLayout as? ACCalendarVerticalLayout)?.visibleSections = indexes
+        
+        if !indexes.contains(self.pageProvider.currentPage) {
+            print("LOAD AGAIn")
+            setVisibleSections(fot: scrollType)
+        }
     }
 
     func deleteSectionsSafely(sectionsToDelete: IndexSet) {
@@ -279,7 +288,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
 
             return service.currentMonthDate.yearsToDate(endDate: lastMonth) <= 2
         }
-        print("isAllowFetchNewMonth - \(isAllowFetchNewMonth),last \(service.months.last?.monthDate), or \(service.pastMonthGenerator.months.last?.monthDate) and \(service.futureMonthGenerator.months.last?.monthDate)")
+        print("isAllowFetchNewMonth - \(isAllowFetchNewMonth),last \(service.months.last?.monthDate), or \(service.pastMonthGenerator.months.last?.monthDate) and \(service.futureMonthGenerator.months.last?.monthDate), current \(service.currentMonthDate)")
         guard isAllowFetchNewMonth,
               canInsertSections else { return }
         self.canInsertSections = false
@@ -432,5 +441,12 @@ extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
         self.service.daySelect(day)
         self.didSelectDates?(self.service.datesSelected)
         self.collectionView.reloadSections(IndexSet(integer: indexPath.section))
+    }
+}
+
+// MARK: - ACCalendarBaseLayoutDelegate
+extension ACCalendarDayCollectionView: ACCalendarBaseLayoutDelegate {
+    public func getDate(for section: Int) -> Date? {
+        self.service.months[safe: section]?.monthDate
     }
 }
