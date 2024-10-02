@@ -66,8 +66,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             self.collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             self.collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
         ])
-        print("zzzz layot \(self.collectionView.collectionViewLayout)")
-        (collectionViewLayout as? ACCalendarVerticalLayout)?.delegate = self
+       
         self.setupPageProvider()
         self.updateComponents()
     }
@@ -100,6 +99,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             animated: animated,
             completion: completion
         )
+        (self.collectionViewLayout as? ACCalendarVerticalLayout)?.delegate = self
         
         self.insertionRules = configurator.makeInsertionRules()
     }
@@ -173,6 +173,8 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     }
         
     // MARK: - Data insertion methods
+    
+    /*
     func insertPastMonths() {
         print("canInsertSections insertPastMonths- \(canInsertSections), all \(self.service.months.count), page - \(self.pageProvider.currentPage)")
         let currentSectionIndex = self.months.firstIndex(where: { $0.monthDate == self.service.currentMonthDate })
@@ -193,7 +195,6 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
 //            return
 //        }
         
-        return ;
         
         guard self.canInsertSections else { return }
         print("insertPastMonths")
@@ -216,7 +217,41 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             }
         }
     }
+*/
+    
+    func insertPastMonths() {
+           guard self.canInsertSections else { return }
+           self.canInsertSections.toggle()
 
+           self.service.asyncGeneratePastDates(count: 12) { [weak self] months in
+               guard let self else { return }
+               if !months.isEmpty {
+                   UIView.performWithoutAnimation {
+                       self.collectionView.insertSectionsAndKeepOffset(.init(months.indices.reversed()))
+                   }
+               }
+               self.canInsertSections.toggle()
+           }
+    }
+    
+    func insertFutureMonths() {
+        guard canInsertSections else { return }
+        self.canInsertSections = false
+        self.service.asyncGenerateFeatureDates(count: 12) { [weak self] monts in
+            guard let self else { return }
+            if !self.months.isEmpty {
+                CATransaction.begin()
+                CATransaction.setCompletionBlock { [weak self] in
+                    self?.canInsertSections.toggle()
+                }
+                self.collectionView.reloadData()
+                CATransaction.commit()
+            } else {
+                self.canInsertSections.toggle()
+            }
+        }
+    }
+    
     func setVisibleSections(fot scrollType: ScrollType) {
         return ;
         
@@ -278,7 +313,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             print("No valid sections to delete \(sectionsToDelete)")
         }
     }
-    
+    /*
     func insertFutureMonths() {
         var isAllowFetchNewMonth: Bool {
             guard let lastMonth = service.months.last?.monthDate else {
@@ -309,7 +344,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
             }
         }
     }
-    
+    */
     // MARK: - Orientation methods
     open func checkOrientationChange() {
         if isLandscapeOrientation != UIDevice.current.orientation.isLandscape {
