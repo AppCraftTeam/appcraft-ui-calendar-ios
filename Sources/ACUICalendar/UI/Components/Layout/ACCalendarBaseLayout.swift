@@ -43,54 +43,38 @@ open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayout {
     }
 
     // MARK: - Layout methods
+    private var attributesByIndexPath: [IndexPath: UICollectionViewLayoutAttributes] = [:]
+    
+    open override func prepare() {
+        super.prepare()
+        
+        attributesByIndexPath = [:]
+        for attribute in itemLayoutAttributes {
+            attributesByIndexPath[attribute.indexPath] = attribute
+        }
+    }
 
     open override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        self.searchItemLayoutAttribute(
-            itemLayoutAttributes.sorted(by: { $0.indexPath < $1.indexPath }),
-            where: indexPath
-        )
+        //print("layoutSubviews layoutAttributesForItem, all \(attributesByIndexPath.count)")
+        return attributesByIndexPath[indexPath]
     }
 
     open override func layoutAttributesForSupplementaryView(
         ofKind elementKind: String,
         at indexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
+        //print("layoutSubviews layoutAttributesForSupplementaryView")
         if headerLayoutAttributes.indices.contains(indexPath.section) {
             return headerLayoutAttributes[indexPath.section]
         }
         return nil
     }
-
-    open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let visibleCellLayoutAttributes = itemLayoutAttributes.filter { rect.intersects($0.frame) }
-        let visibleHeaderLayoutAttributes = headerLayoutAttributes.filter { rect.intersects($0.frame) }
-        return visibleCellLayoutAttributes + visibleHeaderLayoutAttributes
-    }
     
-    // MARK: - Utils
-    private func searchItemLayoutAttribute(
-        _ list: [UICollectionViewLayoutAttributes],
-        where indexPath: IndexPath
-    ) -> UICollectionViewLayoutAttributes? {
-        var low = 0
-        var high = list.count - 1
-        
-        while low <= high {
-            let mid = (high + low) / 2
-            let midAttr = list[mid]
-            
-            if indexPath == midAttr.indexPath {
-                return midAttr
-            }
-            else if midAttr.indexPath > indexPath {
-                high = mid - 1
-            } else {
-                low = mid + 1
-            }
-        }
-        return nil
-    }
-
+     open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+         let visibleCellLayoutAttributes = itemLayoutAttributes.binarySearchRange(for: rect)
+         let visibleHeaderLayoutAttributes = headerLayoutAttributes.binarySearchRange(for: rect)
+         return visibleCellLayoutAttributes + visibleHeaderLayoutAttributes
+     }
 }
 
 // MARK: - Fabrications

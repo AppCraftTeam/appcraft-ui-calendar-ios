@@ -9,7 +9,19 @@ import UIKit
 
 // TODO: Add custom section insets for layout
 
+public protocol ACCalendarBaseLayoutDelegate: AnyObject {
+    func getDate(for section: Int) -> Date?
+}
+
 open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
+    
+    private var cachedAttributes: [Date: [UICollectionViewLayoutAttributes]] = [:]
+    private var contentHeight: CGFloat = 0
+    private var contentWidth: CGFloat {
+        return collectionView?.bounds.width ?? 0
+    }
+    
+    open var delegate: ACCalendarBaseLayoutDelegate?
     
     open var headerHeight: Double {
         didSet {
@@ -26,70 +38,134 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
         fatalError("init(coder:) has not been implemented")
     }
     
+    public var visibleSections: [Int] = []
+    
     open override func prepare() {
         super.prepare()
         guard let collectionView else { return }
-        self.resetLayoutAttributes()
         self.scrollDirection = .vertical
-        
-        let sectionWidth: CGFloat = collectionView.frame.width
-        var sectionHeight: CGFloat = {
-            if isLandscapeOrientation {
-                return collectionView.frame.height
-            } else {
-                return self.itemHeight == .zero ? collectionView.frame.height * 0.5 : self.itemHeight * 6
+        let newVisibleSections = calculateNewVisibleSections()
+        print("zzzz newVisibleSections - \(newVisibleSections), \(self.delegate)")
+        resetLayoutAttributes(for: newVisibleSections)
+        calculateLayout(for: collectionView, newSections: newVisibleSections)
+    }
+    
+    private func calculateNewVisibleSections() -> Set<Date> {
+        var newSections: Set<Date> = []
+        let visibleSectionsRange = getVisibleSectionsRange()
+        print("zzzz visibleSectionsRange - \(visibleSectionsRange)")
+        for section in visibleSectionsRange.lowerBound..<visibleSectionsRange.upperBound {
+            if let sectionDate = getDateForSection(section), cachedAttributes[sectionDate] == nil {
+                newSections.insert(sectionDate)
             }
-        }()
-        let collumnsCount: Int = 7
-        let itemWidth = sectionWidth / CGFloat(collumnsCount)
+        }
         
-        var contentY: CGFloat = 0
+        return newSections
+    }
+    
+    private func resetLayoutAttributes(for newSections: Set<Date>) {
+        for sectionDate in newSections {
+            cachedAttributes[sectionDate] = []
+        }
+        print("zzzz 1 \(self.delegate)")
+    }
+    
+    private func calculateLayout(for collectionView: UICollectionView, newSections: Set<Date>) {
+        print("zzzz 2 \(self.delegate), newSections - \(newSections)")
+        let sectionWidth = collectionView.bounds.width
+        var currentY: CGFloat = contentHeight
         
         for section in 0..<collectionView.numberOfSections {
-            let numberOfItems = collectionView.numberOfItems(inSection: section)
-            let rowsCount = numberOfItems / 7
+            guard let sectionDate = getDateForSection(section) else { continue }
             
-            if self.itemHeight != .zero && !self.isLandscapeOrientation {
-                sectionHeight = Double(rowsCount) * self.itemHeight
+            if let cachedSectionAttributes = cachedAttributes[sectionDate], !newSections.contains(sectionDate) {
+                continue
             }
-            let itemHeight = sectionHeight / CGFloat(rowsCount)
             
-            var currentRow: Int = 0
-            var currentColumn: Int = 0
+            let numberOfItems = collectionView.numberOfItems(inSection: section)
+            let itemHeight: CGFloat = calculateItemHeight(for: section)
+            let rowsCount = (numberOfItems / 7) + ((numberOfItems % 7 > 0) ? 1 : 0)
+            
+            let collumnsCount: Int = 7
+            let itemWidth = sectionWidth / CGFloat(collumnsCount)
+            
+            var currentRow = 0
+            var currentColumn = 0
             
             if headerHeight > 0 {
-                let attr = UICollectionViewLayoutAttributes(
+                let headerAttributes = UICollectionViewLayoutAttributes(
                     forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                     with: IndexPath(item: 0, section: section)
                 )
-                attr.frame = CGRect(x: 0, y: contentY, width: sectionWidth, height: headerHeight)
-                
-                self.headerLayoutAttributes.append(attr)
-                contentY += headerHeight + self.sectionInset.top
+                headerAttributes.frame = CGRect(x: 0, y: currentY, width: sectionWidth, height: headerHeight)
+                cachedAttributes[sectionDate]?.append(headerAttributes)
+                currentY += headerHeight + sectionInset.top
             }
             
             for item in 0..<numberOfItems {
-                let x = itemWidth * CGFloat(currentColumn)
-                let y = itemHeight * CGFloat(currentRow) + contentY
-                
-                let frame = CGRect(x: x, y: y, width: itemWidth, height: itemHeight)
                 let indexPath = IndexPath(item: item, section: section)
-                
                 let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
-                attributes.frame = frame
                 
-                self.itemLayoutAttributes.append(attributes)
+                let x = itemWidth * CGFloat(currentColumn)
+                let y = itemHeight * CGFloat(currentRow) + currentY
+                attributes.frame = CGRect(x: x, y: y, width: itemWidth, height: itemHeight)
                 
-                if currentColumn >= collumnsCount - 1 {
+                cachedAttributes[sectionDate]?.append(attributes)
+                
+                if currentColumn >= 6 {
                     currentColumn = 0
                     currentRow += 1
                 } else {
                     currentColumn += 1
                 }
             }
-            contentY += sectionHeight
+            
+            currentY += itemHeight * CGFloat(rowsCount) + sectionInset.bottom
         }
-        self.headerReferenceSize = .init(width: sectionWidth, height: headerHeight)
-        self.contentSize = .init(width: sectionWidth, height: contentY)
+        
+        contentHeight = currentY
+    }
+    
+    open override var collectionViewContentSize: CGSize {
+        return CGSize(width: contentWidth, height: contentHeight)
+    }
+    
+    open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        var visibleAttributes: [UICollectionViewLayoutAttributes] = []
+        
+        for (_, attributesArray) in cachedAttributes {
+            visibleAttributes.append(contentsOf: attributesArray.filter { $0.frame.intersects(rect) })
+        }
+        
+        return visibleAttributes
+    }
+    
+    open override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        if let sectionDate = getDateForSection(indexPath.section) {
+            return cachedAttributes[sectionDate]?.first(where: { $0.indexPath == indexPath })
+        }
+        return nil
+    }
+    
+    open override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        if let sectionDate = getDateForSection(indexPath.section) {
+            return cachedAttributes[sectionDate]?.first(where: { $0.indexPath == indexPath && $0.representedElementKind == elementKind })
+        }
+        return nil
+    }
+    
+    private func getDateForSection(_ section: Int) -> Date? {
+        print("zzzz delegate - \(delegate), sec \(section) is \(self.delegate?.getDate(for: section))")
+        return self.delegate?.getDate(for: section)
+    }
+    
+#warning("todo")
+    private func getVisibleSectionsRange() -> Range<Int> {
+        return 0..<(collectionView?.numberOfSections ?? 0)
+    }
+    
+    private func calculateItemHeight(for section: Int) -> CGFloat {
+        let defaultHeight: CGFloat = itemHeight == .zero ? (collectionView?.frame.height ?? 0) * 0.5 : itemHeight
+        return isLandscapeOrientation ? (collectionView?.frame.height ?? 0) : defaultHeight
     }
 }

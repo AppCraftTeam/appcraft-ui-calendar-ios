@@ -43,6 +43,7 @@ open class ACCalendarView: ACCalendarBaseView {
         let result = ACCalendarDayCollectionView(service: self.service)
         
         result.didScrollToMonth = { [weak self] monthDate in
+            print("didScrollToMonth monthDate \(monthDate)")
             self?.service.currentMonthDate = monthDate
             self?.monthSelectView.updateMonthDateLabel()
         }

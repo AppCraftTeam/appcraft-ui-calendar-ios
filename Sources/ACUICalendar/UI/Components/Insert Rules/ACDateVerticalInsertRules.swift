@@ -13,7 +13,7 @@ public struct ACDateVerticalInsertRules: ACDateInsertRules {
     
     public func needsInsertPastDates(_ scrollView: UIScrollView) -> Bool {
         let contentOffset = scrollView.contentOffset
-        return contentOffset.y <= -scrollView.contentInset.top
+        return contentOffset.y - scrollView.frame.size.height * 1.5 <= -scrollView.contentInset.top
     }
     
     public func needsInsertFutureDates(_ scrollView: UIScrollView) -> Bool {
@@ -26,6 +26,6 @@ public struct ACDateVerticalInsertRules: ACDateInsertRules {
             + scrollView.contentInset.top
             + scrollView.contentInset.bottom
         )
-        return contentOffset.y + itemWidth >= (bottomOffset.y < 0 ? 0 : bottomOffset.y)
+        return contentOffset.y + itemWidth * 2 >= (bottomOffset.y < 0 ? 0 : bottomOffset.y)
     }
 }
