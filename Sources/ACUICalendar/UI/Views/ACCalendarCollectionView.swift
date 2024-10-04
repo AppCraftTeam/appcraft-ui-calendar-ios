@@ -9,6 +9,7 @@ import UIKit
 
 open class ACCalendarCollectionView: UICollectionView {
 
+    
     public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
         self.showsVerticalScrollIndicator = false

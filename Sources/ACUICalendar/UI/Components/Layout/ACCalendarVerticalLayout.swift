@@ -128,7 +128,7 @@ open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
                       self.itemLayoutAttributes.append(attributes)
                       
                       if let cachedSectionAttributes = cachedAttributes[sectionDate] {
-                          //print("section \(section) already in cache - \(cachedSectionAttributes), new - \(attributes)")
+                        print("section \(section) already in cache - \(cachedSectionAttributes), new - \(attributes)")
                       }
                       
                       //let data = LayoutCacheData(date: sectionDate, currentColumn: currentColumn, currentRow: currentRow, contentY: contentY, item: item, section: section)
