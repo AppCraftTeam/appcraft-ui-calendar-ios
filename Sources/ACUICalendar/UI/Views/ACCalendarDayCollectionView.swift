@@ -9,7 +9,7 @@ import UIKit
 import DPSwift
 import Foundation
 
-open class ACCalendarDayCollectionView: ACCalendarBaseView {
+open class ACCalendarDayCollectionView: ACCalendarBaseView, ACCalendarFlowLayoutDelegate {
     
     // MARK: Props
     var canInsertSections = true
@@ -99,6 +99,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
         self.setPageProvider(configurator.makePageProvider())
         //self.collectionViewLayout = configurator //configurator.makeLayout()
         self.collectionView.delegate = self.collectionViewLayout
+        self.collectionViewLayout.delegate = self
         
         //        self.collectionView.setCollectionViewLayout(
         //            collectionViewLayout,
@@ -422,49 +423,14 @@ extension ACCalendarDayCollectionView: UICollectionViewDataSource {
         cell.updateComponents()
         return cell
     }
-}
-
-// MARK: - UICollectionViewDelegateFlowLayout methods
-extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
     
-    public func collectionView(
-        _ collectionView: UICollectionView,
-        viewForSupplementaryElementOfKind kind: String,
-        at indexPath: IndexPath
-    ) -> UICollectionReusableView {
-        if kind == UICollectionView.elementKindSectionHeader {
-            guard let view = collectionView.dequeueReusableSupplementaryView(
-                ofKind: kind,
-                withReuseIdentifier: ACCalendarMonthSupplementaryView.identifer,
-                for: indexPath
-            ) as? ACCalendarMonthSupplementaryView else {
-                return UICollectionReusableView()
-            }
-            view.theme = theme
-            return view
-        }
-        return .init()
+    // MARK: - ACCalendarFlowLayoutDelegate
+    
+    func getMonths() -> [ACCalendarMonthModel] {
+        self.service.months
     }
     
-    public func collectionView(
-        _ collectionView: UICollectionView,
-        willDisplaySupplementaryView view: UICollectionReusableView,
-        forElementKind elementKind: String,
-        at indexPath: IndexPath
-    ) {
-        guard elementKind == UICollectionView.elementKindSectionHeader, let monthHeader else { return  }
-        
-        if let view = view as? ACCalendarMonthSupplementaryView {
-            let month = months[indexPath.section]
-            view.updateComponents(cfg: monthHeader, model: month)
-        }
-    }
-    
-    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        self.pageProvider.scrollViewDidEndDecelerating(scrollView)
-    }
-    
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         self.pageProvider.scrollViewDidScroll(scrollView)
         
         if insertionRules?.needsInsertFutureDates(scrollView) ?? false {
@@ -474,15 +440,19 @@ extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
         }
     }
     
-    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        self.pageProvider.scrollViewDidEndScrollingAnimation(scrollView)
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func calendarCellDidSelected(indexPath: IndexPath) {
         guard let day = months.element(at: indexPath.section)?.days.element(at: indexPath.item) else { return }
         self.service.daySelect(day)
         self.didSelectDates?(self.service.datesSelected)
         self.collectionView.reloadSections(IndexSet(integer: indexPath.section))
+    }
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        self.pageProvider.scrollViewDidEndDecelerating(scrollView)
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        self.pageProvider.scrollViewDidEndScrollingAnimation(scrollView)
     }
 }
 
