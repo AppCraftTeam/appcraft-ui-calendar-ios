@@ -103,7 +103,7 @@ open class ACCalendarDayViewController: UIViewController {
         super.viewDidLoad()
         
         self.view.backgroundColor = ACCalendarUITheme().backgroundColor
-        
+        /*
         let guide = self.view.safeAreaLayoutGuide
         self.calendarView.backgroundColor = ACCalendarUITheme().backgroundColor
         self.calendarView.removeFromSuperview()
@@ -118,7 +118,7 @@ open class ACCalendarDayViewController: UIViewController {
         ])
         
         self.setupCalendarViewSizeConstraint()
-        
+        */
         if UIDevice.current.orientation.isLandscape {
             self.landscapeConstraint?.isActive = true
         } else {
@@ -133,10 +133,30 @@ open class ACCalendarDayViewController: UIViewController {
         let reusedScrollView = ACReusedScrollView(
             frame: self.view.bounds,
             viewProvider: { index in
+                /*
+                 let view = UIButton(type: .system)
+                 view.setTitle("Hello, \(index)", for: [])
+                 view.tintColor = .red
+               
+                return MonthView(dateInfos: self.dateInfos)
+                */
                 let view = UIButton(type: .system)
                 view.setTitle("Hello, \(index)", for: [])
                 view.tintColor = .red
                 
+                let month = ACCalendarMonthView(dateInfos: self.dateInfos)
+                month.translatesAutoresizingMaskIntoConstraints = false 
+                
+                view.addSubview(month)
+                NSLayoutConstraint.activate([
+                    month.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                    month.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                    month.topAnchor.constraint(equalTo: view.topAnchor),
+                    month.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                ])
+                month.layoutSubviews()
+                view.layoutSubviews()
+                print("view - \(view), month - \(month)")
                 return view
             },
             frameProvider: { index in
@@ -160,6 +180,12 @@ open class ACCalendarDayViewController: UIViewController {
         reusedScrollView.backgroundColor = .blue
         
         self.view.addSubview(reusedScrollView)
+        NSLayoutConstraint.activate([
+            reusedScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            reusedScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            reusedScrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            reusedScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
     
     open override func viewWillTransition(
