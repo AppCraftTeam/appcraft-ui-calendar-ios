@@ -92,18 +92,13 @@ open class ACCalendarDayViewController: UIViewController {
     
     var portraitConstraint: NSLayoutConstraint?
     var landscapeConstraint: NSLayoutConstraint?
-    
-    var dateInfos: (Int, Int) = (
-        Calendar.current.dateComponents([.year], from: Date()).year ?? 2023,
-        Calendar.current.dateComponents([.month], from: Date()).month ?? 7
-    )
-    
+
     // MARK: - Lifecycle methods
     open override func viewDidLoad() {
         super.viewDidLoad()
         
         self.view.backgroundColor = ACCalendarUITheme().backgroundColor
-        /*
+        
         let guide = self.view.safeAreaLayoutGuide
         self.calendarView.backgroundColor = ACCalendarUITheme().backgroundColor
         self.calendarView.removeFromSuperview()
@@ -118,7 +113,7 @@ open class ACCalendarDayViewController: UIViewController {
         ])
         
         self.setupCalendarViewSizeConstraint()
-        */
+        
         if UIDevice.current.orientation.isLandscape {
             self.landscapeConstraint?.isActive = true
         } else {
@@ -133,40 +128,58 @@ open class ACCalendarDayViewController: UIViewController {
         let reusedScrollView = ACReusedScrollView(
             frame: self.view.bounds,
             viewProvider: { index in
-                /*
-                 let view = UIButton(type: .system)
-                 view.setTitle("Hello, \(index)", for: [])
-                 view.tintColor = .red
-               
-                return MonthView(dateInfos: self.dateInfos)
-                */
                 let view = UIButton(type: .system)
                 view.setTitle("Hello, \(index)", for: [])
                 view.tintColor = .red
+                print("index - \(index), all \(self.service.months.count)")
+                guard let month = self.service.months[safe: Int(index)] else {
+                    return UIView()
+                }
+                let monthView = ACCalendarMonthView(
+                    month: month,
+                    theme: self.calendarView.theme,
+                    showsOnlyCurrentDaysInMonth: self.showsOnlyCurrentDaysInMonth,
+                    monthHeader: self.calendarView.dayCollectionView.monthHeader
+                )
+                monthView.didSelectDates = { day in
+                    self.service.daySelect(day)
+                    self.calendarView.dayCollectionView.didSelectDates?(self.service.datesSelected)
+                }
                 
-                let month = ACCalendarMonthView(dateInfos: self.dateInfos)
-                month.translatesAutoresizingMaskIntoConstraints = false 
+                monthView.translatesAutoresizingMaskIntoConstraints = false
                 
-                view.addSubview(month)
+                view.addSubview(monthView)
                 NSLayoutConstraint.activate([
-                    month.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                    month.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                    month.topAnchor.constraint(equalTo: view.topAnchor),
-                    month.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                    monthView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                    monthView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                    monthView.topAnchor.constraint(equalTo: view.topAnchor),
+                    monthView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
                 ])
-                month.layoutSubviews()
+                monthView.layoutSubviews()
                 view.layoutSubviews()
-                print("view - \(view), month - \(month)")
+                
                 return view
             },
             frameProvider: { index in
                 //print("contentFrame for - \(index)")
-                return CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 300)
+//                guard let month = self.service.months[safe: Int(index)] else {
+//                    return .zero
+//                }
+//                let height = (month.weeksCount * 45) - 10
+//                print("heightheight - \(height)")
+//                let totalHeight = CGFloat(height)
+//                return CGRect(x: 0, y: 0, width: self.view.bounds.width, height: totalHeight)
+                return CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 300.0)
             },
             currentIndex: 0,
             incrementIndexAction: { index in
                 //print("changeIndexIncreaseAction - \(index)")
                 page += 1
+                if let month = self.service.months[safe: Int(index)] {
+                    self.service.currentMonthDate = month.monthDate
+                    self.calendarView.monthSelectView.updateMonthDateLabel()
+                }
+                
                 return page
             },
             decrementIndexAction: { index in
@@ -177,7 +190,7 @@ open class ACCalendarDayViewController: UIViewController {
             layoutOrientation: .vertical
         )
         
-        reusedScrollView.backgroundColor = .blue
+        reusedScrollView.backgroundColor = .blue.withAlphaComponent(0.4)
         
         self.view.addSubview(reusedScrollView)
         NSLayoutConstraint.activate([
