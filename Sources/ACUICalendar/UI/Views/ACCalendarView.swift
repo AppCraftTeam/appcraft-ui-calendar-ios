@@ -54,6 +54,21 @@ open class ACCalendarView: ACCalendarBaseView {
         return result
     }()
 
+    open lazy var dayReusedView: ACCalendarContainerView = {
+        let result = ACCalendarContainerView(service: self.service)
+        
+        result.didScrollToMonth = { [weak self] monthDate in
+            self?.service.currentMonthDate = monthDate
+            self?.monthSelectView.updateMonthDateLabel()
+        }
+        
+        result.didSelectDates = { [weak self] dates in
+            self?.service.datesSelected = dates
+        }
+        
+        return result
+    }()
+    
     open lazy var monthPickerView: ACCalendarMonthPickerView = {
         let result = ACCalendarMonthPickerView(service: self.service)
         
@@ -80,6 +95,7 @@ open class ACCalendarView: ACCalendarBaseView {
             self.arrowsView,
             self.weekView,
             self.dayCollectionView,
+            self.dayReusedView,
             self.monthPickerView
         ].forEach({
             $0.removeFromSuperview()
@@ -94,6 +110,7 @@ open class ACCalendarView: ACCalendarBaseView {
         
         self.bottomContentView.addSubview(self.weekView)
         self.bottomContentView.addSubview(self.dayCollectionView)
+        self.bottomContentView.addSubview(self.dayReusedView.reusedScrollView)
         self.bottomContentView.addSubview(self.monthPickerView)
         
         NSLayoutConstraint.activate([
@@ -122,6 +139,11 @@ open class ACCalendarView: ACCalendarBaseView {
             self.dayCollectionView.bottomAnchor.constraint(equalTo: self.bottomContentView.bottomAnchor),
             self.dayCollectionView.leadingAnchor.constraint(equalTo: self.bottomContentView.leadingAnchor),
             self.dayCollectionView.trailingAnchor.constraint(equalTo: self.bottomContentView.trailingAnchor),
+
+            self.dayReusedView.reusedScrollView.topAnchor.constraint(equalTo: self.weekView.bottomAnchor, constant: 16),
+            self.dayReusedView.reusedScrollView.bottomAnchor.constraint(equalTo: self.bottomContentView.bottomAnchor),
+            self.dayReusedView.reusedScrollView.leadingAnchor.constraint(equalTo: self.bottomContentView.leadingAnchor),
+            self.dayReusedView.reusedScrollView.trailingAnchor.constraint(equalTo: self.bottomContentView.trailingAnchor),
 
             self.monthPickerView.topAnchor.constraint(equalTo: self.bottomContentView.topAnchor),
             self.monthPickerView.bottomAnchor.constraint(equalTo: self.bottomContentView.bottomAnchor),
@@ -162,9 +184,13 @@ open class ACCalendarView: ACCalendarBaseView {
         self.dayCollectionView.service = self.service
         self.dayCollectionView.theme = self.theme
         
+        self.dayReusedView.service = self.service
+        self.dayReusedView.theme = self.theme
+        
         let pickerShows = self.monthSelectView.isOn
         self.arrowsView.isHidden = pickerShows
         self.dayCollectionView.isHidden = pickerShows
+        self.dayReusedView.isHidden = pickerShows
         self.weekView.isHidden = pickerShows
         self.monthPickerView.isHidden = !pickerShows
     }

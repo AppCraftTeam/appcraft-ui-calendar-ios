@@ -33,7 +33,7 @@ public class ACCalendarMonthView: UIView {
     }
     
     private func setupMonthView() {
-        print("setupMonthView - \(month.month), \(month.monthDates.first), week - \(month.weeksCount), dats \(month.totalDays.count)")
+        print("setupMonthView - \(month.month), \(month.monthDates.first), week - \(month.weeksCount), dats \(month.totalDays.count), \(self.frame)")
         
         self.backgroundColor = .clear
         
