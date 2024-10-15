@@ -22,6 +22,13 @@ open class ACCalendarContainerView: ACCalendarBaseView {
         horizonalPosition: .offsetFromPassDays
     )
     
+    open var viewBounds: CGRect = .zero {
+        didSet {
+            print("calcMonthFrame layoutSubviews")
+            reusedScrollView.layoutSubviews()
+        }
+    }
+    
     private var insertionRules: (any ACDateInsertRules)?
     private lazy var pageProvider: ACPageProvider = ACVerticalPageProvider()
     private var isAnimationBusy = false
@@ -31,7 +38,7 @@ open class ACCalendarContainerView: ACCalendarBaseView {
     
     open lazy var reusedScrollView: ACReusedScrollView = {
         let reusedScrollView = ACReusedScrollView(
-            frame: self.bounds,
+            frame: viewBounds,
             viewProvider: { index in
                 self.createMonthView(index: index)
             },
@@ -102,23 +109,31 @@ private extension ACCalendarContainerView {
         monthView.layoutSubviews()
         view.layoutSubviews()
         
+        print("0 calcMonthFrame create view \(self.viewBounds) for \(index)")
+
+
         return view
     }
     
     func calcMonthFrame(index: Int) -> CGRect {
+        print("zzz calcMonthFrame \(self.viewBounds) for \(index)")
         guard let month = self.service.months[safe: Int(index)] else {
-            //                    return .zero
-            //                }
-            //                let height = (month.weeksCount * 45) - 10
-            //                print("heightheight - \(height)")
-            //                let totalHeight = CGFloat(height)
-            //                return CGRect(x: 0, y: 0, width: self.view.bounds.width, height: totalHeight)
-            return CGRect(x: 0, y: 0, width: self.bounds.width, height: 300.0)
+            return .zero
         }
-        return CGRect(x: 0, y: 0, width: self.bounds.width, height: 300.0)
+        //return CGRect(x: 0, y: 0, width: viewBounds.width, height: 300.0)
+        let height = CGFloat((month.weeksCount * 47)) + ACCalendarMonthView.headerHeight + ACCalendarMonthView.headerBottonInset
+        print("heightheight - \(height), \(month.weeksCount) for \(index)")
+        let totalHeight = height
+        return CGRect(x: 0, y: 0, width: self.viewBounds.width, height: totalHeight)
     }
     
+
+
     func didDispalyedNextMonthView(index: Int) -> Int {
+        guard index < self.service.months.count else {
+            return index
+        }
+        
         self.currentPage += 1
         if let month = self.service.months[safe: Int(index)] {
             self.service.currentMonthDate = month.monthDate
@@ -130,6 +145,9 @@ private extension ACCalendarContainerView {
     
     func didDispalyedPrevMonthView(index: Int) -> Int {
         //print("changeIndexDecreaseAction - \(index)")
+        guard index > 0 else {
+            return index
+        }
         self.currentPage -= 1
         return self.currentPage
     }

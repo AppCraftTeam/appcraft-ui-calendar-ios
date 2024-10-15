@@ -67,8 +67,8 @@ open class ACCalendarDayView: UIView {
             self.dayLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             self.dayLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             
-            self.daySelectionView.widthAnchor.constraint(equalToConstant: 40),
-            self.daySelectionView.heightAnchor.constraint(equalToConstant: 40),
+            self.daySelectionView.widthAnchor.constraint(equalToConstant: 47),
+            self.daySelectionView.heightAnchor.constraint(equalToConstant: 47),
             self.daySelectionView.centerXAnchor.constraint(equalTo: self.dayLabel.centerXAnchor),
             self.daySelectionView.centerYAnchor.constraint(equalTo: self.dayLabel.centerYAnchor)
         ])

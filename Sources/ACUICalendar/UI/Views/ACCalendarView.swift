@@ -151,7 +151,9 @@ open class ACCalendarView: ACCalendarBaseView {
             self.monthPickerView.trailingAnchor.constraint(equalTo: self.bottomContentView.trailingAnchor)
         ])
 
+        print("13 calcMonthFrame \(self.dayReusedView.bounds) or \(self.dayCollectionView.bounds)")
         self.updateComponents()
+        print("23 calcMonthFrame \(self.dayReusedView.bounds) or \(self.dayCollectionView.bounds)")
     }
     
     open func setupContentView() {
@@ -186,15 +188,27 @@ open class ACCalendarView: ACCalendarBaseView {
         
         self.dayReusedView.service = self.service
         self.dayReusedView.theme = self.theme
-        
+
         let pickerShows = self.monthSelectView.isOn
         self.arrowsView.isHidden = pickerShows
         self.dayCollectionView.isHidden = pickerShows
         self.dayReusedView.isHidden = pickerShows
         self.weekView.isHidden = pickerShows
         self.monthPickerView.isHidden = !pickerShows
+        
+        self.layoutSubviews()
+        print("3 calcMonthFrame \(self.dayReusedView.bounds) or \(self.dayCollectionView.bounds)")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+            print("3s calcMonthFrame \(self.dayReusedView.bounds) or \(self.dayCollectionView.bounds)")
+            self.dayReusedView.viewBounds = CGRect(x: 0, y: 0, width: self.dayCollectionView.bounds.width - 32, height: self.dayCollectionView.bounds.height)
+        })
     }
     
+    open override func layoutSubviews() {
+           super.layoutSubviews()
+        print("Bounds calcMonthFrame appearing: \(self.dayReusedView.bounds) or \(self.dayCollectionView.bounds)")
+    }
 }
 
 
