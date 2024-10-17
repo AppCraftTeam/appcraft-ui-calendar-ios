@@ -15,8 +15,8 @@ public class ACCalendarMonthView: UIView {
     private var showsOnlyCurrentDaysInMonth: Bool = true
     private var monthHeader: ACMonthHeader?
     
-    public static var headerHeight: CGFloat = 47
-    public static var headerBottonInset: CGFloat = 10
+    public static var headerHeight: CGFloat = 20
+    public static var headerBottonInset: CGFloat = 0
     public var didSelectDates: ContextClosure<ACCalendarDayModel>?
     
     // MARK: - Init
@@ -39,68 +39,89 @@ public class ACCalendarMonthView: UIView {
         
         let monthHeaderView = ACCalendarMonthHeaderView()
         if let monthHeader = monthHeader {
+            monthHeaderView.theme = self.theme
             monthHeaderView.updateComponents(cfg: monthHeader, model: month)
-            monthHeaderView.backgroundColor = .red
+            monthHeaderView.backgroundColor = .clear
         }
         
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.distribution = .fillEqually
-        stackView.spacing = ACCalendarMonthView.headerBottonInset
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(monthHeaderView)
         
-        stackView.addArrangedSubview(monthHeaderView)
-                
+        monthHeaderView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            monthHeaderView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            monthHeaderView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            monthHeaderView.topAnchor.constraint(equalTo: self.topAnchor),
+            monthHeaderView.heightAnchor.constraint(equalToConstant: ACCalendarMonthView.headerHeight)
+        ])
+        
         let monthWeekDays = month.days.chunked(into: 7)
         
-        monthWeekDays.forEach({ rowWeekDates in
-            let weekStackView = UIStackView()
-            weekStackView.axis = .horizontal
-            weekStackView.spacing = 0
-            weekStackView.distribution = .fillEqually
-            weekStackView.translatesAutoresizingMaskIntoConstraints = false
+        var previousWeekView: UIView = monthHeaderView
+        
+        monthWeekDays.forEach { rowWeekDates in
+            let weekView = UIView()
+            addSubview(weekView)
             
-            rowWeekDates.forEach({ day in
+            weekView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                weekView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+                weekView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+                weekView.topAnchor.constraint(equalTo: previousWeekView.bottomAnchor),
+                weekView.heightAnchor.constraint(equalToConstant: 47)
+            ])
+            
+            var previousDayLabel: UIView? = nil
+            
+            rowWeekDates.forEach { day in
                 let dayLabel = ACCalendarDayView()
+                dayLabel.day = day
+                dayLabel.backgroundColor = .clear
                 
                 let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDayLabelTap(_:)))
                 dayLabel.addGestureRecognizer(tapGesture)
                 dayLabel.isUserInteractionEnabled = true
-                //dayLabel.tag = i + j
                 
-                dayLabel.day = day
-                dayLabel.backgroundColor = .blue.withAlphaComponent(0.5)
-                
-                let width = self.bounds.width / 7
+                weekView.addSubview(dayLabel)
                 
                 dayLabel.translatesAutoresizingMaskIntoConstraints = false
                 dayLabel.heightAnchor.constraint(equalToConstant: 47).isActive = true
-                weekStackView.addArrangedSubview(dayLabel)
-            })
+                
+                if let previousDayLabel = previousDayLabel {
+                    NSLayoutConstraint.activate([
+                        dayLabel.leadingAnchor.constraint(equalTo: previousDayLabel.trailingAnchor),
+                        dayLabel.widthAnchor.constraint(equalTo: previousDayLabel.widthAnchor)
+                    ])
+                } else {
+                    NSLayoutConstraint.activate([
+                        dayLabel.leadingAnchor.constraint(equalTo: weekView.leadingAnchor)
+                    ])
+                }
+                
+                previousDayLabel = dayLabel
+            }
             
-            weekStackView.heightAnchor.constraint(equalToConstant: 47).isActive = true
-            stackView.addArrangedSubview(weekStackView)
-        })
+            if let lastDayLabel = previousDayLabel {
+                NSLayoutConstraint.activate([
+                    lastDayLabel.trailingAnchor.constraint(equalTo: weekView.trailingAnchor)
+                ])
+            }
+            
+            previousWeekView = weekView
+        }
         
-        addSubview(stackView)
         NSLayoutConstraint.activate([
-            monthHeaderView.heightAnchor.constraint(equalToConstant: ACCalendarMonthView.headerHeight),
-            stackView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            stackView.topAnchor.constraint(equalTo: self.topAnchor),
-            stackView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            previousWeekView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ])
     }
     
     @objc
     private func handleDayLabelTap(_ sender: UITapGestureRecognizer) {
-        guard let dayLabel = sender.view as? ACCalendarDayView else {
+        guard let dayLabel = sender.view as? ACCalendarDayView,
+              let day = dayLabel.day
+        else {
             return
         }
-        
-        let dayIndex = dayLabel.tag
-        let day = month.days[dayIndex]
-        print("didSelectDates... \(day.dayDate)")
+        print("didSelectDates... \(day)")
         didSelectDates?(day)
     }
     

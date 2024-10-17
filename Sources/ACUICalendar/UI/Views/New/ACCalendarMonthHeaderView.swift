@@ -64,11 +64,14 @@ open class ACCalendarMonthHeaderView: UIView {
             self.labelLeadingConstraint?.constant = val
             self.layoutIfNeeded()
         case .offsetFromPassDays:
+            self.layoutSubviews()
+            print("superview - \(superview) or \(self.frame), \(self.label.frame)")
+
             guard let superview else { return }
             let width = superview.frame.width / 7
             let widthString = label.intrinsicContentSize.width
             let leftInset = width * Double(model.previousMonthDates.count)
-            
+            print("width - \(width), widthString - \(widthString), leftInset - \(leftInset)")
             if self.frame.width - leftInset > widthString {
                 self.labelLeadingConstraint?.constant = leftInset
             } else {

@@ -31,11 +31,12 @@ open class ACCalendarContainerView: ACCalendarBaseView {
     private var insertionRules: (any ACDateInsertRules)?
     private lazy var pageProvider: ACPageProvider = ACVerticalPageProvider()
     private var isAnimationBusy = false
-    private var currentPage = 0
     
     public private(set) lazy var collectionViewLayout: ACCalendarLayout = ACCalendarVerticalLayout()
     
     open lazy var reusedScrollView: ACReusedScrollView = {
+        print("viewBoundsviewBounds - \(viewBounds)")
+
         let reusedScrollView = ACReusedScrollView(
             frame: viewBounds,
             viewProvider: { index in
@@ -78,10 +79,6 @@ open class ACCalendarContainerView: ACCalendarBaseView {
 private extension ACCalendarContainerView {
     
     func createMonthView(index: Int) -> UIView {
-        let view = UIButton(type: .system)
-        view.setTitle("Hello, \(index)", for: [])
-        view.tintColor = .red
-        print("index - \(index), all \(self.service.months.count)")
         guard let month = self.service.months[safe: Int(index)] else {
             return UIView()
         }
@@ -96,19 +93,8 @@ private extension ACCalendarContainerView {
             self.didSelectDates?(self.service.datesSelected)
         }
         
-        monthView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(monthView)
-        NSLayoutConstraint.activate([
-            monthView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            monthView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            monthView.topAnchor.constraint(equalTo: view.topAnchor),
-            monthView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-        monthView.layoutSubviews()
-        view.layoutSubviews()
 
-        return view
+        return monthView
     }
     
     func calcMonthFrame(index: Int) -> CGRect {
@@ -127,21 +113,19 @@ private extension ACCalendarContainerView {
             return nil
         }
         
-        self.currentPage += 1
         if let month = self.service.months[safe: Int(index)] {
             self.service.currentMonthDate = month.monthDate
             //self.calendarView.monthSelectView.updateMonthDateLabel()
         }
         
-        return self.currentPage
+        return index + 1
     }
     
     func didDispalyedPrevMonthView(index: Int) -> Int? {
-        //print("changeIndexDecreaseAction - \(index)")
-        guard index > 0 else {
+        guard index >= 0 else {
             return nil
         }
-        self.currentPage -= 1
-        return self.currentPage
+        //print("changeIndexDecreaseAction - \(index)")
+        return index - 1
     }
 }

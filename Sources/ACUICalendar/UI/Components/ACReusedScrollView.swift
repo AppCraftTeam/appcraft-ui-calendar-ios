@@ -15,7 +15,12 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
     }
     
     private var scaleMultiplier: CGFloat
-    private var currentIndex: ItemIndex
+    private var currentIndex: ItemIndex {
+        didSet {
+            print("currentIndex - \(currentIndex)")
+            let t = false
+        }
+    }
     private let spacing: CGFloat
     private var displayedViews: [(UIView, ItemIndex)]
     private let viewProvider: (ItemIndex) -> UIView
