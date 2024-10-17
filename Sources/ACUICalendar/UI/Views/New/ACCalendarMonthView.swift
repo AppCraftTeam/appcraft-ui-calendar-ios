@@ -35,8 +35,6 @@ public class ACCalendarMonthView: UIView {
     }
     
     private func setupMonthView() {
-        print("setupMonthView - \(month.monthDate), dats \(month.totalDays.count), \(self.frame)")
-        
         self.backgroundColor = .clear
         
         let monthHeaderView = ACCalendarMonthHeaderView()
@@ -54,7 +52,6 @@ public class ACCalendarMonthView: UIView {
         stackView.addArrangedSubview(monthHeaderView)
                 
         let monthWeekDays = month.days.chunked(into: 7)
-        print("ddddd  - \(month.monthDate), test - \(monthWeekDays.map{ $0 })")
         
         monthWeekDays.forEach({ rowWeekDates in
             let weekStackView = UIStackView()
@@ -74,9 +71,8 @@ public class ACCalendarMonthView: UIView {
                 dayLabel.day = day
                 dayLabel.backgroundColor = .blue.withAlphaComponent(0.5)
                 
-                //dayLabel.frame.size = CGSize(width: 47, height: 47)
                 let width = self.bounds.width / 7
-                print("widthwidth - \(width)")
+                
                 dayLabel.translatesAutoresizingMaskIntoConstraints = false
                 dayLabel.heightAnchor.constraint(equalToConstant: 47).isActive = true
                 weekStackView.addArrangedSubview(dayLabel)

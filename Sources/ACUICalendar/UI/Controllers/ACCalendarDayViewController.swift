@@ -124,9 +124,10 @@ open class ACCalendarDayViewController: UIViewController {
         self.navigationItem.rightBarButtonItem = .init(title: "Done", style: .plain, target: self, action: #selector(self.handleTapDone))
         
         self.view.layoutSubviews()
-        //393, 361
-        print("2 calcMonthFrame \(self.calendarView.bounds) or \(self.calendarView.dayReusedView.bounds), z \(self.calendarView.dayReusedView.frame), \(self.calendarView.dayCollectionView.frame)")
         self.calendarView.dayReusedView.viewBounds = CGRect(x: 0, y: 0, width: self.calendarView.bounds.width - 32, height: self.calendarView.bounds.height)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+            self.calendarView.dayReusedView.viewBounds = CGRect(x: 0, y: 0, width: self.calendarView.bounds.width - 32, height: self.calendarView.bounds.height)
+        })
     }
     
     open override func viewWillTransition(
