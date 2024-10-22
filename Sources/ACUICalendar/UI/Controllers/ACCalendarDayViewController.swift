@@ -122,11 +122,13 @@ open class ACCalendarDayViewController: UIViewController {
         
         self.navigationItem.leftBarButtonItem = .init(title: "Cancel", style: .plain, target: self, action: #selector(self.handleTapCancel))
         self.navigationItem.rightBarButtonItem = .init(title: "Done", style: .plain, target: self, action: #selector(self.handleTapDone))
-        
+        print("settetet - \(self.calendarView.bounds)")
         self.view.layoutSubviews()
         self.calendarView.dayReusedView.viewBounds = CGRect(x: 0, y: 0, width: self.calendarView.bounds.width - 32, height: self.calendarView.bounds.height)
+        print("settetet 0 \(self.calendarView.bounds)")
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
             self.calendarView.dayReusedView.viewBounds = CGRect(x: 0, y: 0, width: self.calendarView.bounds.width - 32, height: self.calendarView.bounds.height)
+            print("settetet 1 \(self.calendarView.bounds)")
         })
     }
     
@@ -141,7 +143,10 @@ open class ACCalendarDayViewController: UIViewController {
         }
     }
     
-
+    override open func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        print("settetet viewDidLayoutSubviews \(self.calendarView.bounds)")
+    }
     
     // MARK: - Coniguration
     open func setCalendarLayout(

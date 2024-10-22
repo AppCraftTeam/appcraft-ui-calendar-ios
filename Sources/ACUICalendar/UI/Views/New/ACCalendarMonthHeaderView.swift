@@ -17,6 +17,8 @@ open class ACCalendarMonthHeaderView: UIView {
         didSet { self.updateTheme() }
     }
     
+    open var parentSize: CGSize = .zero
+    
     // MARK: - Init
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -68,10 +70,10 @@ open class ACCalendarMonthHeaderView: UIView {
             print("superview - \(superview) or \(self.frame), \(self.label.frame)")
 
             guard let superview else { return }
-            let width = superview.frame.width / 7
+            let width = parentSize.width / 7
             let widthString = label.intrinsicContentSize.width
             let leftInset = width * Double(model.previousMonthDates.count)
-            print("width - \(width), widthString - \(widthString), leftInset - \(leftInset)")
+            print("width - \(width), widthString - \(widthString), leftInset - \(leftInset), parentSize \(parentSize)")
             if self.frame.width - leftInset > widthString {
                 self.labelLeadingConstraint?.constant = leftInset
             } else {
@@ -79,6 +81,24 @@ open class ACCalendarMonthHeaderView: UIView {
             }
         }
     }
+    
+    open override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        if let superview = self.superview {
+            print("Superview exists: \(superview)")
+        } else {
+            print("Superview is nil")
+        }
+    }
+
+    func tets() {
+        if let superview = self.superview {
+            print("zzz Superview exists: \(superview)")
+        } else {
+            print("zzz Superview is nil")
+        }
+    }
+    
     
     private func updateTheme() {
         self.label.font = theme.monthHeaderTextFont

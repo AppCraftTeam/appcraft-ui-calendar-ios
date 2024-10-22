@@ -14,10 +14,12 @@ public class ACCalendarMonthView: UIView {
     private var theme = ACCalendarUITheme()
     private var showsOnlyCurrentDaysInMonth: Bool = true
     private var monthHeader: ACMonthHeader?
-    
+    private let monthHeaderView = ACCalendarMonthHeaderView()
+
     public static var headerHeight: CGFloat = 20
     public static var headerBottonInset: CGFloat = 0
     public var didSelectDates: ContextClosure<ACCalendarDayModel>?
+    public var didGettingSelectingType: ((_ day: ACCalendarDayModel) -> ACCalendarDateSelectionType)?
     
     // MARK: - Init
     public init(month: ACCalendarMonthModel, theme: ACCalendarUITheme, showsOnlyCurrentDaysInMonth: Bool, monthHeader: ACMonthHeader?) {
@@ -34,15 +36,14 @@ public class ACCalendarMonthView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        print("width in layoutSubviews \(self.frame)")
+        monthHeaderView.parentSize = CGSize(width: self.bounds.width, height: ACCalendarMonthView.headerHeight)
+    }
+    
     private func setupMonthView() {
         self.backgroundColor = .clear
-        
-        let monthHeaderView = ACCalendarMonthHeaderView()
-        if let monthHeader = monthHeader {
-            monthHeaderView.theme = self.theme
-            monthHeaderView.updateComponents(cfg: monthHeader, model: month)
-            monthHeaderView.backgroundColor = .clear
-        }
         
         addSubview(monthHeaderView)
         
@@ -57,7 +58,7 @@ public class ACCalendarMonthView: UIView {
         let monthWeekDays = month.days.chunked(into: 7)
         
         var previousWeekView: UIView = monthHeaderView
-        
+
         monthWeekDays.forEach { rowWeekDates in
             let weekView = UIView()
             addSubview(weekView)
@@ -75,7 +76,15 @@ public class ACCalendarMonthView: UIView {
             rowWeekDates.forEach { day in
                 let dayLabel = ACCalendarDayView()
                 dayLabel.day = day
-                dayLabel.backgroundColor = .clear
+                
+                if showsOnlyCurrentDaysInMonth {
+                    dayLabel.dayIsHidden = day.belongsToMonth != .current
+                } else {
+                    dayLabel.dayIsHidden = false
+                }
+                print("dddd \(self.didGettingSelectingType == nil)")
+                dayLabel.daySelection =  self.didGettingSelectingType?(day) ?? .notSelected
+                dayLabel.theme = theme
                 
                 let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDayLabelTap(_:)))
                 dayLabel.addGestureRecognizer(tapGesture)
@@ -112,6 +121,15 @@ public class ACCalendarMonthView: UIView {
         NSLayoutConstraint.activate([
             previousWeekView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ])
+        
+        if let monthHeader = monthHeader {
+            monthHeaderView.theme = self.theme
+            monthHeaderView.updateComponents(cfg: monthHeader, model: month)
+            monthHeaderView.backgroundColor = .clear
+        }
+        
+        monthHeaderView.tets()
+        self.layoutSubviews()
     }
     
     @objc

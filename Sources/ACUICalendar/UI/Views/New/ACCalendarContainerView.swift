@@ -92,8 +92,11 @@ private extension ACCalendarContainerView {
             self.service.daySelect(day)
             self.didSelectDates?(self.service.datesSelected)
         }
+        monthView.didGettingSelectingType = { day in
+            print("daySelection for \(day.dayDate) is \(self.service.daySelected(day))")
+            return self.service.daySelected(day)
+        }
         
-
         return monthView
     }
     
