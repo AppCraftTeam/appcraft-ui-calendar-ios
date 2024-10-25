@@ -18,9 +18,11 @@ open class ACCalendarDayViewController: UIViewController {
     }
     
     // MARK: - Init
-    public init(service: ACCalendarService = .default(), height: CalendarHeight = .fullscreen) {
+    public init(service: ACCalendarService = .default(), height: CalendarHeight = .fullscreen, scrollDirection: UICollectionView.ScrollDirection = .vertical) {
         self.service = service
         self.calendarHeight = height
+        self.scrollDirection = scrollDirection
+        print("set scrollDirection - \(scrollDirection)")
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -35,11 +37,13 @@ open class ACCalendarDayViewController: UIViewController {
     /// Calendar height setting
     public let calendarHeight: CalendarHeight
     
+    public var scrollDirection: UICollectionView.ScrollDirection
+    
     /// Calendar view
     ///
     /// The view serves as a wrapper to a collection view of the calendar and its components, such as date picker, month switcher
     open lazy var calendarView: ACCalendarView = {
-        ACCalendarView(service: self.service)
+        ACCalendarView(service: self.service, scrollDirection: scrollDirection)
     }()
     
     /// A boolean value indicating whether to show days from neighboring months in the current month

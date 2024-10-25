@@ -160,7 +160,8 @@ class ViewController: UIViewController {
     private func handleTapDatesButton() {
         let vc = ACCalendarDayViewController(
             service: self.service,
-            height:  .fullscreen // scrollDirection == .horizontal ? .fix(400) : .fullscreen
+            height:  .fullscreen, // scrollDirection == .horizontal ? .fix(400) : .fullscreen
+            scrollDirection: self.scrollDirection
         )
         vc.setCalendarLayout(
             scrollDirection == .horizontal ? .horizontal() : .vertical(),

@@ -27,9 +27,8 @@ open class ACCalendarContainerView: ACCalendarBaseView {
             reusedScrollView.layoutSubviews()
         }
     }
-    
+        
     private var insertionRules: (any ACDateInsertRules)?
-    private lazy var pageProvider: ACPageProvider = ACVerticalPageProvider()
     private var isAnimationBusy = false
     
     public private(set) lazy var collectionViewLayout: ACCalendarLayout = ACCalendarVerticalLayout()
@@ -52,7 +51,7 @@ open class ACCalendarContainerView: ACCalendarBaseView {
             decrementIndexAction: { index in
                 self.didDispalyedPrevMonthView(index: index)
             },
-            layoutOrientation: .vertical
+            layoutOrientation: scrollDirection
         )
         reusedScrollView.backgroundColor = .blue.withAlphaComponent(0.4)
 
@@ -86,6 +85,7 @@ private extension ACCalendarContainerView {
             month: month,
             theme: self.theme,
             showsOnlyCurrentDaysInMonth: self.showsOnlyCurrentDaysInMonth,
+            scrollDirection: self.scrollDirection,
             monthHeader: self.monthHeader
         )
         monthView.didSelectDates = { day in
@@ -96,7 +96,7 @@ private extension ACCalendarContainerView {
             print("daySelection for \(day.dayDate) is \(self.service.daySelected(day))")
             return self.service.daySelected(day)
         }
-        
+
         return monthView
     }
     
@@ -104,13 +104,19 @@ private extension ACCalendarContainerView {
         guard let month = self.service.months[safe: Int(index)] else {
             return .zero
         }
-        let height = CGFloat((month.days.chunked(into: 7).count * 47)) + ACCalendarMonthView.headerHeight + ACCalendarMonthView.headerBottonInset
-        let totalHeight = height
-        return CGRect(x: 0, y: 0, width: self.viewBounds.width, height: totalHeight)
+        
+        switch self.scrollDirection {
+        case .vertical:
+            let height = CGFloat((month.days.chunked(into: 7).count * 47)) + ACCalendarMonthView.headerHeight + ACCalendarMonthView.headerBottonInset
+            let totalHeight = height
+            return CGRect(x: 0, y: 0, width: self.viewBounds.width, height: totalHeight)
+        case .horizontal:
+            return CGRect(x: 0, y: 0, width: self.viewBounds.width, height: self.viewBounds.height)
+        @unknown default:
+            return .zero
+        }
     }
     
-
-
     func didDispalyedNextMonthView(index: Int) -> Int? {
         guard index < self.service.months.count else {
             return nil

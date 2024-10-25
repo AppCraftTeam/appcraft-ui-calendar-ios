@@ -16,7 +16,7 @@ open class ACCalendarView: ACCalendarBaseView {
     open lazy var bottomContentView = UIView()
     
     open lazy var monthSelectView: ACCalendarMonthSelectView = {
-        let result = ACCalendarMonthSelectView(service: self.service)
+        let result = ACCalendarMonthSelectView(service: self.service, scrollDirection: self.scrollDirection)
         
         result.didToggle = { [weak self] isOn in
             self?.updateComponents()
@@ -26,7 +26,7 @@ open class ACCalendarView: ACCalendarBaseView {
     }()
     
     open lazy var arrowsView: ACCalendarArrowsView = {
-        let result = ACCalendarArrowsView(service: self.service)
+        let result = ACCalendarArrowsView(service: self.service, scrollDirection: self.scrollDirection)
         
         result.didTapOnDirection = { [weak self] direction in
             self?.dayCollectionView.scrollToMonth(on: direction, animated: true)
@@ -36,11 +36,11 @@ open class ACCalendarView: ACCalendarBaseView {
     }()
     
     open lazy var weekView: ACCalendarWeekView = {
-        ACCalendarWeekView(service: self.service)
+        ACCalendarWeekView(service: self.service, scrollDirection: self.scrollDirection)
     }()
     
     open lazy var dayCollectionView: ACCalendarDayCollectionView = {
-        let result = ACCalendarDayCollectionView(service: self.service)
+        let result = ACCalendarDayCollectionView(service: self.service, scrollDirection: self.scrollDirection)
         
         result.didScrollToMonth = { [weak self] monthDate in
             self?.service.currentMonthDate = monthDate
@@ -55,7 +55,7 @@ open class ACCalendarView: ACCalendarBaseView {
     }()
 
     open lazy var dayReusedView: ACCalendarContainerView = {
-        let result = ACCalendarContainerView(service: self.service)
+        let result = ACCalendarContainerView(service: self.service, scrollDirection: self.scrollDirection)
         
         result.didScrollToMonth = { [weak self] monthDate in
             self?.service.currentMonthDate = monthDate
@@ -70,7 +70,7 @@ open class ACCalendarView: ACCalendarBaseView {
     }()
     
     open lazy var monthPickerView: ACCalendarMonthPickerView = {
-        let result = ACCalendarMonthPickerView(service: self.service)
+        let result = ACCalendarMonthPickerView(service: self.service, scrollDirection: self.scrollDirection)
         
         result.didSelectMonth = { [weak self] monthDate in
             self?.service.currentMonthDate = monthDate

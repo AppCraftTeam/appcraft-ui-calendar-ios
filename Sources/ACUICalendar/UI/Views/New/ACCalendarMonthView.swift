@@ -13,6 +13,7 @@ public class ACCalendarMonthView: UIView {
     private var month: ACCalendarMonthModel
     private var theme = ACCalendarUITheme()
     private var showsOnlyCurrentDaysInMonth: Bool = true
+    private var scrollDirection: UICollectionView.ScrollDirection
     private var monthHeader: ACMonthHeader?
     private let monthHeaderView = ACCalendarMonthHeaderView()
 
@@ -22,11 +23,12 @@ public class ACCalendarMonthView: UIView {
     public var didGettingSelectingType: ((_ day: ACCalendarDayModel) -> ACCalendarDateSelectionType)?
     
     // MARK: - Init
-    public init(month: ACCalendarMonthModel, theme: ACCalendarUITheme, showsOnlyCurrentDaysInMonth: Bool, monthHeader: ACMonthHeader?) {
+    public init(month: ACCalendarMonthModel, theme: ACCalendarUITheme, showsOnlyCurrentDaysInMonth: Bool, scrollDirection: UICollectionView.ScrollDirection, monthHeader: ACMonthHeader?) {
         self.month = month
         self.theme = theme
         self.showsOnlyCurrentDaysInMonth = showsOnlyCurrentDaysInMonth
         self.monthHeader = monthHeader
+        self.scrollDirection = scrollDirection
         super.init(frame: .zero)
         
         self.setupMonthView()
@@ -46,19 +48,19 @@ public class ACCalendarMonthView: UIView {
         self.backgroundColor = .clear
         
         addSubview(monthHeaderView)
-        
+        print("scrollDirection setupMonthView \(self.scrollDirection), \(self.scrollDirection == .horizontal)")
         monthHeaderView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             monthHeaderView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             monthHeaderView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             monthHeaderView.topAnchor.constraint(equalTo: self.topAnchor),
-            monthHeaderView.heightAnchor.constraint(equalToConstant: ACCalendarMonthView.headerHeight)
+            monthHeaderView.heightAnchor.constraint(equalToConstant:  self.scrollDirection == .vertical ? ACCalendarMonthView.headerHeight : 0.0)
         ])
+        monthHeaderView.isHidden = self.scrollDirection == .horizontal
+        var previousWeekView: UIView = monthHeaderView
         
         let monthWeekDays = month.days.chunked(into: 7)
         
-        var previousWeekView: UIView = monthHeaderView
-
         monthWeekDays.forEach { rowWeekDates in
             let weekView = UIView()
             addSubview(weekView)

@@ -9,10 +9,6 @@ import UIKit
 
 public class ACReusedScrollView<ItemIndex>: UIScrollView {
     
-    public enum Orientation {
-        case horizontal
-        case vertical
-    }
     
     private var scaleMultiplier: CGFloat
     private var currentIndex: ItemIndex {
@@ -29,7 +25,7 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
     private let incrementIndexAction: (ItemIndex) -> ItemIndex?
     private let decrementIndexAction: (ItemIndex) -> ItemIndex?
     
-    private let layoutOrientation: Orientation
+    private let layoutOrientation: UICollectionView.ScrollDirection
     
     public init(
         frame: CGRect,
@@ -39,7 +35,7 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
         incrementIndexAction: @escaping (ItemIndex) -> ItemIndex?,
         decrementIndexAction: @escaping (ItemIndex) -> ItemIndex?,
         scaleMultiplier: CGFloat = 6,
-        layoutOrientation: Orientation,
+        layoutOrientation: UICollectionView.ScrollDirection,
         spacing: CGFloat = 0
     ) {
         self.displayedViews = []
@@ -55,8 +51,10 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
         
         switch layoutOrientation {
         case .horizontal:
+            self.isPagingEnabled = true
             self.contentSize = CGSize(width: self.frame.size.width * self.scaleMultiplier, height: self.frame.size.height)
         case .vertical:
+            self.isPagingEnabled = false
             self.contentSize = CGSize(width: self.frame.size.width, height: self.frame.size.height * self.scaleMultiplier)
         }
         

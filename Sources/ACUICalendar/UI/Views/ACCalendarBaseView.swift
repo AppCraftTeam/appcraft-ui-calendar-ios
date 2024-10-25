@@ -11,9 +11,10 @@ import UIKit
 open class ACCalendarBaseView: UIView {
     
     // MARK: - Init
-    public init(service: ACCalendarService) {
+    public init(service: ACCalendarService, scrollDirection: UICollectionView.ScrollDirection) {
         self.service = service
-        
+        self.scrollDirection = scrollDirection
+
         super.init(frame: .zero)
         
         self.setupComponents()
@@ -21,7 +22,8 @@ open class ACCalendarBaseView: UIView {
     
     public override init(frame: CGRect) {
         self.service = ACCalendarService.default()
-        
+        self.scrollDirection = .vertical
+
         super.init(frame: frame)
         
         self.setupComponents()
@@ -29,7 +31,8 @@ open class ACCalendarBaseView: UIView {
     
     public required init?(coder: NSCoder) {
         self.service = ACCalendarService.default()
-        
+        self.scrollDirection = .vertical
+
         super.init(coder: coder)
         
         self.setupComponents()
@@ -41,6 +44,10 @@ open class ACCalendarBaseView: UIView {
     }
     
     open var theme = ACCalendarUITheme() {
+        didSet { self.updateComponents() }
+    }
+    
+    open var scrollDirection: UICollectionView.ScrollDirection {
         didSet { self.updateComponents() }
     }
     
