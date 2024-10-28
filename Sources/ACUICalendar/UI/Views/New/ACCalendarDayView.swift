@@ -109,6 +109,8 @@ open class ACCalendarDayView: UIView {
                 self.dayLabel.textColor = self.theme.dayCurrentMonthSelectedTextColor
             }
         }
+        
+        self.backgroundColor = .red.withAlphaComponent(0.7)
     }
     
     open func reset() {

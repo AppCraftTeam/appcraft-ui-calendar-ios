@@ -51,7 +51,7 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
         
         switch layoutOrientation {
         case .horizontal:
-            self.isPagingEnabled = true
+            self.isPagingEnabled = false
             self.contentSize = CGSize(width: self.frame.size.width * self.scaleMultiplier, height: self.frame.size.height)
         case .vertical:
             self.isPagingEnabled = false
@@ -102,6 +102,13 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
         }
         
         updateVisibleViews(beforeIndex: beforeIndex, afterIndex: afterIndex, isCompact: isCompact)
+    }
+    
+    public func scrollToPage(pageIndex: Int, animated: Bool) {
+        let pageHeight = self.frame.height
+        let targetOffset = CGPoint(x: 0, y: CGFloat(pageIndex) * pageHeight)
+        
+        self.setContentOffset(targetOffset, animated: animated)
     }
 }
 

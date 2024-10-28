@@ -16,9 +16,10 @@ public class ACCalendarMonthView: UIView {
     private var scrollDirection: UICollectionView.ScrollDirection
     private var monthHeader: ACMonthHeader?
     private let monthHeaderView = ACCalendarMonthHeaderView()
-
+    
     public static var headerHeight: CGFloat = 20
     public static var headerBottonInset: CGFloat = 0
+    public static var rowHeight: CGFloat = 47.0
     public var didSelectDates: ContextClosure<ACCalendarDayModel>?
     public var didGettingSelectingType: ((_ day: ACCalendarDayModel) -> ACCalendarDateSelectionType)?
     
@@ -61,16 +62,36 @@ public class ACCalendarMonthView: UIView {
         
         let monthWeekDays = month.days.chunked(into: 7)
         
-        monthWeekDays.forEach { rowWeekDates in
+        let numberOfWeeks = CGFloat(6)
+        let totalRowHeight = ACCalendarMonthView.rowHeight * numberOfWeeks
+        let availableHeight: CGFloat = 474.0 //self.bounds.height
+        
+        let remainingSpace = availableHeight - totalRowHeight
+        let single = remainingSpace / numberOfWeeks
+        print("remainingSpace - \(remainingSpace), availableHeight - \(availableHeight), totalRowHeight - \(totalRowHeight), single - \(single)")
+        
+        
+        monthWeekDays.enumerated().forEach { (index, rowWeekDates) in
             let weekView = UIView()
             addSubview(weekView)
+            
+            var topPadding: CGFloat {
+                switch self.scrollDirection {
+                case .vertical:
+                    return 0.0
+                case .horizontal:
+                    return index == 0 ? 0 : (single / 1)
+                @unknown default:
+                    return 0.0
+                }
+            }
             
             weekView.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
                 weekView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
                 weekView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-                weekView.topAnchor.constraint(equalTo: previousWeekView.bottomAnchor),
-                weekView.heightAnchor.constraint(equalToConstant: 47)
+                weekView.topAnchor.constraint(equalTo: previousWeekView.bottomAnchor, constant: topPadding),
+                weekView.heightAnchor.constraint(equalToConstant: ACCalendarMonthView.rowHeight)
             ])
             
             var previousDayLabel: UIView? = nil
@@ -95,7 +116,7 @@ public class ACCalendarMonthView: UIView {
                 weekView.addSubview(dayLabel)
                 
                 dayLabel.translatesAutoresizingMaskIntoConstraints = false
-                dayLabel.heightAnchor.constraint(equalToConstant: 47).isActive = true
+                dayLabel.heightAnchor.constraint(equalToConstant: ACCalendarMonthView.rowHeight).isActive = true
                 
                 if let previousDayLabel = previousDayLabel {
                     NSLayoutConstraint.activate([

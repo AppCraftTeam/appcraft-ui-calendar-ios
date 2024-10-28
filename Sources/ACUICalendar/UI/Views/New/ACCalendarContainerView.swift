@@ -54,9 +54,11 @@ open class ACCalendarContainerView: ACCalendarBaseView {
             layoutOrientation: scrollDirection
         )
         reusedScrollView.backgroundColor = .blue.withAlphaComponent(0.4)
+        reusedScrollView.delegate = self
 
         return reusedScrollView
     }()
+    
     
     open var months: [ACCalendarMonthModel] {
         self.service.months
@@ -73,6 +75,23 @@ open class ACCalendarContainerView: ACCalendarBaseView {
             self.collectionViewLayout.itemHeight = newValue
         }
     }
+    
+    open func scrollToMonth(on direction: ACCalendarDirection, animated: Bool) {
+        guard let monthDate = self.service.month(on: direction) else { return }
+        self.scrollToMonth(with: monthDate, animated: animated)
+    }
+    
+    open func scrollToMonth(with monthDate: Date, animated: Bool) {
+        func isEqual(_ month: ACCalendarMonthModel) -> Bool {
+            self.service.calendar.compare(monthDate, to: month.monthDate, toGranularity: .month) == .orderedSame
+        }
+        
+        guard let index = self.months.firstIndex(where: { isEqual($0) }) else { return }
+        self.isAnimationBusy = true
+        self.reusedScrollView.scrollToPage(pageIndex: index, animated: animated)
+        self.isAnimationBusy = false
+    }
+    
 }
 
 private extension ACCalendarContainerView {
@@ -137,4 +156,17 @@ private extension ACCalendarContainerView {
         //print("changeIndexDecreaseAction - \(index)")
         return index - 1
     }
+}
+
+
+// MARK: - UIScrollViewDelegate
+extension ACCalendarContainerView: UIScrollViewDelegate {
+    /*
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let pageIndex = round(scrollView.contentOffset.x / scrollView.frame.width)
+        let newOffset = CGPoint(x: scrollView.frame.width * pageIndex, y: 0)
+        print("Current Page: \(pageIndex), newOffset - \(newOffset), scrollView \(scrollView.frame)")
+        
+        scrollView.setContentOffset(newOffset, animated: true)
+    }*/
 }

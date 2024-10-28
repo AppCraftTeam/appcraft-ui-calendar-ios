@@ -30,6 +30,7 @@ open class ACCalendarView: ACCalendarBaseView {
         
         result.didTapOnDirection = { [weak self] direction in
             self?.dayCollectionView.scrollToMonth(on: direction, animated: true)
+            self?.dayReusedView.scrollToMonth(on: direction, animated: true)
         }
         
         return result
