@@ -105,6 +105,7 @@ private extension ACCalendarContainerView {
             theme: self.theme,
             showsOnlyCurrentDaysInMonth: self.showsOnlyCurrentDaysInMonth,
             scrollDirection: self.scrollDirection,
+            parentSize: CGSize(width: self.viewBounds.width, height: self.viewBounds.height),
             monthHeader: self.monthHeader
         )
         monthView.didSelectDates = { day in

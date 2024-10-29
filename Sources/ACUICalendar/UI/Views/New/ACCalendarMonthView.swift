@@ -20,14 +20,16 @@ public class ACCalendarMonthView: UIView {
     public static var headerHeight: CGFloat = 20
     public static var headerBottonInset: CGFloat = 0
     public static var rowHeight: CGFloat = 47.0
+    public var parentSize: CGSize = .zero
     public var didSelectDates: ContextClosure<ACCalendarDayModel>?
     public var didGettingSelectingType: ((_ day: ACCalendarDayModel) -> ACCalendarDateSelectionType)?
     
     // MARK: - Init
-    public init(month: ACCalendarMonthModel, theme: ACCalendarUITheme, showsOnlyCurrentDaysInMonth: Bool, scrollDirection: UICollectionView.ScrollDirection, monthHeader: ACMonthHeader?) {
+    public init(month: ACCalendarMonthModel, theme: ACCalendarUITheme, showsOnlyCurrentDaysInMonth: Bool, scrollDirection: UICollectionView.ScrollDirection, parentSize: CGSize, monthHeader: ACMonthHeader?) {
         self.month = month
         self.theme = theme
         self.showsOnlyCurrentDaysInMonth = showsOnlyCurrentDaysInMonth
+        self.parentSize = parentSize
         self.monthHeader = monthHeader
         self.scrollDirection = scrollDirection
         super.init(frame: .zero)
@@ -41,13 +43,12 @@ public class ACCalendarMonthView: UIView {
     
     override public func layoutSubviews() {
         super.layoutSubviews()
-        print("width in layoutSubviews \(self.frame)")
-        monthHeaderView.parentSize = CGSize(width: self.bounds.width, height: ACCalendarMonthView.headerHeight)
     }
     
     private func setupMonthView() {
         self.backgroundColor = .clear
         
+        monthHeaderView.parentSize = self.parentSize
         addSubview(monthHeaderView)
         print("scrollDirection setupMonthView \(self.scrollDirection), \(self.scrollDirection == .horizontal)")
         monthHeaderView.translatesAutoresizingMaskIntoConstraints = false
@@ -148,10 +149,8 @@ public class ACCalendarMonthView: UIView {
         if let monthHeader = monthHeader {
             monthHeaderView.theme = self.theme
             monthHeaderView.updateComponents(cfg: monthHeader, model: month)
-            monthHeaderView.backgroundColor = .clear
         }
         
-        monthHeaderView.tets()
         self.layoutSubviews()
     }
     
