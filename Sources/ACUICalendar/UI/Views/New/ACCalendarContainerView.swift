@@ -92,6 +92,44 @@ open class ACCalendarContainerView: ACCalendarBaseView {
         self.isAnimationBusy = false
     }
     
+    // MARK: - Data insertion methods
+    func insertPastMonths() {
+        guard self.canInsertSections else { return }
+        self.canInsertSections.toggle()
+        let currentIndex = reusedScrollView.currentIndex
+
+        self.service.asyncGeneratePastDates(count: 12) { [weak self] months in
+            guard let self else { return }
+            
+            if !months.isEmpty {
+                let newMonthsCount = months.count
+                let newIndex = currentIndex + newMonthsCount
+                print("insertPastMonths - \(months.count), currentIndex - \(currentIndex), newIndex - \(newIndex)")
+                reusedScrollView.currentIndex = newIndex
+                reusedScrollView.scrollToPage(pageIndex: newIndex, animated: false)
+            }
+            self.canInsertSections.toggle()
+        }
+    }
+    
+    func insertFutureMonths() {
+        var isAllowFetchNewMonth: Bool {
+            guard let lastMonth = service.months.last?.monthDate else {
+                return true
+            }
+            
+            return service.currentMonthDate.yearsToDate(endDate: lastMonth) <= 2
+        }
+        
+        guard isAllowFetchNewMonth,
+              canInsertSections else { return }
+        self.canInsertSections = false
+        self.service.asyncGenerateFeatureDates(count: 12) { [weak self] months in
+            guard let self else { return }
+            print("insertFutureMonths - \(months.count)")
+            self.canInsertSections.toggle()
+        }
+    }
 }
 
 private extension ACCalendarContainerView {
@@ -141,7 +179,12 @@ private extension ACCalendarContainerView {
         guard index < self.service.months.count else {
             return nil
         }
+        print("didDispalyedNextMonthView \(index), all \(self.service.months.count)")
         
+        if index <= self.service.months.count {
+            self.insertFutureMonths()
+        }
+
         if let month = self.service.months[safe: Int(index)] {
             self.service.currentMonthDate = month.monthDate
             //self.calendarView.monthSelectView.updateMonthDateLabel()
@@ -151,7 +194,9 @@ private extension ACCalendarContainerView {
     }
     
     func didDispalyedPrevMonthView(index: Int) -> Int? {
+        print("didDispalyedPrevMonthView \(index)")
         guard index >= 0 else {
+            self.insertPastMonths()
             return nil
         }
         //print("changeIndexDecreaseAction - \(index)")

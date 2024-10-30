@@ -11,7 +11,7 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
     
     
     private var scaleMultiplier: CGFloat
-    private var currentIndex: ItemIndex {
+    public var currentIndex: ItemIndex {
         didSet {
             print("currentIndex - \(currentIndex)")
             let t = false
