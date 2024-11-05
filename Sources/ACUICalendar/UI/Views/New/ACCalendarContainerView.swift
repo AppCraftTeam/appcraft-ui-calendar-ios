@@ -133,28 +133,29 @@ open class ACCalendarContainerView: ACCalendarBaseView {
 }
 
 private extension ACCalendarContainerView {
-    
     func createMonthView(index: Int) -> UIView {
         guard let month = self.service.months[safe: Int(index)] else {
             return UIView()
         }
+        let size = self.calcMonthFrame(index: index)
         let monthView = ACCalendarMonthView(
             month: month,
             theme: self.theme,
             showsOnlyCurrentDaysInMonth: self.showsOnlyCurrentDaysInMonth,
             scrollDirection: self.scrollDirection,
-            parentSize: CGSize(width: self.viewBounds.width, height: self.viewBounds.height),
+            parentSize: CGSize(width: size.width, height: size.height),
             monthHeader: self.monthHeader
         )
         monthView.didSelectDates = { day in
             self.service.daySelect(day)
             self.didSelectDates?(self.service.datesSelected)
+            monthView.setDaySelection()
         }
         monthView.didGettingSelectingType = { day in
-            print("daySelection for \(day.dayDate) is \(self.service.daySelected(day))")
             return self.service.daySelected(day)
         }
-
+        monthView.setDaySelection()
+        
         return monthView
     }
     
@@ -180,7 +181,9 @@ private extension ACCalendarContainerView {
             return nil
         }
         print("didDispalyedNextMonthView \(index), all \(self.service.months.count)")
-        
+        if let displayedMonth = self.service.months[safe: index - 2] {
+            self.didScrollToMonth?(displayedMonth.monthDate)
+        }
         if index <= self.service.months.count {
             self.insertFutureMonths()
         }
@@ -199,6 +202,9 @@ private extension ACCalendarContainerView {
             self.insertPastMonths()
             return nil
         }
+        if let displayedMonth = self.service.months[safe: index - 2] {
+            self.didScrollToMonth?(displayedMonth.monthDate)
+        }
         //print("changeIndexDecreaseAction - \(index)")
         return index - 1
     }
@@ -207,12 +213,26 @@ private extension ACCalendarContainerView {
 
 // MARK: - UIScrollViewDelegate
 extension ACCalendarContainerView: UIScrollViewDelegate {
-    /*
+    
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let pageIndex = round(scrollView.contentOffset.y / scrollView.frame.width)
+        let newOffset = CGPoint(x: scrollView.frame.width * pageIndex, y: 0)
+        
+        let currentOffset = reusedScrollView.contentOffset
+        let contentHeight = reusedScrollView.contentSize.height
+        let centerOffsetY = (contentHeight - reusedScrollView.bounds.height) / 2
+        let distanceFromCenterY = abs(currentOffset.y - centerOffsetY)
+        
+        if let month = self.service.months[safe: Int(pageIndex)] {
+            print("didDispalyed Current Page: \(pageIndex), \(scrollView.contentOffset.y) newOffset - \(newOffset), scrollView \(scrollView.frame), month \(month.monthDate), distanceFromCenterY \(distanceFromCenterY), centerOffsetY - \(centerOffsetY)")
+        }
+    }
+    
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let pageIndex = round(scrollView.contentOffset.x / scrollView.frame.width)
         let newOffset = CGPoint(x: scrollView.frame.width * pageIndex, y: 0)
-        print("Current Page: \(pageIndex), newOffset - \(newOffset), scrollView \(scrollView.frame)")
+        //print("Current Page: \(pageIndex), newOffset - \(newOffset), scrollView \(scrollView.frame)")
         
-        scrollView.setContentOffset(newOffset, animated: true)
-    }*/
+        //scrollView.setContentOffset(newOffset, animated: true)
+    }
 }

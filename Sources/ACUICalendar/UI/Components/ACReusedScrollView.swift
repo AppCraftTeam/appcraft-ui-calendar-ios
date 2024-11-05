@@ -148,7 +148,6 @@ private extension ACReusedScrollView {
             self.updateVerticalViews(minVisibleY: minVisibleY, maxVisibleY: maxVisibleY, previousIndex: beforeIndex, nextIndex: afterIndex, isCompact: isCompact)
         }
     }
-    
 }
 
 private extension ACReusedScrollView {

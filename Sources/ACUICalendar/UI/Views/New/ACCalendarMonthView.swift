@@ -10,12 +10,14 @@ import UIKit
 
 public class ACCalendarMonthView: UIView {
     
+    // MARK: - Props
     private var month: ACCalendarMonthModel
     private var theme = ACCalendarUITheme()
     private var showsOnlyCurrentDaysInMonth: Bool = true
     private var scrollDirection: UICollectionView.ScrollDirection
     private var monthHeader: ACMonthHeader?
     private let monthHeaderView = ACCalendarMonthHeaderView()
+    private var dayLabels: [ACCalendarDayView] = []
     
     public static var headerHeight: CGFloat = 20
     public static var headerBottonInset: CGFloat = 0
@@ -34,23 +36,40 @@ public class ACCalendarMonthView: UIView {
         self.scrollDirection = scrollDirection
         super.init(frame: .zero)
         
-        self.setupMonthView()
+        setupComponents()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Methods
+    
     override public func layoutSubviews() {
         super.layoutSubviews()
     }
     
-    private func setupMonthView() {
+    public func setDaySelection() {
+        dayLabels.forEach { dayLabel in
+            guard let day = dayLabel.day else { return }
+            dayLabel.daySelection = self.didGettingSelectingType?(day) ?? .notSelected
+        }
+    }
+}
+
+// MARK: - Setup Methods
+private extension ACCalendarMonthView {
+    
+    func setupComponents() {
         self.backgroundColor = .clear
-        
-        monthHeaderView.parentSize = self.parentSize
+        setupMonthHeaderView()
+        setupWeekViews()
+    }
+    
+    func setupMonthHeaderView() {
+        monthHeaderView.parentSize = parentSize
         addSubview(monthHeaderView)
-        print("scrollDirection setupMonthView \(self.scrollDirection), \(self.scrollDirection == .horizontal)")
+        
         monthHeaderView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             monthHeaderView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
@@ -58,36 +77,31 @@ public class ACCalendarMonthView: UIView {
             monthHeaderView.topAnchor.constraint(equalTo: self.topAnchor),
             monthHeaderView.heightAnchor.constraint(equalToConstant:  self.scrollDirection == .vertical ? ACCalendarMonthView.headerHeight : 0.0)
         ])
-        monthHeaderView.isHidden = self.scrollDirection == .horizontal
+        
+        monthHeaderView.isHidden = scrollDirection == .horizontal
+        
+        if let monthHeader = monthHeader {
+            monthHeaderView.theme = theme
+            monthHeaderView.updateComponents(cfg: monthHeader, model: month)
+        }
+    }
+    
+    func setupWeekViews() {
+        dayLabels.removeAll()
+        let monthWeekDays = month.days.chunked(into: 7)
+        let totalRowHeight = ACCalendarMonthView.rowHeight * CGFloat(monthWeekDays.count)
+        let availableHeight: CGFloat = parentSize.height
+        let remainingSpace = availableHeight - totalRowHeight
+        let singlePadding = remainingSpace / CGFloat(monthWeekDays.count)
+        print("parentSize - \(parentSize), remainingSpace \(remainingSpace), \(singlePadding), count \(monthWeekDays.count)")
+
         var previousWeekView: UIView = monthHeaderView
         
-        let monthWeekDays = month.days.chunked(into: 7)
-        
-        let numberOfWeeks = CGFloat(6)
-        let totalRowHeight = ACCalendarMonthView.rowHeight * numberOfWeeks
-        let availableHeight: CGFloat = 474.0 //self.bounds.height
-        
-        let remainingSpace = availableHeight - totalRowHeight
-        let single = remainingSpace / numberOfWeeks
-        print("remainingSpace - \(remainingSpace), availableHeight - \(availableHeight), totalRowHeight - \(totalRowHeight), single - \(single)")
-        
-        
-        monthWeekDays.enumerated().forEach { (index, rowWeekDates) in
-            let weekView = UIView()
+        monthWeekDays.enumerated().forEach { index, weekDays in
+            let weekView = createWeekView()
             addSubview(weekView)
             
-            var topPadding: CGFloat {
-                switch self.scrollDirection {
-                case .vertical:
-                    return 0.0
-                case .horizontal:
-                    return index == 0 ? 0 : (single / 1)
-                @unknown default:
-                    return 0.0
-                }
-            }
-            
-            weekView.translatesAutoresizingMaskIntoConstraints = false
+            let topPadding = getTopPadding(for: index, padding: singlePadding)
             NSLayoutConstraint.activate([
                 weekView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
                 weekView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
@@ -95,50 +109,7 @@ public class ACCalendarMonthView: UIView {
                 weekView.heightAnchor.constraint(equalToConstant: ACCalendarMonthView.rowHeight)
             ])
             
-            var previousDayLabel: UIView? = nil
-            
-            rowWeekDates.forEach { day in
-                let dayLabel = ACCalendarDayView()
-                dayLabel.day = day
-                
-                if showsOnlyCurrentDaysInMonth {
-                    dayLabel.dayIsHidden = day.belongsToMonth != .current
-                } else {
-                    dayLabel.dayIsHidden = false
-                }
-                print("dddd \(self.didGettingSelectingType == nil)")
-                dayLabel.daySelection =  self.didGettingSelectingType?(day) ?? .notSelected
-                dayLabel.theme = theme
-                
-                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDayLabelTap(_:)))
-                dayLabel.addGestureRecognizer(tapGesture)
-                dayLabel.isUserInteractionEnabled = true
-                
-                weekView.addSubview(dayLabel)
-                
-                dayLabel.translatesAutoresizingMaskIntoConstraints = false
-                dayLabel.heightAnchor.constraint(equalToConstant: ACCalendarMonthView.rowHeight).isActive = true
-                
-                if let previousDayLabel = previousDayLabel {
-                    NSLayoutConstraint.activate([
-                        dayLabel.leadingAnchor.constraint(equalTo: previousDayLabel.trailingAnchor),
-                        dayLabel.widthAnchor.constraint(equalTo: previousDayLabel.widthAnchor)
-                    ])
-                } else {
-                    NSLayoutConstraint.activate([
-                        dayLabel.leadingAnchor.constraint(equalTo: weekView.leadingAnchor)
-                    ])
-                }
-                
-                previousDayLabel = dayLabel
-            }
-            
-            if let lastDayLabel = previousDayLabel {
-                NSLayoutConstraint.activate([
-                    lastDayLabel.trailingAnchor.constraint(equalTo: weekView.trailingAnchor)
-                ])
-            }
-            
+            setupDayViews(in: weekView, days: weekDays)
             previousWeekView = weekView
         }
         
@@ -146,23 +117,72 @@ public class ACCalendarMonthView: UIView {
             previousWeekView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ])
         
-        if let monthHeader = monthHeader {
-            monthHeaderView.theme = self.theme
-            monthHeaderView.updateComponents(cfg: monthHeader, model: month)
+        self.layoutSubviews()
+    }
+    
+    func createWeekView() -> UIView {
+        let weekView = UIView()
+        weekView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return weekView
+    }
+    
+    func getTopPadding(for index: Int, padding: CGFloat) -> CGFloat {
+        guard scrollDirection == .horizontal else {
+            return 0.0
         }
         
-        self.layoutSubviews()
+        return index == 0 ? 0 : padding
+    }
+    
+    func setupDayViews(in weekView: UIView, days: [ACCalendarDayModel]) {
+        var previousDayLabel: UIView? = nil
+        
+        days.forEach { day in
+            let dayLabel = createDayLabel(for: day)
+            weekView.addSubview(dayLabel)
+            dayLabels.append(dayLabel)
+            
+            if let previousDayLabel = previousDayLabel {
+                NSLayoutConstraint.activate([
+                    dayLabel.leadingAnchor.constraint(equalTo: previousDayLabel.trailingAnchor),
+                    dayLabel.widthAnchor.constraint(equalTo: previousDayLabel.widthAnchor)
+                ])
+            } else {
+                NSLayoutConstraint.activate([
+                    dayLabel.leadingAnchor.constraint(equalTo: weekView.leadingAnchor)
+                ])
+            }
+            
+            previousDayLabel = dayLabel
+        }
+        
+        if let lastDayLabel = previousDayLabel {
+            NSLayoutConstraint.activate([
+                lastDayLabel.trailingAnchor.constraint(equalTo: weekView.trailingAnchor)
+            ])
+        }
+    }
+    
+    func createDayLabel(for day: ACCalendarDayModel) -> ACCalendarDayView {
+        let dayLabel = ACCalendarDayView()
+        dayLabel.day = day
+        dayLabel.dayIsHidden = showsOnlyCurrentDaysInMonth && day.belongsToMonth != .current
+        dayLabel.daySelection = didGettingSelectingType?(day) ?? .notSelected
+        dayLabel.theme = theme
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDayLabelTap(_:)))
+        dayLabel.addGestureRecognizer(tapGesture)
+        dayLabel.isUserInteractionEnabled = true
+        
+        dayLabel.translatesAutoresizingMaskIntoConstraints = false
+        dayLabel.heightAnchor.constraint(equalToConstant: ACCalendarMonthView.rowHeight).isActive = true
+        return dayLabel
     }
     
     @objc
     private func handleDayLabelTap(_ sender: UITapGestureRecognizer) {
-        guard let dayLabel = sender.view as? ACCalendarDayView,
-              let day = dayLabel.day
-        else {
-            return
-        }
-        print("didSelectDates... \(day)")
+        guard let dayLabel = sender.view as? ACCalendarDayView, let day = dayLabel.day else { return }
         didSelectDates?(day)
     }
-    
 }
