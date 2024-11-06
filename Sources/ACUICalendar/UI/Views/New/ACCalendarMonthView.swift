@@ -11,29 +11,27 @@ import UIKit
 public class ACCalendarMonthView: UIView {
     
     // MARK: - Props
-    private var month: ACCalendarMonthModel
-    private var theme = ACCalendarUITheme()
-    private var showsOnlyCurrentDaysInMonth: Bool = true
-    private var scrollDirection: UICollectionView.ScrollDirection
-    private var monthHeader: ACMonthHeader?
-    private let monthHeaderView = ACCalendarMonthHeaderView()
-    private var dayLabels: [ACCalendarDayView] = []
-    
-    public static var headerHeight: CGFloat = 20
-    public static var headerBottonInset: CGFloat = 0
-    public static var rowHeight: CGFloat = 47.0
+    var month: ACCalendarMonthModel
+    var theme = ACCalendarUITheme()
+    var showsOnlyCurrentDaysInMonth: Bool = true
+    var monthHeader: ACMonthHeader?
+    let monthHeaderView = ACCalendarMonthHeaderView()
+    var dayLabels: [ACCalendarDayView] = []
+    var headerHeight: CGFloat = 20
+    var headerBottonInset: CGFloat = 0
+    var rowHeight: CGFloat = 47.0
     public var parentSize: CGSize = .zero
     public var didSelectDates: ContextClosure<ACCalendarDayModel>?
     public var didGettingSelectingType: ((_ day: ACCalendarDayModel) -> ACCalendarDateSelectionType)?
     
     // MARK: - Init
-    public init(month: ACCalendarMonthModel, theme: ACCalendarUITheme, showsOnlyCurrentDaysInMonth: Bool, scrollDirection: UICollectionView.ScrollDirection, parentSize: CGSize, monthHeader: ACMonthHeader?) {
+    public init(month: ACCalendarMonthModel, theme: ACCalendarUITheme, showsOnlyCurrentDaysInMonth: Bool, parentSize: CGSize, monthHeader: ACMonthHeader?, headerHeight: Double = 20) {
         self.month = month
         self.theme = theme
         self.showsOnlyCurrentDaysInMonth = showsOnlyCurrentDaysInMonth
         self.parentSize = parentSize
         self.monthHeader = monthHeader
-        self.scrollDirection = scrollDirection
+        self.headerHeight = headerHeight
         super.init(frame: .zero)
         
         setupComponents()
@@ -41,6 +39,37 @@ public class ACCalendarMonthView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    static func build(
+        for scrollDirection: ACCalendarScrollDirection,
+        month: ACCalendarMonthModel,
+        theme: ACCalendarUITheme,
+        showsOnlyCurrentDaysInMonth: Bool, 
+        parentSize: CGSize,
+        monthHeader: ACMonthHeader?,
+        headerHeight: Double = 20
+    ) -> ACCalendarMonthView {
+        switch scrollDirection {
+        case .horizontal:
+            return ACCalendarMonthHorizontalView(
+                month: month,
+                theme: theme,
+                showsOnlyCurrentDaysInMonth: showsOnlyCurrentDaysInMonth,
+                parentSize: parentSize,
+                monthHeader: monthHeader,
+                headerHeight: headerHeight
+            )
+        case .vertical:
+            return ACCalendarMonthVerticalView(
+                month: month,
+                theme: theme,
+                showsOnlyCurrentDaysInMonth: showsOnlyCurrentDaysInMonth,
+                parentSize: parentSize,
+                monthHeader: monthHeader,
+                headerHeight: headerHeight
+            )
+        }
     }
     
     // MARK: - Methods
@@ -55,84 +84,30 @@ public class ACCalendarMonthView: UIView {
             dayLabel.daySelection = self.didGettingSelectingType?(day) ?? .notSelected
         }
     }
+    
+    func getTopPadding(for index: Int, padding: CGFloat) -> CGFloat {
+        0.0
+    }
+    
+    func setupMonthHeaderView() {}
+    
+    func setupWeekViews() {}
 }
 
 // MARK: - Setup Methods
-private extension ACCalendarMonthView {
+extension ACCalendarMonthView {
     
     func setupComponents() {
         self.backgroundColor = .clear
         setupMonthHeaderView()
         setupWeekViews()
     }
-    
-    func setupMonthHeaderView() {
-        monthHeaderView.parentSize = parentSize
-        addSubview(monthHeaderView)
         
-        monthHeaderView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            monthHeaderView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            monthHeaderView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            monthHeaderView.topAnchor.constraint(equalTo: self.topAnchor),
-            monthHeaderView.heightAnchor.constraint(equalToConstant:  self.scrollDirection == .vertical ? ACCalendarMonthView.headerHeight : 0.0)
-        ])
-        
-        monthHeaderView.isHidden = scrollDirection == .horizontal
-        
-        if let monthHeader = monthHeader {
-            monthHeaderView.theme = theme
-            monthHeaderView.updateComponents(cfg: monthHeader, model: month)
-        }
-    }
-    
-    func setupWeekViews() {
-        dayLabels.removeAll()
-        let monthWeekDays = month.days.chunked(into: 7)
-        let totalRowHeight = ACCalendarMonthView.rowHeight * CGFloat(monthWeekDays.count)
-        let availableHeight: CGFloat = parentSize.height
-        let remainingSpace = availableHeight - totalRowHeight
-        let singlePadding = remainingSpace / CGFloat(monthWeekDays.count)
-        print("parentSize - \(parentSize), remainingSpace \(remainingSpace), \(singlePadding), count \(monthWeekDays.count)")
-
-        var previousWeekView: UIView = monthHeaderView
-        
-        monthWeekDays.enumerated().forEach { index, weekDays in
-            let weekView = createWeekView()
-            addSubview(weekView)
-            
-            let topPadding = getTopPadding(for: index, padding: singlePadding)
-            NSLayoutConstraint.activate([
-                weekView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-                weekView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-                weekView.topAnchor.constraint(equalTo: previousWeekView.bottomAnchor, constant: topPadding),
-                weekView.heightAnchor.constraint(equalToConstant: ACCalendarMonthView.rowHeight)
-            ])
-            
-            setupDayViews(in: weekView, days: weekDays)
-            previousWeekView = weekView
-        }
-        
-        NSLayoutConstraint.activate([
-            previousWeekView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
-        ])
-        
-        self.layoutSubviews()
-    }
-    
     func createWeekView() -> UIView {
         let weekView = UIView()
         weekView.translatesAutoresizingMaskIntoConstraints = false
         
         return weekView
-    }
-    
-    func getTopPadding(for index: Int, padding: CGFloat) -> CGFloat {
-        guard scrollDirection == .horizontal else {
-            return 0.0
-        }
-        
-        return index == 0 ? 0 : padding
     }
     
     func setupDayViews(in weekView: UIView, days: [ACCalendarDayModel]) {
@@ -176,7 +151,7 @@ private extension ACCalendarMonthView {
         dayLabel.isUserInteractionEnabled = true
         
         dayLabel.translatesAutoresizingMaskIntoConstraints = false
-        dayLabel.heightAnchor.constraint(equalToConstant: ACCalendarMonthView.rowHeight).isActive = true
+        dayLabel.heightAnchor.constraint(equalToConstant: rowHeight).isActive = true
         return dayLabel
     }
     

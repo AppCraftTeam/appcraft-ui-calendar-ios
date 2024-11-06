@@ -64,7 +64,7 @@ class ViewController: UIViewController {
     var calendarItemSize: Double = .zero
     var selectionNames: [ACCalendarDateSelectionName] = [.single, .multi, .range]
     
-    var scrollDirection: UICollectionView.ScrollDirection = .horizontal
+    var scrollDirection: ACCalendarScrollDirection = .horizontal
     
     var showsOnlyCurrentDaysInMonth = false
     

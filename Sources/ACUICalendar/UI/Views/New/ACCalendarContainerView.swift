@@ -88,13 +88,14 @@ open class ACCalendarContainerView: ACCalendarBaseView {
         
         guard let index = self.months.firstIndex(where: { isEqual($0) }) else { return }
         self.isAnimationBusy = true
+        print("scrollToPage index \(index), \(monthDate)")
         self.reusedScrollView.scrollToPage(pageIndex: index, animated: animated)
         self.isAnimationBusy = false
     }
     
     // MARK: - Data insertion methods
     func insertPastMonths() {
-        guard self.canInsertSections else { return }
+        guard self.canInsertSections, !self.isAnimationBusy else { return }
         self.canInsertSections.toggle()
         let currentIndex = reusedScrollView.currentIndex
 
@@ -122,7 +123,9 @@ open class ACCalendarContainerView: ACCalendarBaseView {
         }
         
         guard isAllowFetchNewMonth,
-              canInsertSections else { return }
+              canInsertSections,
+              !self.isAnimationBusy
+        else { return }
         self.canInsertSections = false
         self.service.asyncGenerateFeatureDates(count: 12) { [weak self] months in
             guard let self else { return }
@@ -138,11 +141,11 @@ private extension ACCalendarContainerView {
             return UIView()
         }
         let size = self.calcMonthFrame(index: index)
-        let monthView = ACCalendarMonthView(
+        let monthView = ACCalendarMonthView.build(
+            for: self.scrollDirection,
             month: month,
             theme: self.theme,
             showsOnlyCurrentDaysInMonth: self.showsOnlyCurrentDaysInMonth,
-            scrollDirection: self.scrollDirection,
             parentSize: CGSize(width: size.width, height: size.height),
             monthHeader: self.monthHeader
         )
@@ -166,7 +169,7 @@ private extension ACCalendarContainerView {
         
         switch self.scrollDirection {
         case .vertical:
-            let height = CGFloat((month.days.chunked(into: 7).count * 47)) + ACCalendarMonthView.headerHeight + ACCalendarMonthView.headerBottonInset
+            let height = CGFloat((month.days.chunked(into: 7).count * 47)) + 20
             let totalHeight = height
             return CGRect(x: 0, y: 0, width: self.viewBounds.width, height: totalHeight)
         case .horizontal:

@@ -25,7 +25,7 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
     private let incrementIndexAction: (ItemIndex) -> ItemIndex?
     private let decrementIndexAction: (ItemIndex) -> ItemIndex?
     
-    private let layoutOrientation: UICollectionView.ScrollDirection
+    private let layoutOrientation: ACCalendarScrollDirection
     
     public init(
         frame: CGRect,
@@ -35,7 +35,7 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
         incrementIndexAction: @escaping (ItemIndex) -> ItemIndex?,
         decrementIndexAction: @escaping (ItemIndex) -> ItemIndex?,
         scaleMultiplier: CGFloat = 6,
-        layoutOrientation: UICollectionView.ScrollDirection,
+        layoutOrientation: ACCalendarScrollDirection,
         spacing: CGFloat = 0
     ) {
         self.displayedViews = []
@@ -49,15 +49,17 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
         self.spacing = spacing
         super.init(frame: frame)
         
+        let size = CGSize(width: 361, height: 565)
+        
         switch layoutOrientation {
         case .horizontal:
-            self.isPagingEnabled = false
-            self.contentSize = CGSize(width: self.frame.size.width * self.scaleMultiplier, height: self.frame.size.height)
+            self.isPagingEnabled = true
+            self.contentSize = CGSize(width: size.width * self.scaleMultiplier, height: size.height)
         case .vertical:
             self.isPagingEnabled = false
             self.contentSize = CGSize(width: self.frame.size.width, height: self.frame.size.height * self.scaleMultiplier)
         }
-        
+        print("contentSize - \(self.contentSize), \(self.frame.size)")
         self.translatesAutoresizingMaskIntoConstraints = false
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false
@@ -107,7 +109,7 @@ public class ACReusedScrollView<ItemIndex>: UIScrollView {
     public func scrollToPage(pageIndex: Int, animated: Bool) {
         let pageHeight = self.frame.height
         let targetOffset = CGPoint(x: 0, y: CGFloat(pageIndex) * pageHeight)
-        
+        print("scrollToPage targetOffset \(targetOffset)")
         self.setContentOffset(targetOffset, animated: animated)
     }
 }

@@ -307,9 +307,9 @@ extension ACCalendarDayCollectionView: UICollectionViewDelegateFlowLayout {
         self.pageProvider.scrollViewDidScroll(scrollView)
         
         if insertionRules?.needsInsertFutureDates(scrollView) ?? false {
-            self.insertFutureMonths()
+            //self.insertFutureMonths()
         } else if insertionRules?.needsInsertPastDates(scrollView) ?? false {
-            self.insertPastMonths()
+            //self.insertPastMonths()
         }
     }
     

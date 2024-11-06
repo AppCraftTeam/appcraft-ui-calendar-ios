@@ -11,7 +11,7 @@ import UIKit
 open class ACCalendarBaseView: UIView {
     
     // MARK: - Init
-    public init(service: ACCalendarService, scrollDirection: UICollectionView.ScrollDirection) {
+    public init(service: ACCalendarService, scrollDirection: ACCalendarScrollDirection) {
         self.service = service
         self.scrollDirection = scrollDirection
 
@@ -47,7 +47,7 @@ open class ACCalendarBaseView: UIView {
         didSet { self.updateComponents() }
     }
     
-    open var scrollDirection: UICollectionView.ScrollDirection {
+    open var scrollDirection: ACCalendarScrollDirection {
         didSet { self.updateComponents() }
     }
     

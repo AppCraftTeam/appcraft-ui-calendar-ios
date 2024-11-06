@@ -18,7 +18,7 @@ open class ACCalendarDayViewController: UIViewController {
     }
     
     // MARK: - Init
-    public init(service: ACCalendarService = .default(), height: CalendarHeight = .fullscreen, scrollDirection: UICollectionView.ScrollDirection = .vertical) {
+    public init(service: ACCalendarService = .default(), height: CalendarHeight = .fullscreen, scrollDirection: ACCalendarScrollDirection = .vertical) {
         self.service = service
         self.calendarHeight = height
         self.scrollDirection = scrollDirection
@@ -37,7 +37,7 @@ open class ACCalendarDayViewController: UIViewController {
     /// Calendar height setting
     public let calendarHeight: CalendarHeight
     
-    public var scrollDirection: UICollectionView.ScrollDirection
+    public var scrollDirection: ACCalendarScrollDirection
     
     /// Calendar view
     ///
