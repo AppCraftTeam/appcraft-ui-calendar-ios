@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 /// A set of methods for working with calendar data.
 public class ACCalendarService {
     
@@ -73,21 +74,29 @@ public class ACCalendarService {
     public var months: [ACCalendarMonthModel] {
         pastMonthGenerator.months + futureMonthGenerator.months
     }
+    
+    public var allPastMonths = [ACCalendarMonthModel]()
+    public var allFutureMonths = [ACCalendarMonthModel]()
+
+    public var allMonths: [ACCalendarMonthModel] {
+        allPastMonths + allFutureMonths
+    }
     public var years: [ACCalendarYearModel] = []
     
     public var datesSelected: [Date] {
         get { self.selection.datesSelected }
         set { self.selection.datesSelected = newValue }
     }
-    
+        
+    /// Limit the maximum number of months to display in a collection view
+    public var maxDisplayedMonthsCount = 48
+
     // MARK: - Methods
     public func setupComponents() {
         self.selection.calendar = self.calendar
-        self.generatePastMonths()
-        self.generateFutureMonths()
-        self.years = self.generateYears(from: self.months)
+        self.generateMonths(count: 12)
+        self.generateYearsAtCurrentMonths()
     }
-    
 }
 
 // MARK: - Equatable
@@ -100,27 +109,91 @@ extension ACCalendarService: Equatable {
         lhs.currentMonthDate == rhs.currentMonthDate &&
         lhs.selection.datesSelected == rhs.selection.datesSelected
     }
-    
 }
+
 // MARK: - Generators
 public extension ACCalendarService {
     
     @discardableResult
-    func generatePastMonths(count: Int = 2) -> [ACCalendarMonthModel] {
-        let months = (0...count + 1).compactMap { _ in
-            self.pastMonthGenerator.next()
+    func generateMonths(count: Int = 4) -> [ACCalendarMonthModel] {
+        //let pastMonths = generateMonths(count: count, generator: pastMonthGenerator)
+        let pastMonths: [ACCalendarMonthModel] = []
+        let futureMonths = generateMonths(count: count, generator: futureMonthGenerator)
+        
+        self.allPastMonths = pastMonths.sorted(by: { lel, rel in
+            lel.monthDate < rel.monthDate
+        })
+        
+        if let month = futureMonthGenerator.generateMonth(for: currentMonthDate) {
+            self.allFutureMonths.append(month)
         }
+        self.allFutureMonths += futureMonths
+        self.allFutureMonths = self.allFutureMonths.removingDuplicates().sorted(by: { lel, rel in
+            lel.monthDate < rel.monthDate
+        })
+
+        return pastMonths + futureMonths
+    }
+    
+    func asyncGeneratePastDates(count: Int, completion: @escaping ([ACCalendarMonthModel]) -> Void) {
+            DispatchQueue.global(qos: .userInitiated).async {
+                let months = self.generateMonths(count: count, generator: self.pastMonthGenerator)
+
+                if !months.isEmpty {
+                    self.years = self.generateYears(from: self.months)
+                }
+                
+                DispatchQueue.main.async {
+                    self.allPastMonths += months
+                    completion(months)
+                }
+            }
+        }
+
+    func asyncGenerateFeatureDates(count: Int, completion: @escaping ([ACCalendarMonthModel]) -> Void) {
+            DispatchQueue.global(qos: .userInitiated).async {
+                let months = self.generateMonths(count: count, generator: self.futureMonthGenerator)
+                print("asyncGenerateFeatureDates c months \(months.map({ $0.monthDate }))")
+
+                if !months.isEmpty {
+                    self.years = self.generateYears(from: self.months)
+                }
+
+                DispatchQueue.main.async {
+                    self.allFutureMonths += months
+                    completion(months)
+                }
+            }
+        }
+    @discardableResult
+    func generateMonths(count: Int, generator: MonthGenerator) -> [ACCalendarMonthModel] {
+        var months = [ACCalendarMonthModel]()
+        
+        for _ in (0..<count) {
+            if let month = generator.next() {
+                months.insert(month, at: 0)
+            } else {
+                break
+            }
+        }
+
+        return months
+    }
+
+    @discardableResult
+    func generatePastDates(count: Int = 2) -> [ACCalendarMonthModel] {
+        let months = generateMonths(count: count, generator: pastMonthGenerator)
+        
         if !months.isEmpty {
-            years = generateYears(from: self.months)
+            self.years = generateYears(from: self.months)
         }
         return months
     }
 
     @discardableResult
-    func generateFutureMonths(count: Int = 2) -> [ACCalendarMonthModel] {
-        let months = (0...count + 1).compactMap { _ in
-            self.futureMonthGenerator.next()
-        }
+    func generateFutureDates(count: Int = 2) -> [ACCalendarMonthModel] {
+        
+        let months = generateMonths(count: count, generator: futureMonthGenerator)
         if !months.isEmpty {
            years = generateYears(from: self.months)
         }
@@ -195,6 +268,10 @@ public extension ACCalendarService {
         let dateComponents = self.calendar.dateComponents([.year], from: date)
         
         return self.calendar.date(from: dateComponents)
+    }
+    
+    func generateYearsAtCurrentMonths() {
+        self.years = generateYears(from: self.months)
     }
     
     func generateYears(from months: [ACCalendarMonthModel]) -> [ACCalendarYearModel] {

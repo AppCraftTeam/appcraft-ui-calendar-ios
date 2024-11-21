@@ -11,13 +11,12 @@ open class PastMonthGenerator: MonthGenerator {
     
     public let minDate: Date?
     public let currentDate: Date
-
     public init(calendar: Calendar, currentDate: Date, minDate: Date? = nil) {
         self.minDate = minDate
         self.currentDate = currentDate
         super.init(calendar: calendar)
     }
-    
+        
     @discardableResult
     open override func next() -> ACCalendarMonthModel? {
         let lastMinDate = self.months.first?.monthDate ?? currentDate
@@ -32,6 +31,7 @@ open class PastMonthGenerator: MonthGenerator {
             return nil
         }
         self.months.insert(nextMonth, at: 0)
+
         return nextMonth
     }
 }

@@ -166,7 +166,7 @@ class ViewController: UIViewController {
             scrollDirection == .horizontal ? .horizontal() : .vertical(),
             animated: false
         )
-        vc.itemHeight = calendarItemSize
+        //vc.itemHeight = calendarItemSize
         vc.monthDatePickerViewEnabled = false
         vc.monthArrowSwitcherIsHidden = scrollDirection == .horizontal ? false : true
         vc.showsOnlyCurrentDaysInMonth = showsOnlyCurrentDaysInMonth

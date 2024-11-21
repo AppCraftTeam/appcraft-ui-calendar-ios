@@ -76,12 +76,12 @@ open class ACCalendarDayViewController: UIViewController {
         }
     }
     
-    open var itemHeight: Double {
-        get { self.calendarView.dayCollectionView.itemHeight }
-        set {
-            self.calendarView.dayCollectionView.itemHeight = newValue
-        }
-    }
+//    open var itemHeight: Double {
+//        get { self.calendarView.dayCollectionView.itemHeight }
+//        set {
+//            self.calendarView.dayCollectionView.itemHeight = newValue
+//        }
+//    }
 
     // MARK: Actions
     open var onTapCancel: Closure?

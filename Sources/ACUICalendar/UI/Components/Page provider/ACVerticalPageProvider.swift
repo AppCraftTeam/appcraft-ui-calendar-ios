@@ -12,6 +12,7 @@ import Foundation
 final
 public class ACVerticalPageProvider: ACPageProvider {
     
+    public var currentPage: Int = 0
     private var previousVisibleSection: Int?
     
     public var onChangePage: ((Int) -> Void)?
@@ -33,9 +34,11 @@ public class ACVerticalPageProvider: ACPageProvider {
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard let firstVisibleSection = getCurrentFirstVisibleSection(in: scrollView) else { return }
+
         if let previousVisibleSection = self.previousVisibleSection {
             if firstVisibleSection != previousVisibleSection {
                 self.previousVisibleSection = firstVisibleSection
+                self.currentPage = firstVisibleSection
                 self.onChangePage?(firstVisibleSection)
             }
         } else {

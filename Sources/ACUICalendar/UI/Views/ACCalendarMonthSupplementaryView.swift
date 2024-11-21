@@ -50,7 +50,6 @@ open class ACCalendarMonthSupplementaryView: UICollectionReusableView {
         
         self.labelLeadingConstraint = label.leadingAnchor.constraint(equalTo: leadingAnchor)
         self.labelLeadingConstraint?.isActive = true
-        
     }
     
     open func updateComponents(
@@ -85,7 +84,6 @@ open class ACCalendarMonthSupplementaryView: UICollectionReusableView {
             } else {
                 self.labelLeadingConstraint?.constant = self.frame.width - widthString
             }
-            self.layoutIfNeeded()
         }
     }
     

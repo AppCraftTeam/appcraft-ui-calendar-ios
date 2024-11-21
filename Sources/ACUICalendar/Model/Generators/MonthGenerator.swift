@@ -11,7 +11,7 @@ open class MonthGenerator: IteratorProtocol {
 
     public typealias Element = ACCalendarMonthModel
 
-    open var months = [ACCalendarMonthModel]()
+    open var months = ACSafeCollection<ACCalendarMonthModel>()
 
     public let calendar: Calendar
 
@@ -37,7 +37,7 @@ open class MonthGenerator: IteratorProtocol {
             })
 
         return ACCalendarMonthModel(
-            month: self.calendar.component(.month, from: monthDate),
+            month: calendar.component(.month, from: monthDate),
             monthDate: monthDate,
             monthDates: monthDates,
             previousMonthDates: previousMonthDates,
@@ -113,17 +113,17 @@ open class MonthGenerator: IteratorProtocol {
 
     open func generateNextMonthDates(for monthDate: Date) -> [Date]? {
         guard
-            let endOfMonth = self.endOfMonth(for: monthDate),
-            let nextEndOfMonth = self.calendar.date(byAdding: .day, value: 1, to: endOfMonth)
+            let endOfMonth = endOfMonth(for: monthDate),
+            let nextEndOfMonth = calendar.date(byAdding: .day, value: 1, to: endOfMonth)
         else { return nil }
         
         var result: [Date] = []
         var nextDate = nextEndOfMonth
         
-        while self.calendar.component(.weekOfYear, from: endOfMonth) == self.calendar.component(.weekOfYear, from: nextDate) {
+        while calendar.component(.weekOfYear, from: endOfMonth) == calendar.component(.weekOfYear, from: nextDate) {
             result += [nextDate]
             
-            guard let dateAddingDay = self.calendar.date(byAdding: .day, value: 1, to: nextDate) else { break }
+            guard let dateAddingDay = calendar.date(byAdding: .day, value: 1, to: nextDate) else { break }
             nextDate = dateAddingDay
         }
         
