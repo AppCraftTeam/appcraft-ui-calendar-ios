@@ -5,27 +5,26 @@
 
 import UIKit
 
-class CalendarItemView: UIView {
+public class CalendarItemView: UIView {
     
-    let contentView: UIView
+    public let contentView: UIView
     
-    var selectionHandler: (() -> Void)?
+    public var selectionHandler: (() -> Void)?
     
-    var itemType: VisibleItem.ItemType?
+    public var itemType: VisibleItem.ItemType?
     
-    var calendarItemModel: AnyCalendarItemModel {
+    public var calendarItemModel: AnyCalendarItemModel {
         didSet {
-            guard calendarItemModel._itemViewDifferentiator == oldValue._itemViewDifferentiator else {
+            guard calendarItemModel._itemViewDifferentiator == oldValue._itemViewDifferentiator,
+                  !calendarItemModel._isContentEqual(toContentOf: oldValue) else {
                 return
             }
-            
-            guard !calendarItemModel._isContentEqual(toContentOf: oldValue) else { return }
             
             updateContent()
         }
     }
     
-    init(initialCalendarItemModel: AnyCalendarItemModel) {
+    public init(initialCalendarItemModel: AnyCalendarItemModel) {
         calendarItemModel = initialCalendarItemModel
         contentView = calendarItemModel._createView()
         
@@ -33,25 +32,23 @@ class CalendarItemView: UIView {
         
         contentView.insetsLayoutMarginsFromSafeArea = false
         addSubview(contentView)
-        
         updateContent()
     }
     
-    required init?(coder _: NSCoder) {
+    required public init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override class var layerClass: AnyClass {
+    override public class var layerClass: AnyClass {
         CATransformLayer.self
     }
     
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
-        
         contentView.frame = bounds
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         
         if touches.first.map(isTouchInView(_:)) ?? false {
@@ -59,7 +56,7 @@ class CalendarItemView: UIView {
         }
     }
     
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let view = super.hitTest(point, with: event)
         if view === self {
             return nil
