@@ -113,4 +113,28 @@ extension Calendar {
         let row = component(.weekOfMonth, from: date)
         return isFirstDayInFirstWeek ? row - 1 : row
     }
+    
+    func createMonthFormatter() -> DateFormatter {
+        let monthHeaderDateFormatter = DateFormatter()
+        monthHeaderDateFormatter.calendar = self
+        monthHeaderDateFormatter.locale = self.locale
+        monthHeaderDateFormatter.dateFormat = DateFormatter.dateFormat(
+            fromTemplate: "MMMM yyyy",
+            options: 0,
+            locale: self.locale ?? Locale.current
+        )
+        return monthHeaderDateFormatter
+    }
+    
+    func createDayFormatter() -> DateFormatter {
+        let dayDateFormatter = DateFormatter()
+        dayDateFormatter.calendar = self
+        dayDateFormatter.locale = self.locale
+        dayDateFormatter.dateFormat = DateFormatter.dateFormat(
+            fromTemplate: "EEEE, MMM d, yyyy",
+            options: 0,
+            locale: self.locale ?? Locale.current
+        )
+        return dayDateFormatter
+    }
 }

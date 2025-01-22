@@ -13,7 +13,6 @@ public struct LayoutItem {
         case monthHeader(MonthComponents)
         case dayOfWeekInMonth(position: WeekdayPosition, month: MonthComponents)
         case day(DayComponents)
-        case emptyDate(DayComponents)
         
         var month: MonthComponents {
             switch self {
@@ -22,8 +21,6 @@ public struct LayoutItem {
             case .dayOfWeekInMonth(_, let month):
                 return month
             case .day(let day):
-                return day.month
-            case .emptyDate(let day):
                 return day.month
             }
         }
@@ -52,10 +49,6 @@ extension LayoutItem.ItemType: Comparable {
             return lhsDay.month < rhsMonth
         case let (.day(lhsDay), .dayOfWeekInMonth(_, rhsMonth)):
             return lhsDay.month < rhsMonth
-        case (.emptyDate(_), _):
-            return true
-        case (_, .emptyDate(_)):
-            return true
         }
     }
 }

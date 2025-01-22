@@ -54,8 +54,6 @@ final class LayoutItemTypeEnumerator {
             return monthRange.contains(month)
         case .day(let day):
             return dayRange.contains(day)
-        case .emptyDate(let day):
-            return true
         }
     }
     
@@ -78,8 +76,6 @@ final class LayoutItemTypeEnumerator {
                 return .dayOfWeekInMonth(position: .last, month: day.month)
             }
             return .day(calendar.day(byAddingDays: -1, to: day))
-        case .emptyDate(let day):
-            return .emptyDate(day)
         }
     }
     
@@ -106,8 +102,6 @@ final class LayoutItemTypeEnumerator {
             } else {
                 return .day(nextDay)
             }
-        case .emptyDate(let day):
-            return .emptyDate(day)
         }
     }
     
