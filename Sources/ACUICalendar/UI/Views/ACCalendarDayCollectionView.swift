@@ -27,7 +27,7 @@ open class ACCalendarDayCollectionView: ACCalendarBaseView {
     private lazy var pageProvider: ACPageProvider = ACVerticalPageProvider()
     private var isAnimationBusy = false
     
-    public private(set) lazy var collectionViewLayout: ACCalendarLayout = ACCalendarVerticalLayout()
+    public private(set) lazy var collectionViewLayout: ACCalendarLayoutOld = ACCalendarVerticalLayoutOld()
     
     open lazy var collectionView: UICollectionView = {
         let collectionView = ACCalendarCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)

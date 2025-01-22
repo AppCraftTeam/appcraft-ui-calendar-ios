@@ -1,5 +1,5 @@
 //
-//  ACCalendarHorizontalLayout.swift
+//  ACCalendarHorizontalLayoutOld.swift
 //  ACUICalendarDemo
 //
 //  Created by Дмитрий Поляков on 24.08.2022.
@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 
-open class ACCalendarHorizontalLayout: ACCalendarBaseLayout {
+open class ACCalendarHorizontalLayoutOld: ACCalendarBaseLayout {
 
     open override func prepare() {
         super.prepare()

@@ -31,7 +31,7 @@ open class ACCalendarContainerView: ACCalendarBaseView {
     private var insertionRules: (any ACDateInsertRules)?
     private var isAnimationBusy = false
     
-    public private(set) lazy var collectionViewLayout: ACCalendarLayout = ACCalendarVerticalLayout()
+    public private(set) lazy var collectionViewLayout: ACCalendarLayoutOld = ACCalendarVerticalLayoutOld()
     
     open lazy var reusedScrollView: ACReusedScrollView = {
         print("viewBoundsviewBounds - \(viewBounds)")
@@ -92,13 +92,13 @@ open class ACCalendarContainerView: ACCalendarBaseView {
         self.reusedScrollView.scrollToPage(pageIndex: index, animated: animated)
         self.isAnimationBusy = false
     }
-    
+    var isLoaded = false
     // MARK: - Data insertion methods
     func insertPastMonths() {
-        guard self.canInsertSections, !self.isAnimationBusy else { return }
+        guard !self.isLoaded, self.canInsertSections, !self.isAnimationBusy else { return }
         self.canInsertSections.toggle()
         let currentIndex = reusedScrollView.currentIndex
-
+        self.isLoaded = true
         self.service.asyncGeneratePastDates(count: 12) { [weak self] months in
             guard let self else { return }
             
@@ -107,7 +107,8 @@ open class ACCalendarContainerView: ACCalendarBaseView {
                 let newIndex = currentIndex + newMonthsCount
                 print("insertPastMonths - \(months.count), currentIndex - \(currentIndex), newIndex - \(newIndex)")
                 reusedScrollView.currentIndex = newIndex
-                reusedScrollView.scrollToPage(pageIndex: newIndex, animated: false)
+                reusedScrollView.layoutSubviews()
+                //reusedScrollView.scrollToPage(pageIndex: newIndex, animated: false)
             }
             self.canInsertSections.toggle()
         }
@@ -137,6 +138,7 @@ open class ACCalendarContainerView: ACCalendarBaseView {
 
 private extension ACCalendarContainerView {
     func createMonthView(index: Int) -> UIView {
+        print("createMonthView \(index)")
         guard let month = self.service.months[safe: Int(index)] else {
             return UIView()
         }

@@ -9,7 +9,7 @@ import UIKit
 
 // TODO: Add custom section insets for layout
 
-open class ACCalendarVerticalLayout: ACCalendarBaseLayout {
+open class ACCalendarVerticalLayoutOld: ACCalendarBaseLayout {
     
     open var headerHeight: Double {
         didSet {

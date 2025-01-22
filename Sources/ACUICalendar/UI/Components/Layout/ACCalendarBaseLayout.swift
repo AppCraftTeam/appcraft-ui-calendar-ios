@@ -7,7 +7,7 @@
 
 import UIKit
 
-open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayout {
+open class ACCalendarBaseLayout: UICollectionViewFlowLayout, ACCalendarLayoutOld {
 
     // MARK: Attributes
     open var itemHeight: CGFloat = .zero {
@@ -83,10 +83,10 @@ public extension UICollectionViewFlowLayout {
     static func vertical(
         headerHeight: Double = 20
     ) -> UICollectionViewFlowLayout {
-        ACCalendarVerticalLayout(headerHeight: headerHeight)
+        ACCalendarVerticalLayoutOld(headerHeight: headerHeight)
     }
     
     static var horizontal: UICollectionViewFlowLayout {
-        ACCalendarHorizontalLayout()
+        ACCalendarHorizontalLayoutOld()
     }
 }

@@ -7,7 +7,7 @@ import UIKit
 
 final class LayoutItemTypeEnumerator {
         
-    init(calendar: Calendar, monthsLayout: MonthsLayout, monthRange: MonthRange, dayRange: DayRange) {
+    init(calendar: Calendar, monthsLayout: ACMonthsLayout, monthRange: MonthRange, dayRange: DayRange) {
         self.calendar = calendar
         self.monthsLayout = monthsLayout
         self.monthRange = monthRange
@@ -42,7 +42,7 @@ final class LayoutItemTypeEnumerator {
     // MARK: Private
     
     private let calendar: Calendar
-    private let monthsLayout: MonthsLayout
+    private let monthsLayout: ACMonthsLayout
     private let monthRange: MonthRange
     private let dayRange: DayRange
     
@@ -60,7 +60,6 @@ final class LayoutItemTypeEnumerator {
     }
     
     private func previousItemType(from itemType: LayoutItem.ItemType) -> LayoutItem.ItemType {
-        print("previousItemType \(itemType)")
         switch itemType {
         case .monthHeader(let month):
             let previousMonth = calendar.month(byAddingMonths: -1, to: month)
