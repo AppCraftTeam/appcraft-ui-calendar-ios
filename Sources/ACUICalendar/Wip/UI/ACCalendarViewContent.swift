@@ -11,6 +11,41 @@ public final class ACCalendarViewContent {
     public let dayRange: DayRange
     public let monthRange: MonthRange
     public let monthsLayout: ACMonthsLayout
+    public let params: ACCalendarViewContent.Params
+    
+    public struct Params {
+        public var dayAspectRatio: CGFloat
+        public var dayOfWeekAspectRatio: CGFloat
+        public var interMonthSpacing: CGFloat
+        public var monthDayInsets: UIEdgeInsets
+        public var verticalDayMargin: CGFloat
+        public var horizontalDayMargin: CGFloat
+        
+        public init(
+            dayAspectRatio: CGFloat = 1,
+            dayOfWeekAspectRatio: CGFloat = 1,
+            interMonthSpacing: CGFloat = 0,
+            monthDayInsets: UIEdgeInsets = .zero,
+            verticalDayMargin: CGFloat = 0,
+            horizontalDayMargin: CGFloat = 0
+        ) {
+            self.interMonthSpacing = interMonthSpacing
+            self.monthDayInsets = monthDayInsets
+            self.verticalDayMargin = verticalDayMargin
+            self.horizontalDayMargin = horizontalDayMargin
+            
+            let validAspectRatioRange: ClosedRange<CGFloat> = 0.5...3
+            
+            self.dayOfWeekAspectRatio = min(
+                max(dayOfWeekAspectRatio, validAspectRatioRange.lowerBound),
+                validAspectRatioRange.upperBound
+            )
+            self.dayAspectRatio = min(
+                max(dayAspectRatio, validAspectRatioRange.lowerBound),
+                validAspectRatioRange.upperBound
+            )
+        }
+    }
     
     public var selectedDate: Date?
     
@@ -22,14 +57,24 @@ public final class ACCalendarViewContent {
         calendar.createDayFormatter()
     }
     
+    public var dayRangesAndItemProvider: (
+        dayRanges: Set<DayRange>,
+        dayRangeItemProvider: (DayRangeLayoutContext) -> AnyCalendarItemModel)?
+    
+    public var overlaidItemLocationsAndItemProvider: (
+        overlaidItemLocations: Set<OverlaidItemLocation>,
+        overlayItemProvider: (OverlayLayoutContext) -> AnyCalendarItemModel)?
+    
     public init(
         calendar: Calendar = Calendar.current,
         visibleDateRange: ClosedRange<Date>,
-        monthsLayout: ACMonthsLayout
+        monthsLayout: ACMonthsLayout,
+        params: ACCalendarViewContent.Params
     ){
         self.calendar = calendar
         monthRange = MonthRange(containing: visibleDateRange, in: calendar)
         self.monthsLayout = monthsLayout
+        self.params = params
         
         let firstDateOfLowerBoundMonth = calendar.firstDate(of: monthRange.lowerBound)
         let lastDateOfUpperBoundMonth = calendar.lastDate(of: monthRange.upperBound)
@@ -37,6 +82,23 @@ public final class ACCalendarViewContent {
             containing: firstDateOfLowerBoundMonth...lastDateOfUpperBoundMonth,
             in: calendar
         )
+    }
+    
+    public func dayRangeItemProvider(
+        for dateRanges: Set<ClosedRange<Date>>,
+        _ dayRangeItemProvider: @escaping (
+            _ dayRangeLayoutContext: DayRangeLayoutContext)
+        -> AnyCalendarItemModel) {
+        let dayRanges = Set(dateRanges.map { DayRange(containing: $0, in: calendar) })
+        dayRangesAndItemProvider = (dayRanges, dayRangeItemProvider)
+    }
+    
+    public func overlayItemProvider(
+        for overlaidItemLocations: Set<OverlaidItemLocation>,
+        _ overlayItemProvider: @escaping (
+            _ overlayLayoutContext: OverlayLayoutContext)
+        -> AnyCalendarItemModel) {
+        overlaidItemLocationsAndItemProvider = (overlaidItemLocations, overlayItemProvider)
     }
     
     public func monthHeaderItemProvider(for month: MonthComponents) -> AnyCalendarItemModel {
@@ -90,4 +152,3 @@ public final class ACCalendarViewContent {
         )
     }
 }
-
